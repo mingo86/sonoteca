@@ -401,6 +401,22 @@
   [data-theme="dark"] .navactive,[data-theme="dark"] .topnav .navbtn.active{color:#fff}
   [data-theme="dark"] .barrow .bf{background:linear-gradient(90deg,#1ed760,#1db954)}
   [data-theme="dark"] .meter .fill,[data-theme="dark"] .grow .gf{background:linear-gradient(90deg,#1ed760,#1db954)}
+  /* caroselli stile Spotify */
+  .grid-h{margin:18px 0 12px;font-size:20px;font-weight:800;color:var(--txt)}
+  .shelf{margin:6px 0 24px}
+  .shelf-h{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 12px}
+  .shelf-h h3{margin:0;font-size:20px;font-weight:800;color:var(--txt)}
+  .shelf-row{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity}
+  .shelf-row::-webkit-scrollbar{height:8px}
+  .shelf-card{flex:none;width:150px;cursor:pointer;scroll-snap-align:start;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;transition:.2s;position:relative}
+  .shelf-card:hover{background:var(--elev)}
+  .shelf-card .cover{width:100%;aspect-ratio:1;border-radius:8px;font-size:28px;margin-bottom:10px}
+  .shelf-card .ti{font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .shelf-card .ta{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .shelf-fab{position:absolute;right:20px;top:120px;width:42px;height:42px;border-radius:50%;border:0;background:var(--green);color:#000;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(8px);transition:.18s;box-shadow:0 8px 16px rgba(0,0,0,.5)}
+  .shelf-card:hover .shelf-fab{opacity:1;transform:translateY(0)}
+  .shelf-fab:hover{transform:scale(1.07)}
+  [data-theme="dark"] .player.on .pt{color:var(--green2)}
   /* ====== NUOVO LAYOUT: topbar + content + rail ====== */
   :root{--rail:344px}
   body{height:auto;min-height:100%}
@@ -483,6 +499,8 @@
       <div class="viewhead"><h2 id="secTitle">Brani</h2><span class="side-foot" id="sidefoot"></span></div>
       <section id="tab-brani">
         <div class="hero"><div class="art">🎧</div><div><div class="eyebrow">Corso di musica personale</div><h1>La mia Sonoteca</h1><p>Ogni brano analizzato a fondo — genere, tonalità, voce, strumenti, scena — con mood, infografiche e playlist contestuali. Passa sopra una copertina per l'anteprima.</p></div></div>
+        <div id="shelves"></div>
+        <h3 class="grid-h" id="gridHead">Tutti i brani</h3>
         <div id="grid" class="grid"></div>
       </section>
       <section id="tab-mood" style="display:none"><p style="color:var(--muted);margin-top:4px">Sfoglia per atmosfera. Tocca un mood per vedere i brani che lo evocano.</p><div id="moodgrid" class="moodgrid"></div></section>
@@ -1307,8 +1325,27 @@ function renderTagbar(){
 
 /* ====== RENDER BRANI ====== */
 function domEmo(b){return (b.emozioni&&b.emozioni.length)?b.emozioni.slice().sort((x,y)=>y.val-x.val)[0]:null;}
+function shelfCard(b){const i=BRANI.indexOf(b);const fab=b.preview?`<button class="shelf-fab" onclick="event.stopPropagation();playPreview(${i})">▶</button>`:'';return `<div class="shelf-card" onclick="openSheet(${i})">${coverHTML(b)}${fab}<div class="ti">${b.titolo}</div><div class="ta">${b.artista}</div></div>`;}
+function shelfRow(title,arr){if(!arr.length)return '';return `<div class="shelf"><div class="shelf-h"><h3>${title}</h3></div><div class="shelf-row">${arr.map(shelfCard).join('')}</div></div>`;}
+function renderShelves(){
+  const host=document.getElementById('shelves');if(!host)return;
+  const M=k=>b=>b.metriche&&b.metriche[k];
+  const byDate=BRANI.slice().sort((a,b)=>(''+(b.data||'')).localeCompare(''+(a.data||''))).slice(0,16);
+  const ballabili=BRANI.filter(b=>b.metriche&&b.metriche['Ballabilità']>=80).sort((a,b)=>b.metriche['Ballabilità']-a.metriche['Ballabilità']).slice(0,16);
+  const energia=BRANI.filter(b=>b.metriche&&b.metriche.Energia>=85).slice(0,16);
+  const notturni=BRANI.filter(b=>b.metriche&&(b.metriche['Intimità']>=68||b.metriche['Oscurità']>=68)).slice(0,16);
+  const cover=BRANI.filter(b=>b.cover).slice(0,16);
+  const mc={};BRANI.forEach(b=>(b.mood||[]).forEach(m=>mc[m]=(mc[m]||0)+1));
+  const topMoods=Object.keys(mc).sort((a,b)=>mc[b]-mc[a]).slice(0,4);
+  let html=shelfRow('🆕 Aggiunti di recente',byDate)+shelfRow('💃 Da ballare',ballabili)+shelfRow('⚡ Alta energia',energia)+shelfRow('🌙 Notturni & intimi',notturni)+shelfRow('🖼️ Con copertina',cover);
+  topMoods.forEach(m=>{html+=shelfRow('• '+m,BRANI.filter(b=>(b.mood||[]).indexOf(m)>=0).slice(0,16));});
+  host.innerHTML=html;
+}
 function render(){
   const q=document.getElementById('q').value.toLowerCase();
+  var _f=q||activeTags.size,_sh=document.getElementById('shelves'),_gh=document.getElementById('gridHead');
+  if(_sh)_sh.style.display=_f?'none':'';
+  if(_gh)_gh.textContent=_f?'Risultati':'Tutti i brani';
   const grid=document.getElementById('grid');grid.innerHTML='';
   const list=BRANI.filter(b=>{
     const hay=(b.titolo+b.artista+b.strumenti+(b.tags||[]).join(' ')+b.mood.join(' ')).toLowerCase();
@@ -1644,7 +1681,7 @@ function sorprendimi(){
   if(!pool.length)pool=BRANI;
   openSheet(BRANI.indexOf(pool[Math.floor(Math.random()*pool.length)]));
 }
-renderTagbar();render();renderMood();renderLezioni();renderGlossario();renderInfo();renderStats();renderTimeline();newQuiz();railTab('filtri');
+renderShelves();renderTagbar();render();renderMood();renderLezioni();renderGlossario();renderInfo();renderStats();renderTimeline();newQuiz();railTab('filtri');
 </script>
 </body>
 </html>
