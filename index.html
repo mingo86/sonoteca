@@ -442,6 +442,9 @@
   .qstats{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:14px;color:var(--muted);margin-bottom:14px;font-weight:800}
   .qstats .qfire{color:var(--green2)}
   .qsub{font-size:12.5px;color:var(--muted);margin:-6px 0 14px}
+  .spembed{border-radius:12px;margin:4px 0 14px;border:0;display:block}
+  .qmode{display:flex;justify-content:center;margin:-4px 0 12px}
+  .chain-spark{background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:10px}
   /* ====== NUOVO LAYOUT: topbar + content + rail ====== */
   :root{--rail:344px}
   body{height:auto;min-height:100%}
@@ -1304,6 +1307,18 @@ Apri una scheda e guarda 'Anatomia della sensazione': vedi da quali numeri nasce
 ];
 
 const GLOSSARIO = [
+  ["Four-on-the-floor","Cassa su ogni movimento (1-2-3-4): il battito dritto di house, techno e disco."],
+  ["Drop","Il momento di 'esplosione' dopo il build: rientrano cassa e basso. Cuore della musica da club."],
+  ["Build / build-up","Sezione di tensione crescente (filtri, rullante che sale) prima del drop."],
+  ["Camelot","Sistema di notazione delle tonalità per il mixaggio armonico (es. 8A, 8B): chiavi vicine si mixano bene."],
+  ["BPM","Battiti per minuto = velocità. House ~120-125, techno 125-140, trance 135-145, reggaeton ~90-100."],
+  ["Sidechain","Il volume 'respira' a tempo con la cassa: effetto di pompaggio tipico di house/EDM."],
+  ["Supersaw","Lead sintetico fatto di più onde a dente di sega: suono enorme, marchio della trance."],
+  ["Dembow","Il riddim sincopato che sta alla base del reggaeton (dal dancehall giamaicano)."],
+  ["Organic house","House lenta e calda con strumenti acustici/etnici: il suono 'sunset'."],
+  ["Afro house","House con percussioni africane, forte in Sudafrica (Black Coffee). Vedi anche amapiano."],
+  ["Half-time","Il rullante cade ogni 2 movimenti: il pezzo sembra più lento e pesante."],
+  ["Tropical / cumbia","Famiglia di balli latini (Colombia, Messico, Perù): fisarmonica, percussioni, fiati."],
   ["Tonalità (key)","La 'casa' armonica del brano (es. Sol minore). Determina quali note suonano stabili."],
   ["Maggiore / minore","Maggiore = aperto/luminoso; minore = cupo/malinconico. Punto di partenza, non regola ferrea."],
   ["BPM","Battiti per minuto = velocità. ~70 ballad, ~90-100 R&B, ~120-128 dance, 140+ trap/dnb."],
@@ -1450,6 +1465,7 @@ function render(){
   var _f=q||activeTags.size,_sh=document.getElementById('shelves'),_gh=document.getElementById('gridHead');
   if(_sh)_sh.style.display=_f?'none':'';
   if(_gh)_gh.textContent=_f?'Risultati':'Tutti i brani';
+  syncHash();
   const grid=document.getElementById('grid');grid.innerHTML='';
   const list=BRANI.filter(b=>{
     const hay=(b.titolo+b.artista+b.strumenti+(b.tags||[]).join(' ')+b.mood.join(' ')).toLowerCase();
@@ -1473,14 +1489,25 @@ function render(){
 
 /* ====== MODAL ====== */
 function similiByTag(b,n){const sa=TAGSET.get(b);if(!sa)return [];const out=[];BRANI.forEach(x=>{if(x===b)return;const sx=TAGSET.get(x);if(!sx)return;let inter=0;sa.forEach(t=>{if(sx.has(t))inter++;});if(!inter)return;out.push({x,score:inter/(sa.size+sx.size-inter),shared:inter});});return out.sort((a,c)=>c.score-a.score).slice(0,n||6);}
+/* ====== PREFERITI (localStorage) ====== */
+function favSet(){try{return new Set(JSON.parse(localStorage.getItem('sonoteca-fav')||'[]'))}catch(e){return new Set()}}
+function isFav(id){return id?favSet().has(id):false;}
+function toggleFav(id,btn){const s=favSet();if(s.has(id))s.delete(id);else s.add(id);try{localStorage.setItem('sonoteca-fav',JSON.stringify([...s]))}catch(e){}if(btn)btn.innerHTML=s.has(id)?'❤️ Nei preferiti':'🤍 Preferito';var p=document.getElementById('rail-scorciatoie');if(p&&p.style.display!=='none')renderScorciatoie();}
+function favBrani(){const s=favSet();return BRANI.filter(b=>s.has(b.trackId));}
+/* ====== LINK CONDIVISIBILI (hash) ====== */
+function syncHash(){try{const cur=document.querySelector('.navbtn.active');const tab=cur?cur.dataset.tab:'brani';const h={t:tab};if(activeTags.size)h.g=[...activeTags];if(bpmTarget)h.b=bpmTarget;location.replace('#'+encodeURIComponent(JSON.stringify(h)));}catch(e){}}
+function applyHash(){try{if(!location.hash||location.hash.length<2)return;const h=JSON.parse(decodeURIComponent(location.hash.slice(1)));if(h.g){activeTags.clear();h.g.forEach(t=>activeTags.add(t));}if(h.b)bpmTarget=h.b;renderTagbar();render();if(h.t&&h.t!=='brani')switchTab(h.t);}catch(e){}}
 function openSheet(i){
   const b=BRANI[i];
   const prev=b.preview?`<button class="btn-ghost" onclick="playPreview(${i})">▶ Anteprima 30s</button>`:'';
+  const fav=isFav(b.trackId);
+  const embed=b.trackId?`<iframe class="spembed" src="https://open.spotify.com/embed/track/${b.trackId}" width="100%" height="80" frameborder="0" loading="lazy" allow="encrypted-media"></iframe>`:'';
   document.getElementById('sheet').innerHTML=
     `<button class="close" onclick="closeModal()">✕</button>`+
     `<div class="sheet-hero">${coverHTML(b)}<div><div class="eyebrow">${b.genere}</div><h2>${b.titolo}</h2><div class="artist">${b.artista} · ${b.epoca}</div></div></div>`+
     `<div class="sheet-body">`+
-      `<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}</div>`+
+      `<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost" onclick="toggleFav('${esc(b.trackId)}',this)">${fav?'❤️ Nei preferiti':'🤍 Preferito'}</button></div>`+
+      embed+
       `<div class="ctx"><b>Mood —</b> ${b.contesto}<div class="chips" style="margin-top:8px">${b.mood.map(x=>`<span class="chip click" onclick="goTag('${esc(x)}')">${x}</span>`).join('')}</div></div>`+
       `<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>`<button class="tagchip" style="--tc:${TAGCATS[t.c].col}" onclick="goTag('${esc(t.t)}')">${t.t}</button>`).join('')}</div></div>`+
       `<table><tr><td>Genere</td><td>${b.genere}</td></tr><tr><td>Tonalità</td><td>${b.key}</td></tr><tr><td>BPM</td><td>${b.bpm}</td></tr><tr><td>Metro</td><td>${b.metro}</td></tr><tr><td>Durata</td><td>${b.durata}</td></tr><tr><td>Produttore</td><td>${b.produttore||'—'}</td></tr></table>`+
@@ -1542,6 +1569,7 @@ function switchTab(t){
   if(t==='mixaggio')renderMix();
   if(t==='costellazione')renderCostellazione();
   document.getElementById('content').scrollTo({top:0,behavior:'auto'});
+  syncHash();
 }
 document.querySelectorAll('.navbtn').forEach(btn=>btn.onclick=()=>switchTab(btn.dataset.tab));
 function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('sonoteca-theme',t)}catch(e){}var b=document.getElementById('themeBtn');if(b)b.textContent=(t==='light'?'🌙':'☀️');}
@@ -1596,6 +1624,20 @@ function emozioniHTML(b){
   return `<div class="sec"><h4>🎭 Cosa dovresti sentire</h4>`+b.emozioni.map(e=>`<div class="emo"><div class="emo-top"><span class="emo-name"><span class="emo-ic">${e.ic}</span>${e.emo}</span><span class="emo-val" style="color:${e.col}">${e.val}%</span></div><div class="emo-track"><div class="emo-fill" style="width:${e.val}%;background:${e.col}"></div></div><div class="emo-why">${e.perche}</div></div>`).join('')+`</div>`;
 }
 /* ====== DASHBOARD ====== */
+function statScatter(){
+  const W=560,H=320,pad=36;
+  const pts=BRANI.filter(b=>b.metriche).map(b=>{const en=b.metriche.Energia,va=100-(b.metriche['Oscurità']||0);const ds=(b.emozioni&&b.emozioni.length)?b.emozioni.slice().sort((x,y)=>y.val-x.val)[0]:null;return {x:pad+en/100*(W-2*pad),y:H-pad-va/100*(H-2*pad),c:ds?ds.col:'#888',j:BRANI.indexOf(b)};});
+  const dots=pts.map(p=>`<circle cx="${p.x.toFixed(0)}" cy="${p.y.toFixed(0)}" r="3.2" fill="${p.c}" fill-opacity=".72" onclick="openSheet(${p.j})" style="cursor:pointer"/>`).join('');
+  const ax=`<line x1="${pad}" y1="${H-pad}" x2="${W-pad}" y2="${H-pad}" stroke="var(--line)"/><line x1="${pad}" y1="${pad}" x2="${pad}" y2="${H-pad}" stroke="var(--line)"/>`;
+  const q=`<text x="${W-pad-4}" y="${pad+12}" font-size="10" fill="var(--muted)" text-anchor="end">euforico</text><text x="${pad+4}" y="${pad+12}" font-size="10" fill="var(--muted)">sereno</text><text x="${pad+4}" y="${H-pad-6}" font-size="10" fill="var(--muted)">malinconico</text><text x="${W-pad-4}" y="${H-pad-6}" font-size="10" fill="var(--muted)" text-anchor="end">teso/dark</text>`;
+  const lab=`<text x="${W/2}" y="${H-6}" font-size="11" fill="var(--muted)" text-anchor="middle">Energia →</text><text x="14" y="${H/2}" font-size="11" fill="var(--muted)" text-anchor="middle" transform="rotate(-90 14 ${H/2})">Positività →</text>`;
+  return `<div class="barlist" style="max-width:none"><h4>🗺️ Mappa Energia × Positività — clicca un punto</h4><svg viewBox="0 0 ${W} ${H}" style="width:100%">${ax}${q}${dots}${lab}</svg></div>`;
+}
+function statBpmHist(){
+  const bk={};BRANI.forEach(b=>{if(!b.bpmNum)return;const k=Math.floor(b.bpmNum/10)*10;bk[k]=(bk[k]||0)+1;});
+  const keys=Object.keys(bk).map(Number).sort((a,b)=>a-b),max=Math.max.apply(null,keys.map(k=>bk[k]));
+  return `<div class="barlist"><h4>Distribuzione BPM</h4>`+keys.map(k=>`<div class="barrow"><span class="nm">${k}–${k+9}</span><div class="bt"><div class="bf" style="width:${bk[k]/max*100}%"></div></div><span class="vn">${bk[k]}</span></div>`).join('')+`</div>`;
+}
 function renderStats(){
   const n=BRANI.length, withBpm=BRANI.filter(b=>b.bpmNum);
   const bpmAvg=withBpm.length?Math.round(withBpm.reduce((s,b)=>s+b.bpmNum,0)/withBpm.length):0;
@@ -1605,7 +1647,8 @@ function renderStats(){
   function bars(title,data){const max=Math.max.apply(null,data.map(d=>d[1]));return `<div class="barlist"><h4>${title}</h4>`+data.map(d=>`<div class="barrow"><span class="nm">${d[0]}</span><div class="bt"><div class="bf" style="width:${d[1]/max*100}%"></div></div><span class="vn">${d[1]}</span></div>`).join('')+`</div>`;}
   document.getElementById('tab-stats').innerHTML=
     `<div class="stat-row"><div class="bigstat reveal"><div class="n">${n}</div><div class="l">brani in archivio</div></div><div class="bigstat reveal"><div class="n">${bpmAvg}</div><div class="l">BPM medio</div></div><div class="bigstat reveal"><div class="n">${minorPct}%</div><div class="l">in tonalità minore</div></div><div class="bigstat reveal"><div class="n">${moodN}</div><div class="l">mood diversi</div></div></div>`+
-    bars('Generi',count(BRANI.map(b=>b.genere)))+bars('Epoche',count(BRANI.map(b=>b.epoca)))+bars('Mood ricorrenti',count(BRANI.flatMap(b=>b.mood)).slice(0,8));
+    statScatter()+statBpmHist()+
+    bars('Generi',count(BRANI.flatMap(b=>splitGenere(b.genere))).slice(0,12))+bars('Epoche',count(BRANI.map(b=>b.epoca)))+bars('Mood ricorrenti',count(BRANI.flatMap(b=>b.mood)).slice(0,10));
 }
 
 /* ====== TIMELINE ====== */
@@ -1643,7 +1686,8 @@ function renderMixFor(i){
   const row=o=>`<div class="tl-item" onclick="openSheet(${o.j})">${coverHTML(o.x)}<div style="flex:1;min-width:0"><div class="ti">${o.x.titolo}</div><div class="ta">${o.x.artista}</div></div><div class="mixbadges"><span class="mixb">${o.x.camelot}</span><span class="mixb">${o.x.bpmNum} BPM</span><span class="mixtag">${o.tag}</span></div></div>`;
   document.getElementById('mixOut').innerHTML=
     `<div class="mixbase">${coverHTML(b)}<div><div class="eyebrow">Brano base</div><div class="ti" style="font-size:18px">${b.titolo}</div><div class="ta">${b.artista} · ${b.camelot} · ${b.bpmNum} BPM · ${b.key}</div></div></div>`+
-    `<button class="btn-green" style="margin:2px 0 14px" onclick="renderChain(${i})">🔗 Genera set da qui</button>`+
+    `<button class="btn-green" style="margin:2px 8px 14px 0" onclick="renderChain(${i})">🔗 Genera set</button>`+
+    `<button class="btn-ghost" style="margin:2px 0 14px" onclick="renderArc(${i})">🌅→🔥→🌙 Genera serata</button>`+
     `<div id="mixChain"></div>`+
     `<h4 class="mixh">Compatibili (${matches.length})</h4>`+
     (matches.length?`<div class="tl-items">${matches.map(row).join('')}</div>`:`<div class="empty">Nessun brano compatibile trovato.</div>`);
@@ -1651,30 +1695,39 @@ function renderMixFor(i){
 }
 
 /* ====== QUIZ ====== */
-let qScore=0,qTotal=0,qStreak=0,qBest=0;
+let qScore=0,qTotal=0,qStreak=0,qBest=0,qChallenge=false,qLeft=0;
+function startChallenge(){qChallenge=true;qLeft=10;qScore=0;qStreak=0;newQuiz();}
+function qBadge(s){return s>=160?'🏆 Leggenda':s>=100?'🥇 Oro':s>=55?'🥈 Argento':'🥉 Bronzo';}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
 function bpmChoices(real){const set=[real];const d=[-30,-20,20,30,40];while(set.length<3){const v=real+d[Math.floor(Math.random()*d.length)];if(v>40&&set.indexOf(v)<0)set.push(v);}return shuffle(set);}
 function qWrongs(pool,correct,n){return shuffle(pool.filter(x=>x&&x!==correct)).slice(0,n);}
 function qPts(){return 10+Math.min(qStreak,5)*5;}
-function qHead(){return `<div class="qstats"><span>⭐ ${qScore}</span><span class="${qStreak>=3?'qfire':''}">🔥 ${qStreak}</span><span>🏆 ${qBest}</span><span>🎮 ${qTotal}</span></div>`;}
+function qHead(){const mode=qChallenge?`<span>🏁 ${11-qLeft}/10</span>`:`<span>🎮 ${qTotal}</span>`;return `<div class="qstats"><span>⭐ ${qScore}</span><span class="${qStreak>=3?'qfire':''}">🔥 ${qStreak}</span><span>🏆 ${qBest}</span>${mode}</div>`;}
 function qWrap(q,opts,b,sub){
   const play=(b&&b.preview)?`<div class="qplay"><button class="btn-ghost" onclick="playPreview(${BRANI.indexOf(b)})">▶ Ascolta indizio (30s)</button></div>`:'';
-  return `<div class="quiz"><div class="quiz-card">${qHead()}<div class="qq">${q}</div>${sub?`<div class="qsub">${sub}</div>`:''}${play}<div class="opts">`+shuffle(opts).map(o=>`<button class="qopt" data-correct="${o[1]?1:0}" onclick="answer(this)">${o[0]}</button>`).join('')+`</div><div class="next" id="qnext"></div></div></div>`;
+  const modebar=qChallenge?'':`<div class="qmode"><button class="btn-ghost" onclick="startChallenge()">🏁 Sfida: 10 domande</button></div>`;
+  return `<div class="quiz"><div class="quiz-card">${qHead()}${modebar}<div class="qq">${q}</div>${sub?`<div class="qsub">${sub}</div>`:''}${play}<div class="opts">`+shuffle(opts).map(o=>`<button class="qopt" data-correct="${o[1]?1:0}" onclick="answer(this)">${o[0]}</button>`).join('')+`</div><div class="next" id="qnext"></div></div></div>`;
 }
 function answer(btn){
   const correct=btn.dataset.correct==='1';qTotal++;let pts=0;
   if(correct){qStreak++;pts=qPts();qScore+=pts;if(qScore>qBest)qBest=qScore;}else{qStreak=0;}
   btn.parentNode.querySelectorAll('.qopt').forEach(o=>{o.style.pointerEvents='none';if(o.dataset.correct==='1')o.classList.add('ok')});
   if(!correct)btn.classList.add('no');
-  const msg=correct?(qStreak>=5?`🔥 ${qStreak} di fila! +${pts} punti`:(qStreak>=3?`💪 Combo x${qStreak}! +${pts}`:`✓ Esatto! +${pts}`)):'✗ Ops! La risposta giusta è in verde. Streak azzerato.';
-  document.getElementById('qnext').innerHTML=`<div class="score">${msg}</div><button class="btn-green" style="margin-top:14px" onclick="newQuiz()">Prossima →</button>`;
+  const msg=correct?(qStreak>=5?`🔥 ${qStreak} di fila! +${pts} punti`:(qStreak>=3?`💪 Combo x${qStreak}! +${pts}`:`✓ Esatto! +${pts}`)):'✗ Ops! La risposta giusta è in verde.';
+  let next;
+  if(qChallenge){qLeft--;
+    if(qLeft<=0){qChallenge=false;next=`<div class="score">🏁 Sfida finita! Punteggio <b>${qScore}</b> — ${qBadge(qScore)}</div><button class="btn-green" style="margin-top:14px" onclick="startChallenge()">🏁 Rigioca</button> <button class="btn-ghost" onclick="newQuiz()">Modalità libera</button>`;}
+    else next=`<div class="score">${msg}</div><button class="btn-green" style="margin-top:14px" onclick="newQuiz()">Prossima (${qLeft} rimaste) →</button>`;
+  } else next=`<div class="score">${msg}</div><button class="btn-green" style="margin-top:14px" onclick="newQuiz()">Prossima →</button>`;
+  document.getElementById('qnext').innerHTML=next;
 }
 function newQuiz(){
-  const types=['key','bpm','genere','sensazione','epoca','camelot'];
+  const types=['key','bpm','genere','sensazione','epoca','camelot','transizione'];
   let t=types[Math.floor(Math.random()*types.length)];
   const b=BRANI[Math.floor(Math.random()*BRANI.length)];let html='';
   if(t==='bpm'&&!b.bpmNum)t='key';
   if(t==='camelot'&&!b.camelot)t='key';
+  if(t==='transizione'&&(!b.camelot||!b.bpmNum))t='key';
   if(t==='sensazione'&&!(b.emozioni&&b.emozioni.length))t='key';
   if(t==='epoca'&&(!b.epoca||b.epoca==='—'))t='key';
   if(t==='key'){const min=/min/i.test(b.key);html=qWrap(`«${b.titolo}» di ${b.artista} è in tonalità…`,[['Maggiore',!min],['Minore',min]],b);}
@@ -1682,6 +1735,9 @@ function newQuiz(){
   else if(t==='genere'){const fam=resolveGenre(b).nome;const all=[...new Set(Object.keys(GENRE_EVO).map(k=>GENRE_EVO[k].nome))];html=qWrap(`A che famiglia di genere appartiene «${b.titolo}»?`,[[fam,true]].concat(qWrongs(all,fam,3).map(w=>[w,false])),b,b.genere);}
   else if(t==='sensazione'){const dom=b.emozioni.slice().sort((x,y)=>y.val-x.val)[0].emo;const all=[...new Set(BRANI.flatMap(x=>(x.emozioni||[]).map(e=>e.emo)))];html=qWrap(`Che sensazione domina in «${b.titolo}»?`,[[dom,true]].concat(qWrongs(all,dom,3).map(w=>[w,false])),b);}
   else if(t==='epoca'){const all=[...new Set(BRANI.map(x=>x.epoca).filter(x=>x&&x!=='—'))];html=qWrap(`Di che epoca è «${b.titolo}» di ${b.artista}?`,[[b.epoca,true]].concat(qWrongs(all,b.epoca,3).map(w=>[w,false])),b);}
+  else if(t==='transizione'){const cs=[b.camelot].concat(camCompat(b.camelot));const good=BRANI.find(x=>x!==b&&x.camelot&&cs.indexOf(x.camelot)>=0&&x.bpmNum&&Math.abs(x.bpmNum-b.bpmNum)<=8);const bads=shuffle(BRANI.filter(x=>x!==b&&x.camelot&&cs.indexOf(x.camelot)<0&&Math.abs((x.bpmNum||0)-b.bpmNum)>16)).slice(0,3);
+    if(good&&bads.length>=3)html=qWrap(`🎛️ Con quale brano mixeresti meglio «${b.titolo}» (${b.camelot} · ${b.bpmNum} BPM)?`,[[good.titolo+' — '+good.artista,true]].concat(bads.map(x=>[x.titolo+' — '+x.artista,false])),b,'Compatibile per tonalità (Camelot) e BPM');
+    else{const min=/min/i.test(b.key);html=qWrap(`«${b.titolo}» è in tonalità…`,[['Maggiore',!min],['Minore',min]],b);}}
   else{const comp=camCompat(b.camelot),good=comp[0],codes=[];for(let n=1;n<=12;n++){codes.push(n+'A',n+'B');}const bad=qWrongs(codes.filter(c=>c!==b.camelot&&comp.indexOf(c)<0),null,3);html=qWrap(`🎛️ Quale chiave mixa in armonia con «${b.titolo}» (${b.camelot})?`,[[good,true]].concat(bad.map(w=>[w,false])),b,'Sfida DJ · compatibilità sulla ruota Camelot');}
   document.getElementById('tab-quiz').innerHTML=html;
 }
@@ -1792,9 +1848,12 @@ function renderContesto(i){
 function renderScorciatoie(){
   const host=document.getElementById('rail-scorciatoie');if(!host)return;
   const moods=railTop(BRANI.flatMap(b=>b.mood||[]),12);
+  const favs=favBrani();
+  const favHtml=favs.length?favs.slice(0,20).map(b=>{const j=BRANI.indexOf(b);return `<div class="ctx-row" onclick="openSheet(${j})">${coverHTML(b)}<div style="flex:1;min-width:0"><div class="ti">${b.titolo}</div><div class="ta">${b.artista}</div></div></div>`;}).join(''):'<div class="rail-hint">Nessun preferito ancora. Apri un brano e tocca 🤍 Preferito.</div>';
   host.innerHTML=`<button class="sc-btn" onclick="sorprendimi()">🎲 Sorprendimi</button>`+
     `<button class="sc-btn" onclick="clearTags();switchTab('brani')">🧹 Azzera filtri</button>`+
     `<button class="sc-btn" onclick="switchTab('mixaggio')">🎛️ Vai al mixaggio</button>`+
+    `<div class="rail-h">❤️ Preferiti (${favs.length})</div>${favHtml}`+
     `<div class="rail-h">Mood al volo</div><div class="chips">${moods.map(m=>`<span class="chip click" onclick="goTag('${esc(m[0])}')">${m[0]} <span style="opacity:.55">${m[1]}</span></span>`).join('')}</div>`;
 }
 function sorprendimi(){
@@ -1856,13 +1915,32 @@ function mixChain(i){
     chain.push({x:best.x,j:best.j,note:tr+(best.db?` · ${best.db>0?'+':''}${best.db} BPM`:'')});cur=best.x;}
   return chain;
 }
+function durSec(d){const m=/(\d+):(\d+)/.exec(d||'');return m?(+m[1]*60+ +m[2]):0;}
+function fmtDur(s){return Math.round(s/60)+' min';}
+function sparkline(vals){if(!vals.length)return '';const W=vals.length*26,H=46,pts=vals.map((v,i)=>`${i*26+13},${(H-5-(v/100)*(H-14)).toFixed(0)}`).join(' ');return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:48px"><polyline points="${pts}" fill="none" stroke="#1db954" stroke-width="2"/>${vals.map((v,i)=>`<circle cx="${i*26+13}" cy="${(H-5-(v/100)*(H-14)).toFixed(0)}" r="2.6" fill="#1ed760"/>`).join('')}</svg>`;}
+function mixArc(i){const b=BRANI[i];if(!b||!b.camelot||!b.bpmNum)return [];const cs=[b.camelot].concat(camCompat(b.camelot));
+  let pool=BRANI.filter(x=>x.camelot&&x.bpmNum&&cs.indexOf(x.camelot)>=0&&Math.abs(x.bpmNum-b.bpmNum)<=10);
+  pool=pool.slice().sort((p,q)=>((p.metriche&&p.metriche.Energia)||50)-((q.metriche&&q.metriche.Energia)||50)).slice(0,14);
+  const up=pool.filter((_,n)=>n%2===0),down=pool.filter((_,n)=>n%2===1).reverse();
+  return up.concat(down);}
+function setRows(arr,noteFn){return arr.map((x,n)=>{const j=BRANI.indexOf(x);return `<div class="chain-row"><span class="chain-n">${n+1}</span><div style="flex:1;min-width:0;cursor:pointer" onclick="openSheet(${j})"><div class="ti">${x.titolo}</div><div class="ta">${x.artista} · ${x.camelot} · ${x.bpmNum} BPM</div></div><span class="chain-note">${noteFn(x,n,arr)}</span></div>`;}).join('');}
 function renderChain(i){
   const out=document.getElementById('mixChain');if(!out)return;
   const ch=mixChain(i);
   if(!ch||ch.length<2){out.innerHTML='<div class="empty">Catena non costruibile da questo brano.</div>';return;}
   lastSet=ch.map(c=>({t:c.x.titolo,a:c.x.artista,id:c.x.trackId}));
+  const en=ch.map(c=>(c.x.metriche&&c.x.metriche.Energia)||50),tot=ch.reduce((s,c)=>s+durSec(c.x.durata),0);
   const rows=ch.map((c,n)=>`<div class="chain-row"><span class="chain-n">${n+1}</span><div style="flex:1;min-width:0;cursor:pointer" onclick="openSheet(${c.j})"><div class="ti">${c.x.titolo}</div><div class="ta">${c.x.artista} · ${c.x.camelot} · ${c.x.bpmNum} BPM</div></div><span class="chain-note">${c.note}</span></div>`).join('');
-  out.innerHTML=`<h4 class="mixh">🔗 Set generato (${ch.length} tracce)</h4><div class="chain">${rows}</div><button class="btn-ghost" onclick="copySet()">📋 Copia tracklist</button><div class="rail-hint" style="margin-top:8px">Vuoi la playlist vera sul tuo Spotify? Dimmelo in chat: la creo io dai trackId del set.</div>`;
+  out.innerHTML=`<h4 class="mixh">🔗 Set generato (${ch.length} tracce · ${fmtDur(tot)})</h4><div class="rail-hint" style="margin:0 0 6px">Curva di energia del set</div><div class="chain-spark">${sparkline(en)}</div><div class="chain">${rows}</div><button class="btn-ghost" onclick="copySet()">📋 Copia tracklist</button><div class="rail-hint" style="margin-top:8px">Vuoi la playlist vera sul tuo Spotify? Dimmelo in chat: la creo io dai trackId del set.</div>`;
+}
+function renderArc(i){
+  const out=document.getElementById('mixChain');if(!out)return;
+  const arr=mixArc(i);
+  if(arr.length<3){out.innerHTML='<div class="empty">Serata non costruibile da questo brano (servono più brani compatibili).</div>';return;}
+  lastSet=arr.map(x=>({t:x.titolo,a:x.artista,id:x.trackId}));
+  const en=arr.map(x=>(x.metriche&&x.metriche.Energia)||50),tot=arr.reduce((s,x)=>s+durSec(x.durata),0);
+  const rows=setRows(arr,(x,n,a)=>n<a.length/3?'🌅 warm-up':n<a.length*2/3?'🔥 peak':'🌙 cool-down');
+  out.innerHTML=`<h4 class="mixh">🌅→🔥→🌙 Serata (${arr.length} tracce · ${fmtDur(tot)})</h4><div class="rail-hint" style="margin:0 0 6px">Arco di energia: si sale e si scende</div><div class="chain-spark">${sparkline(en)}</div><div class="chain">${rows}</div><button class="btn-ghost" onclick="copySet()">📋 Copia tracklist</button>`;
 }
 function copySet(){try{navigator.clipboard.writeText(lastSet.map(s=>s.a+' - '+s.t).join('\n'));alert('Tracklist copiata ('+lastSet.length+' tracce)');}catch(e){}}
 /* ====== RUOTA CAMELOT ====== */
@@ -1887,7 +1965,7 @@ function renderCostellazione(seed){
   const center=`<circle cx="${cx}" cy="${cy}" r="36" fill="#1db954"/><text x="${cx}" y="${cy}" font-size="8.5" fill="#000" text-anchor="middle" font-weight="700"><tspan x="${cx}">${esc((b.titolo||'').slice(0,15))}</tspan></text>`;
   host.innerHTML=`<p class="mixhint">Costellazione per affinità di tag — clicca un nodo per ricentrare. Centro: <b>${b.titolo} — ${b.artista}</b> <button class="btn-ghost" style="margin-left:8px" onclick="openSheet(${seed})">apri scheda</button></p><svg viewBox="0 0 600 480" style="width:100%;max-width:780px">${links}${center}${nodes}</svg>`;
 }
-renderShelves();renderTagbar();render();renderMood();renderLezioni();renderGlossario();renderInfo();renderStats();renderTimeline();newQuiz();railTab('filtri');
+renderShelves();renderTagbar();render();renderMood();renderLezioni();renderGlossario();renderInfo();renderStats();renderTimeline();newQuiz();railTab('filtri');applyHash();
 </script>
 </body>
 </html>
