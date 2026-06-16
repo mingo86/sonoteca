@@ -14,34 +14,34 @@
      Due temi curati: scuro (default) e chiaro (allegro, NON tutto bianco).
      =================================================================== */
   :root{
-    /* --- brand accents (condivisi dai due temi salvo override) --- */
-    --green:#1db954; --green2:#1ed760; --accent:#a78bfa; --accent2:#c4b5fd;
+    /* --- accenti (stile Spotify: verde) --- */
+    --green:#1db954; --green2:#1ed760; --accent:#1db954; --accent2:#1ed760;
     --pink:#f472b6; --sun:#fbbf24; --sky:#38bdf8; --side:236px;
-    --brand:linear-gradient(90deg,var(--accent),var(--pink) 55%,var(--sun));
-    /* --- superfici (scuro) --- */
-    --bg-grad:radial-gradient(1200px 600px at 82% -14%,#34216b 0%,transparent 58%),radial-gradient(900px 500px at -8% 8%,#3a1846 0%,transparent 55%),#0a0b10;
-    --sidebar:#101119; --panel:#15161f; --panel2:#15161f; --elev:#1f2030; --line:#272838;
-    --txt:#f4f3fb; --muted:#a3a0bd;
-    --content-grad:linear-gradient(180deg,#1a1730 0%,#101119 280px);
-    --topbar-grad:linear-gradient(180deg,rgba(16,17,25,.82),rgba(16,17,25,0));
-    --info-bg:#11121b; --track:#272838;
-    --chip-bg:#241f38; --chip-bd:#3a3358; --chip-tx:#cbbcff;
-    --ctx-grad:linear-gradient(135deg,#221a3c,#1c1530); --ctx-bd:#3a3358; --ctx-tx:#e6def8;
-    --sheet:#14151e; --sheet-hero:linear-gradient(150deg,#4a2f8c 0%,#7a2f6e 45%,#15161f 100%); --sheet-hero-tx:#fff; --sheet-hero-sub:#d6c6ff;
-    --player:#14151ee6; --overlay:rgba(6,6,12,.72);
-    --gauge-needle:#ffffff; --gauge-track:#272838; --doc-tx:#d8d5e8;
-    --bigstat:linear-gradient(135deg,#2a2052,#1a1730);
-    --navhover:#1c1d2b; --navactive:linear-gradient(135deg,#2a2052,#231b3e); --navactive-tx:#ffffff;
+    --brand:linear-gradient(90deg,#1ed760,#1db954);
+    /* --- superfici (scuro Spotify) --- */
+    --bg-grad:#121212;
+    --sidebar:#000000; --panel:#181818; --panel2:#181818; --elev:#282828; --line:#2a2a2a;
+    --txt:#ffffff; --muted:#b3b3b3;
+    --content-grad:linear-gradient(180deg,#262626 0%,#121212 300px);
+    --topbar-grad:linear-gradient(180deg,rgba(0,0,0,.7),rgba(0,0,0,0));
+    --info-bg:#1a1a1a; --track:#2a2a2a;
+    --chip-bg:#232323; --chip-bd:#3a3a3a; --chip-tx:#e6e6e6;
+    --ctx-grad:linear-gradient(135deg,#202020,#181818); --ctx-bd:#333333; --ctx-tx:#e6e6e6;
+    --sheet:#181818; --sheet-hero:linear-gradient(150deg,#3a3a3a 0%,#222222 50%,#121212 100%); --sheet-hero-tx:#fff; --sheet-hero-sub:#c8c8c8;
+    --player:#181818f2; --overlay:rgba(0,0,0,.72);
+    --gauge-needle:#ffffff; --gauge-track:#2a2a2a; --doc-tx:#c8c8c8;
+    --bigstat:linear-gradient(135deg,#232323,#181818);
+    --navhover:#1a1a1a; --navactive:#232323; --navactive-tx:#ffffff;
     /* --- ombre --- */
-    --sh-1:0 2px 8px rgba(0,0,0,.35);
-    --sh-2:0 10px 28px rgba(0,0,0,.45);
-    --sh-3:0 22px 56px rgba(0,0,0,.55);
-    --shadow:rgba(0,0,0,.45);
-    --glow:0 8px 30px rgba(167,139,250,.28);
-    /* --- raggi --- */
-    --r-sm:10px; --r:14px; --r-lg:18px; --r-xl:24px;
+    --sh-1:0 2px 8px rgba(0,0,0,.4);
+    --sh-2:0 8px 24px rgba(0,0,0,.5);
+    --sh-3:0 16px 44px rgba(0,0,0,.6);
+    --shadow:rgba(0,0,0,.5);
+    --glow:0 8px 30px rgba(29,185,84,.28);
+    /* --- raggi (Spotify: piccoli) --- */
+    --r-sm:8px; --r:12px; --r-lg:16px; --r-xl:20px;
     /* --- tipografia --- */
-    --fs-hero:clamp(32px,5vw,46px); --fs-h2:24px;
+    --fs-hero:clamp(32px,5vw,48px); --fs-h2:24px;
   }
   [data-theme="light"]{
     --green:#0fae64; --green2:#0a9b58; --accent:#7c3aed; --accent2:#a78bfa;
@@ -390,6 +390,17 @@
   .mixbadges{display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:none}
   .mixb{background:var(--elev);border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700;color:var(--txt)}
   .mixtag{font-size:11px;font-weight:700;color:var(--muted)}
+  /* ====== TWEAK STILE SPOTIFY SCURO ====== */
+  [data-theme="dark"] .hero h1{-webkit-text-fill-color:#fff;color:#fff;background:none}
+  [data-theme="dark"] .card{background:#181818}
+  [data-theme="dark"] .card:hover{background:#282828;transform:translateY(-2px)}
+  [data-theme="dark"] .topbar{background:#000;backdrop-filter:none}
+  [data-theme="dark"] .btn-green,[data-theme="dark"] .playfab{color:#000}
+  [data-theme="dark"] .playfab{box-shadow:0 8px 18px rgba(0,0,0,.5)}
+  [data-theme="dark"] .eyebrow{color:var(--green2)}
+  [data-theme="dark"] .navactive,[data-theme="dark"] .topnav .navbtn.active{color:#fff}
+  [data-theme="dark"] .barrow .bf{background:linear-gradient(90deg,#1ed760,#1db954)}
+  [data-theme="dark"] .meter .fill,[data-theme="dark"] .grow .gf{background:linear-gradient(90deg,#1ed760,#1db954)}
   /* ====== NUOVO LAYOUT: topbar + content + rail ====== */
   :root{--rail:344px}
   body{height:auto;min-height:100%}
@@ -1392,7 +1403,7 @@ function switchTab(t){
 document.querySelectorAll('.navbtn').forEach(btn=>btn.onclick=()=>switchTab(btn.dataset.tab));
 function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('sonoteca-theme',t)}catch(e){}var b=document.getElementById('themeBtn');if(b)b.textContent=(t==='light'?'🌙':'☀️');}
 function toggleTheme(){var cur=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';setTheme(cur==='light'?'dark':'light');}
-(function(){var s='light';try{s=localStorage.getItem('sonoteca-theme')||'light'}catch(e){}setTheme(s);})();
+(function(){var s='dark';try{s=localStorage.getItem('sonoteca-theme')||'dark'}catch(e){}setTheme(s);})();
 
 /* ====== INFOGRAFICHE ====== */
 function bpmLabel(n){return n<75?'Lento':n<100?'Medio':n<130?'Sostenuto':'Veloce'}
