@@ -417,6 +417,24 @@
   .shelf-card:hover .shelf-fab{opacity:1;transform:translateY(0)}
   .shelf-fab:hover{transform:scale(1.07)}
   [data-theme="dark"] .player.on .pt{color:var(--green2)}
+  /* anatomia della sensazione */
+  .anat{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+  .anat-row{display:grid;grid-template-columns:92px 1fr 130px;align-items:center;gap:9px;font-size:12px}
+  .anat-l{color:var(--muted);font-weight:700}
+  .anat-t{height:8px;background:var(--track);border-radius:99px;overflow:hidden}
+  .anat-f{height:100%;border-radius:99px;animation:growW .8s ease both}
+  .anat-v{color:var(--txt);font-size:11px;text-align:right}
+  .anat-formula{margin-top:12px;background:var(--ctx-grad);border:1px solid var(--ctx-bd);border-radius:12px;padding:12px 14px;color:var(--ctx-tx);font-size:13px;line-height:1.5}
+  /* confronta */
+  .cmp-leg{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--txt);margin-top:8px}
+  .cmp-leg span{width:14px;height:14px;border-radius:4px;flex:none}
+  /* set a catena */
+  .chain{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+  .chain-row{display:flex;align-items:center;gap:12px;background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+  .chain-n{width:24px;height:24px;flex:none;border-radius:50%;background:var(--green);color:#000;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center}
+  .chain-note{font-size:11px;color:var(--muted);white-space:nowrap;flex:none}
+  .chain-row .ti{font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chain-row .ta{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* ====== NUOVO LAYOUT: topbar + content + rail ====== */
   :root{--rail:344px}
   body{height:auto;min-height:100%}
@@ -483,6 +501,7 @@
     <button class="navbtn" data-tab="mood"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9.5" r="1"/><circle cx="15" cy="9.5" r="1"/></svg><span class="navlabel">Mood</span></button>
     <button class="navbtn" data-tab="timeline"><svg viewBox="0 0 24 24"><path d="M4 12h16"/><circle cx="7" cy="12" r="2"/><circle cx="17" cy="12" r="2"/></svg><span class="navlabel">Timeline</span></button>
     <button class="navbtn" data-tab="mixaggio"><svg viewBox="0 0 24 24"><path d="M6 3v12"/><path d="M18 9v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/></svg><span class="navlabel">Mix</span></button>
+    <button class="navbtn" data-tab="costellazione"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="1.5"/><circle cx="19" cy="7" r="1.5"/><circle cx="18" cy="17" r="1.5"/><circle cx="6" cy="18" r="1.5"/><path d="M12 12 5 6M12 12l7-5M12 12l6 5M12 12l-6 6"/></svg><span class="navlabel">Costellazione</span></button>
     <button class="navbtn" data-tab="stats"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span class="navlabel">Stats</span></button>
     <button class="navbtn" data-tab="quiz"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .8-1 1.7M12 17h.01"/></svg><span class="navlabel">Quiz</span></button>
     <button class="navbtn" data-tab="lezioni"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/></svg><span class="navlabel">Lezioni</span></button>
@@ -506,6 +525,7 @@
       <section id="tab-mood" style="display:none"><p style="color:var(--muted);margin-top:4px">Sfoglia per atmosfera. Tocca un mood per vedere i brani che lo evocano.</p><div id="moodgrid" class="moodgrid"></div></section>
       <section id="tab-timeline" style="display:none"></section>
       <section id="tab-mixaggio" style="display:none"></section>
+      <section id="tab-costellazione" style="display:none"></section>
       <section id="tab-stats" style="display:none"></section>
       <section id="tab-quiz" style="display:none"></section>
       <section id="tab-lezioni" style="display:none"></section>
@@ -522,6 +542,7 @@
     </div>
     <div class="rail-body">
       <div class="rail-panel" id="rail-filtri">
+        <input id="nlq" class="tagfilter" placeholder="✨ A parole: es. malinconico ballabile ~120" onkeydown="if(event.key==='Enter')nlSearch(this.value)">
         <input id="tagfilter" class="tagfilter" placeholder="Cerca un tag…" oninput="filterTags(this.value)">
         <div class="taghead" id="taghead"></div>
         <div class="tagbar" id="tagbar"></div>
@@ -540,6 +561,7 @@
   </aside>
 </div>
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
+<div class="modal" id="cmpModal" onclick="if(event.target===this)closeCmp()"><div class="sheet" id="cmpSheet" style="max-width:480px"></div></div>
 <script>
 /* ====== DATI ====== nuovi brani in cima ====== */
 const BRANI = [
@@ -1291,9 +1313,20 @@ const TAGINDEX={};        // label -> {t,c,n}
 BRANI.forEach(b=>{const s=new Set();tagsOf(b).forEach(({t,c})=>{s.add(t);const e=TAGINDEX[t]||(TAGINDEX[t]={t,c,n:0});e.n++;});TAGSET.set(b,s);});
 const activeTags=new Set();
 function esc(s){return (''+s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
-let tagQuery='';
+let tagQuery='';let bpmTarget=null;
 function toggleTag(t){activeTags.has(t)?activeTags.delete(t):activeTags.add(t);renderTagbar();render();}
-function clearTags(){activeTags.clear();renderTagbar();render();}
+function clearTags(){activeTags.clear();bpmTarget=null;var n=document.getElementById('nlq');if(n)n.value='';renderTagbar();render();}
+const NLSYN={ballabile:'Da ballare',ballabili:'Da ballare',ballare:'Da ballare',energico:'Adrenalina',energica:'Adrenalina',adrenalina:'Adrenalina',malinconico:'Malinconico',malinconica:'Malinconico',malinconia:'Malinconico',triste:'Malinconico',sensuale:'Sensuale',intimo:'Intimo',intima:'Intimo',tramonto:'Tramonto',solare:'Solare',allegro:'Solare',felice:'Solare',rilassato:'Disteso',rilassata:'Disteso',calmo:'Disteso',strumentale:'Strumentale',minore:'Minore',maggiore:'Maggiore'};
+function nlSearch(text){
+  const t=(text||'').toLowerCase();activeTags.clear();bpmTarget=null;
+  const bm=t.match(/(\d{2,3})\s*(?:bpm)?/);if(bm){const v=+bm[1];if(v>=50&&v<=210)bpmTarget=v;}
+  const words=t.replace(/[~,.]/g,' ').split(/\s+/).filter(Boolean);
+  const lower={};Object.keys(TAGINDEX).forEach(tag=>lower[tag.toLowerCase()]=tag);
+  words.forEach(w=>{if(NLSYN[w]&&TAGINDEX[NLSYN[w]])activeTags.add(NLSYN[w]);else if(lower[w])activeTags.add(lower[w]);});
+  ['tarda notte','camera da letto','pista da ballo','sogno a occhi aperti','notte in città'].forEach(p=>{if(t.includes(p)&&TAGINDEX[p[0].toUpperCase()+p.slice(1)]);});
+  var q=document.getElementById('q');if(q)q.value='';
+  switchTab('brani');renderTagbar();render();
+}
 function filterTags(v){tagQuery=(v||'').toLowerCase();renderTagbar();}
 function goTag(t){activeTags.clear();activeTags.add(t);switchTab('brani');var q=document.getElementById('q');if(q)q.value='';renderTagbar();render();document.getElementById('content').scrollTo({top:0,behavior:'smooth'});}
 function toggleDrawer(open){
@@ -1351,6 +1384,7 @@ function render(){
     const hay=(b.titolo+b.artista+b.strumenti+(b.tags||[]).join(' ')+b.mood.join(' ')).toLowerCase();
     if(q&&!hay.includes(q))return false;
     if(activeTags.size){const s=TAGSET.get(b);for(const t of activeTags)if(!s.has(t))return false;}
+    if(bpmTarget&&(!b.bpmNum||Math.abs(b.bpmNum-bpmTarget)>8))return false;
     return true;
   });
   if(!list.length){grid.innerHTML='<div class="empty">Nessun brano con questi filtri.'+(activeTags.size?'<br><button class="tagclear" style="margin-top:12px" onclick="clearTags()">✕ Azzera filtri</button>':'')+'</div>';return}
@@ -1380,7 +1414,7 @@ function openSheet(i){
       `<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>`<button class="tagchip" style="--tc:${TAGCATS[t.c].col}" onclick="goTag('${esc(t.t)}')">${t.t}</button>`).join('')}</div></div>`+
       `<table><tr><td>Genere</td><td>${b.genere}</td></tr><tr><td>Tonalità</td><td>${b.key}</td></tr><tr><td>BPM</td><td>${b.bpm}</td></tr><tr><td>Metro</td><td>${b.metro}</td></tr><tr><td>Durata</td><td>${b.durata}</td></tr><tr><td>Produttore</td><td>${b.produttore||'—'}</td></tr></table>`+
       infografica(b)+
-      emozioniHTML(b)+
+      emozioniHTML(b)+anatomiaSensazione(b,i)+
       (b.voce?`<div class="sec"><h4>La voce</h4><div>${b.voce}</div></div>`:'')+
       (b.strumenti?`<div class="sec"><h4>Strumenti e produzione</h4><div>${b.strumenti}</div></div>`:'')+
       (b.armonia?`<div class="sec"><h4>Armonia e struttura</h4><div>${b.armonia}</div></div>`:'')+
@@ -1426,15 +1460,16 @@ function renderGlossario(){document.getElementById('tab-glossario').innerHTML='<
 function renderInfo(){document.getElementById('tab-info').innerHTML='<div class="doc"><h3>Come funziona</h3>'+INFO+'</div>'}
 
 /* ====== TABS ====== */
-const TITLES={brani:'Brani',mood:'Mood',timeline:'Timeline',mixaggio:'Mixaggio',stats:'Statistiche',quiz:'Quiz · ear-training',lezioni:'Lezioni',glossario:'Glossario',info:'Info'};
+const TITLES={brani:'Brani',mood:'Mood',timeline:'Timeline',mixaggio:'Mixaggio',costellazione:'Costellazione',stats:'Statistiche',quiz:'Quiz · ear-training',lezioni:'Lezioni',glossario:'Glossario',info:'Info'};
 function switchTab(t){
   toggleDrawer(false);
   document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
-  ['brani','mood','timeline','mixaggio','stats','quiz','lezioni','glossario','info'].forEach(x=>document.getElementById('tab-'+x).style.display=(x===t?'':'none'));
+  ['brani','mood','timeline','mixaggio','costellazione','stats','quiz','lezioni','glossario','info'].forEach(x=>document.getElementById('tab-'+x).style.display=(x===t?'':'none'));
   document.getElementById('secTitle').textContent=TITLES[t];
   document.getElementById('searchWrap').style.display=(t==='brani'?'':'none');
   if(t==='quiz')newQuiz();
   if(t==='mixaggio')renderMix();
+  if(t==='costellazione')renderCostellazione();
   document.getElementById('content').scrollTo({top:0,behavior:'auto'});
 }
 document.querySelectorAll('.navbtn').forEach(btn=>btn.onclick=()=>switchTab(btn.dataset.tab));
@@ -1518,8 +1553,9 @@ function renderMix(){
   const host=document.getElementById('tab-mixaggio');
   const list=BRANI.filter(b=>b.bpmNum&&b.camelot).slice().sort((a,b)=>a.titolo.localeCompare(b.titolo));
   if(!list.length){host.innerHTML='<div class="empty">Servono brani con BPM e tonalità per il mixaggio.</div>';return;}
-  host.innerHTML=`<p class="mixhint">Scegli un brano: ti mostro quelli compatibili per <b>tonalità (Camelot)</b> e <b>BPM</b> per incatenare il mix.</p>
+  host.innerHTML=`<p class="mixhint">Scegli un brano (o clicca una chiave sulla ruota): compatibili per <b>Camelot</b> e <b>BPM</b>, e genera un <b>set a catena</b>.</p>
     <select id="mixSel" class="mixsel" onchange="renderMixFor(+this.value)">${list.map(b=>`<option value="${BRANI.indexOf(b)}">${b.titolo} — ${b.artista} · ${b.camelot} · ${b.bpmNum} BPM</option>`).join('')}</select>
+    <div id="mixWheel" style="display:flex;justify-content:center;margin:4px 0 14px"></div>
     <div id="mixOut"></div>`;
   renderMixFor(BRANI.indexOf(list[0]));
 }
@@ -1536,8 +1572,11 @@ function renderMixFor(i){
   const row=o=>`<div class="tl-item" onclick="openSheet(${o.j})">${coverHTML(o.x)}<div style="flex:1;min-width:0"><div class="ti">${o.x.titolo}</div><div class="ta">${o.x.artista}</div></div><div class="mixbadges"><span class="mixb">${o.x.camelot}</span><span class="mixb">${o.x.bpmNum} BPM</span><span class="mixtag">${o.tag}</span></div></div>`;
   document.getElementById('mixOut').innerHTML=
     `<div class="mixbase">${coverHTML(b)}<div><div class="eyebrow">Brano base</div><div class="ti" style="font-size:18px">${b.titolo}</div><div class="ta">${b.artista} · ${b.camelot} · ${b.bpmNum} BPM · ${b.key}</div></div></div>`+
+    `<button class="btn-green" style="margin:2px 0 14px" onclick="renderChain(${i})">🔗 Genera set da qui</button>`+
+    `<div id="mixChain"></div>`+
     `<h4 class="mixh">Compatibili (${matches.length})</h4>`+
     (matches.length?`<div class="tl-items">${matches.map(row).join('')}</div>`:`<div class="empty">Nessun brano compatibile trovato.</div>`);
+  var w=document.getElementById('mixWheel');if(w)w.innerHTML=camelotWheelSVG(b.camelot);
 }
 
 /* ====== QUIZ ====== */
@@ -1680,6 +1719,90 @@ function sorprendimi(){
   if(activeTags.size)pool=BRANI.filter(b=>{const s=TAGSET.get(b);for(const t of activeTags)if(!s.has(t))return false;return true;});
   if(!pool.length)pool=BRANI;
   openSheet(BRANI.indexOf(pool[Math.floor(Math.random()*pool.length)]));
+}
+/* ====== ANATOMIA DELLA SENSAZIONE ====== */
+function anatomiaSensazione(b,i){
+  if(!b.metriche)return '';
+  const m=b.metriche,min=/min/i.test(b.key||''),t=b.bpmNum||0;
+  const dom=(b.emozioni&&b.emozioni.length)?b.emozioni.slice().sort((x,y)=>y.val-x.val)[0]:null;
+  const tl=t<75?'lento':t<100?'medio':t<130?'sostenuto':'veloce';
+  const ing=[
+    {l:'Modo',v:min?80:30,txt:min?'minore (scuro)':'maggiore (luminoso)',c:min?'#7c3aed':'#fbbf24'},
+    {l:'Tempo',v:Math.min(100,Math.round(t/180*100)),txt:(t||'?')+' BPM · '+tl,c:'#22b8cf'},
+    {l:'Energia',v:m.Energia,txt:m.Energia+'/100',c:'#ef4444'},
+    {l:'Ballabilità',v:m['Ballabilità'],txt:m['Ballabilità']+'/100',c:'#ec4899'},
+    {l:'Intimità',v:m['Intimità'],txt:m['Intimità']+'/100',c:'#16c172'},
+    {l:'Oscurità',v:m['Oscurità'],txt:m['Oscurità']+'/100',c:'#64748b'}
+  ];
+  const bars=ing.map(x=>`<div class="anat-row"><span class="anat-l">${x.l}</span><div class="anat-t"><div class="anat-f" style="width:${x.v}%;background:${x.c}"></div></div><span class="anat-v">${x.txt}</span></div>`).join('');
+  const f=dom?`<b style="color:${dom.col}">${dom.ic} ${dom.emo}</b> nasce da: ${min?'modo minore':'modo maggiore'} + tempo ${tl} (${t} BPM) + ${m['Oscurità']>=60?'oscurità alta':m.Energia>=70?'energia alta':(m['Intimità']>=60?'carattere intimo':'carattere aperto')}.`:'';
+  return `<div class="sec"><h4>🔬 Anatomia della sensazione</h4><div class="anat">${bars}</div>${f?`<div class="anat-formula">${f}</div>`:''}<button class="btn-ghost" style="margin-top:12px" onclick="openCompare(${i})">⚖️ Confronta con un altro brano</button></div>`;
+}
+/* ====== CONFRONTA (radar) ====== */
+function radarSVG(a,b){
+  const keys=['Energia','Ballabilità','Intimità','Oscurità'],cx=110,cy=110,R=80;
+  const pt=(v,idx)=>{const ang=-Math.PI/2+idx*2*Math.PI/keys.length,r=R*v/100;return [cx+r*Math.cos(ang),cy+r*Math.sin(ang)];};
+  const poly=o=>keys.map((k,idx)=>pt((o.metriche&&o.metriche[k])||0,idx).join(',')).join(' ');
+  const grid=[25,50,75,100].map(p=>`<polygon points="${keys.map((k,idx)=>pt(p,idx).join(',')).join(' ')}" fill="none" stroke="var(--line)" stroke-width="1"/>`).join('');
+  const ax=keys.map((k,idx)=>{const[x,y]=pt(116,idx);return `<text x="${x.toFixed(0)}" y="${y.toFixed(0)}" font-size="10" fill="var(--muted)" text-anchor="middle">${k.slice(0,4)}</text>`;}).join('');
+  return `<svg viewBox="0 0 220 230" style="width:100%;max-width:300px">${grid}${ax}<polygon points="${poly(a)}" fill="rgba(29,185,84,.25)" stroke="#1db954" stroke-width="2"/>${b?`<polygon points="${poly(b)}" fill="rgba(236,72,153,.20)" stroke="#ec4899" stroke-width="2"/>`:''}</svg>`;
+}
+let cmpA=null;
+function openCompare(i){cmpA=i;renderCompare();document.getElementById('cmpModal').classList.add('open');}
+function closeCmp(){document.getElementById('cmpModal').classList.remove('open');}
+function renderCompare(b2){
+  const a=BRANI[cmpA];if(!a)return;
+  const others=BRANI.map((x,j)=>({x,j})).filter(o=>o.j!==cmpA);
+  const sel=(b2==null)?others[0].j:+b2,b=BRANI[sel];
+  const opts=others.slice().sort((x,y)=>x.x.titolo.localeCompare(y.x.titolo)).map(o=>`<option value="${o.j}"${o.j===sel?' selected':''}>${o.x.titolo} — ${o.x.artista}</option>`).join('');
+  const leg=(o,c)=>`<div class="cmp-leg"><span style="background:${c}"></span><b>${o.titolo}</b> · ${o.artista} · ${[o.key,o.camelot,o.bpmNum?o.bpmNum+' BPM':''].filter(Boolean).join(' · ')}</div>`;
+  document.getElementById('cmpSheet').innerHTML=`<button class="close" onclick="closeCmp()">✕</button><div style="padding:24px"><h2 style="margin:0 0 14px;font-size:22px">⚖️ Confronta</h2><div style="display:flex;justify-content:center">${radarSVG(a,b)}</div>${leg(a,'#1db954')}${leg(b,'#ec4899')}<div style="margin-top:14px"><div style="font-size:11px;color:var(--muted);margin-bottom:6px">Secondo brano</div><select class="mixsel" onchange="renderCompare(this.value)">${opts}</select></div></div>`;
+}
+/* ====== SET-BUILDER A CATENA ====== */
+let lastSet=[];
+function mixChain(i){
+  const start=BRANI[i];if(!start||!start.camelot||!start.bpmNum)return [];
+  const used=new Set([i]),chain=[{x:start,j:i,note:'partenza'}];let cur=start;
+  for(let s=0;s<9;s++){const cs=[cur.camelot].concat(camCompat(cur.camelot));let best=null,bs=-1;
+    BRANI.forEach((x,j)=>{if(used.has(j)||!x.camelot||!x.bpmNum)return;if(cs.indexOf(x.camelot)<0)return;
+      const db=x.bpmNum-cur.bpmNum;if(Math.abs(db)>8)return;
+      const en=(x.metriche&&x.metriche.Energia)||50;const sc=(x.camelot===cur.camelot?1:0)+(db>=0?2:0)+en/100-Math.abs(db)/20;
+      if(sc>bs){bs=sc;best={x,j,db};}});
+    if(!best)break;used.add(best.j);
+    const tr=best.x.camelot===cur.camelot?'stessa key':(camCompat(cur.camelot)[0]===best.x.camelot?'relativa (mood)':'±1 (energia)');
+    chain.push({x:best.x,j:best.j,note:tr+(best.db?` · ${best.db>0?'+':''}${best.db} BPM`:'')});cur=best.x;}
+  return chain;
+}
+function renderChain(i){
+  const out=document.getElementById('mixChain');if(!out)return;
+  const ch=mixChain(i);
+  if(!ch||ch.length<2){out.innerHTML='<div class="empty">Catena non costruibile da questo brano.</div>';return;}
+  lastSet=ch.map(c=>({t:c.x.titolo,a:c.x.artista,id:c.x.trackId}));
+  const rows=ch.map((c,n)=>`<div class="chain-row"><span class="chain-n">${n+1}</span><div style="flex:1;min-width:0;cursor:pointer" onclick="openSheet(${c.j})"><div class="ti">${c.x.titolo}</div><div class="ta">${c.x.artista} · ${c.x.camelot} · ${c.x.bpmNum} BPM</div></div><span class="chain-note">${c.note}</span></div>`).join('');
+  out.innerHTML=`<h4 class="mixh">🔗 Set generato (${ch.length} tracce)</h4><div class="chain">${rows}</div><button class="btn-ghost" onclick="copySet()">📋 Copia tracklist</button><div class="rail-hint" style="margin-top:8px">Vuoi la playlist vera sul tuo Spotify? Dimmelo in chat: la creo io dai trackId del set.</div>`;
+}
+function copySet(){try{navigator.clipboard.writeText(lastSet.map(s=>s.a+' - '+s.t).join('\n'));alert('Tracklist copiata ('+lastSet.length+' tracce)');}catch(e){}}
+/* ====== RUOTA CAMELOT ====== */
+function camelotWheelSVG(active){
+  let g='';
+  for(let n=1;n<=12;n++){['B','A'].forEach((L,ring)=>{
+    const code=n+L,ang=(n-1)/12*2*Math.PI-Math.PI/2,rad=ring===0?92:60,cx=110+rad*Math.cos(ang),cy=110+rad*Math.sin(ang);
+    const isA=code===active,on=active&&([active].concat(camCompat(active)).indexOf(code)>=0),cnt=BRANI.filter(b=>b.camelot===code).length;
+    g+=`<g onclick="wheelPick('${code}')" style="cursor:pointer"><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="14.5" fill="${isA?'#1db954':on?'rgba(29,185,84,.33)':'var(--elev)'}" stroke="var(--line)"/><text x="${cx.toFixed(1)}" y="${(cy+2).toFixed(1)}" font-size="9" fill="${isA?'#000':'var(--txt)'}" text-anchor="middle" font-weight="700">${code}</text>${cnt?`<text x="${cx.toFixed(1)}" y="${(cy+11).toFixed(1)}" font-size="7" fill="${isA?'#000':'var(--muted)'}" text-anchor="middle">${cnt}</text>`:''}</g>`;});}
+  return `<svg viewBox="0 0 220 220" style="width:100%;max-width:300px">${g}</svg>`;
+}
+function wheelPick(code){const b=BRANI.find(x=>x.camelot===code&&x.bpmNum);if(b)renderMixFor(BRANI.indexOf(b));}
+/* ====== COSTELLAZIONE ====== */
+let cstSeed=null;
+function renderCostellazione(seed){
+  const host=document.getElementById('tab-costellazione');if(!host)return;
+  if(seed==null)seed=(cstSeed!=null?cstSeed:0);cstSeed=seed;const b=BRANI[seed];if(!b)return;
+  const sims=similiByTag(b,12),cx=300,cy=240,R=180;let links='',nodes='';
+  sims.forEach((o,idx)=>{const ang=idx/sims.length*2*Math.PI,x=cx+R*Math.cos(ang),y=cy+R*Math.sin(ang),j=BRANI.indexOf(o.x);
+    links+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(0)}" y2="${y.toFixed(0)}" stroke="var(--line)" stroke-width="${(1+o.shared/3).toFixed(1)}"/>`;
+    nodes+=`<g onclick="renderCostellazione(${j})" style="cursor:pointer"><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="24" fill="var(--elev)" stroke="#1db954" stroke-width="1.5"/><text x="${x.toFixed(0)}" y="${y.toFixed(0)}" font-size="7.5" fill="var(--txt)" text-anchor="middle"><tspan x="${x.toFixed(0)}" dy="-1">${esc((o.x.titolo||'').slice(0,13))}</tspan><tspan x="${x.toFixed(0)}" dy="10" fill="var(--muted)">${o.shared} tag</tspan></text><title>${o.x.titolo} — ${o.x.artista}</title></g>`;});
+  const center=`<circle cx="${cx}" cy="${cy}" r="36" fill="#1db954"/><text x="${cx}" y="${cy}" font-size="8.5" fill="#000" text-anchor="middle" font-weight="700"><tspan x="${cx}">${esc((b.titolo||'').slice(0,15))}</tspan></text>`;
+  host.innerHTML=`<p class="mixhint">Costellazione per affinità di tag — clicca un nodo per ricentrare. Centro: <b>${b.titolo} — ${b.artista}</b> <button class="btn-ghost" style="margin-left:8px" onclick="openSheet(${seed})">apri scheda</button></p><svg viewBox="0 0 600 480" style="width:100%;max-width:780px">${links}${center}${nodes}</svg>`;
 }
 renderShelves();renderTagbar();render();renderMood();renderLezioni();renderGlossario();renderInfo();renderStats();renderTimeline();newQuiz();railTab('filtri');
 </script>
