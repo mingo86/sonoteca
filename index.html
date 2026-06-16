@@ -435,6 +435,13 @@
   .chain-note{font-size:11px;color:var(--muted);white-space:nowrap;flex:none}
   .chain-row .ti{font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .chain-row .ta{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* lezioni interattive */
+  .lez-ex{display:inline-flex;align-items:center;gap:6px;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:700;cursor:pointer;margin:8px 8px 2px 0;transition:.15s}
+  .lez-ex:hover{border-color:var(--green);color:var(--green2);transform:translateY(-1px)}
+  /* quiz-game */
+  .qstats{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:14px;color:var(--muted);margin-bottom:14px;font-weight:800}
+  .qstats .qfire{color:var(--green2)}
+  .qsub{font-size:12.5px;color:var(--muted);margin:-6px 0 14px}
   /* ====== NUOVO LAYOUT: topbar + content + rail ====== */
   :root{--rail:344px}
   body{height:auto;min-height:100%}
@@ -1229,7 +1236,71 @@ COME SI RICONOSCE
 • Armonia: accordi di settima/nona che addolciscono tutto.
 • Struttura: spesso un verso rap dentro un brano cantato.
 
-LA "VOCE DELL'EST": filone diverso da affiancare. Il pop dell'Europa orientale/balcanica usa scale modali (frigio, minore armonica) e melismi turco-balcanici/rom. Quando arriverà un brano così, la scheda lo collegherà qui per sentire la differenza col melisma gospel.`}
+LA "VOCE DELL'EST": filone diverso da affiancare. Il pop dell'Europa orientale/balcanica usa scale modali (frigio, minore armonica) e melismi turco-balcanici/rom. Quando arriverà un brano così, la scheda lo collegherà qui per sentire la differenza col melisma gospel.`},
+  {titolo:"Lezione 2 — La house: dal Warehouse di Chicago al mondo",
+   testo:`L'IDEA — La house nasce a Chicago a metà anni '80 dalle ceneri della disco: cassa dritta in QUATTRO (four-on-the-floor) a ~120-125 BPM, hi-hat in levare, basso ipnotico e voci soul campionate. Frankie Knuckles al club Warehouse ne è il padre.
+
+I RAMI (tutti nella tua libreria)
+• Deep & soulful house: calda, accordi jazzy, voci gospel.
+• Tech house & tribal: percussiva, da club.
+• Afro house & afro tech: percussioni africane, Sudafrica (Black Coffee).
+• Melodic house & techno: emozionale, atmosferica (Afterlife, Anjunadeep).
+• Organic house: 'sunset', strumenti etnici, tempi rilassati.
+
+COME SI RICONOSCE — cassa regolare, groove ipnotico, struttura intro→build→drop→break pensata per il DJ.
+
+<button class="lez-ex" onclick="goTag('deep house')">🔎 Deep house</button><button class="lez-ex" onclick="goTag('afro house')">🌍 Afro house</button><button class="lez-ex" onclick="switchTab('mixaggio')">🎛️ Provala nel mixaggio</button>`},
+  {titolo:"Lezione 3 — Techno & trance: la pista europea",
+   testo:`TECHNO — nata a Detroit (i Belleville Three), cresciuta a Berlino (Tresor, Berghain): macchine, ripetizione, suono industriale, ~125-140 BPM. Dal minimal/dub techno alla hard techno 'peak time'.
+
+TRANCE — Germania anni '90: melodie epiche e malinconiche, build lunghi e drop catartici, 135-145 BPM (Paul van Dyk, Tiësto, Armin van Buuren).
+
+DIFFERENZA — la techno è ipnotica e percussiva; la trance è melodica ed emotiva. Entrambe vivono di tensione e rilascio.
+
+<button class="lez-ex" onclick="goTag('techno')">🔎 Techno</button><button class="lez-ex" onclick="goTag('trance')">✨ Trance</button>`},
+  {titolo:"Lezione 4 — Mixare come un DJ: la ruota Camelot",
+   testo:`Per incatenare due brani senza stonature servono due cose: BPM vicini e tonalità COMPATIBILI.
+
+LA RUOTA CAMELOT — ogni tonalità ha un codice (es. 8A, 8B). Regole d'oro per una transizione armonica:
+• Stessa chiave (8A → 8A): fusione perfetta.
+• +1 / -1 sullo stesso anello (8A → 9A o 7A): l'energia sale/scende dolcemente.
+• Stesso numero, cambio lettera (8A → 8B): cambio di 'mood' minore/maggiore.
+
+BPM — tieni i brani entro ~±6%; il trucco 'metà/doppio' permette di mixare un 128 con qualcosa a 64 di feel.
+
+Nella vista Mix trovi la RUOTA interattiva, i compatibili di ogni brano e il generatore di SET a catena.
+
+<button class="lez-ex" onclick="switchTab('mixaggio')">🎛️ Apri il Mixaggio</button>`},
+  {titolo:"Lezione 5 — Organic house & downtempo: il suono del tramonto",
+   testo:`Il filone 'sunset': house lenta e calda (110-122 BPM) con strumenti acustici/etnici, percussioni e field recordings. Nasce dal balearic di Ibiza (Café del Mar) e dal downtempo anni '90 (Kruder & Dorfmeister); oggi etichette come All Day I Dream e Sol Selectas (Lee Burridge, Bedouin, Nicola Cruz).
+
+ATMOSFERA — niente drop aggressivi: tutto respira, ipnotico e malinconico. Perfetto per alba e tramonto.
+
+<button class="lez-ex" onclick="goTag('organic house')">🌅 Organic house</button><button class="lez-ex" onclick="goTag('Tramonto')">🌇 Brani da tramonto</button>`},
+  {titolo:"Lezione 6 — Il mondo latino: reggaeton, cumbia, tropical",
+   testo:`REGGAETON — nato tra Panama e Porto Rico negli anni '90 sul riddim 'Dem Bow' (dancehall): oggi pop globale (Daddy Yankee, Bad Bunny, Karol G), ~90-100 BPM, ritmo riconoscibilissimo.
+
+CUMBIA & TROPICAL — radici colombiane (costa caraibica), poi Messico e Perù (chicha): fisarmonica, percussioni, fiati. Il ballo popolare per eccellenza.
+
+Filo comune: musica del corpo, festa e comunità.
+
+<button class="lez-ex" onclick="goTag('reggaeton')">🔥 Reggaeton</button><button class="lez-ex" onclick="goTag('cumbia')">🪗 Cumbia</button>`},
+  {titolo:"Lezione 7 — Leggere le sensazioni dai numeri",
+   testo:`Ogni brano ha dei 'parametri' che spiegano cosa senti:
+• MODO (maggiore/minore): luminoso vs cupo/malinconico.
+• VALENZA (positività): alta = solare; bassa = malinconica.
+• ENERGIA: quanta spinta/intensità.
+• BALLABILITÀ: quanto invita a muoverti.
+• BPM: la velocità.
+
+RICETTE DI SENSAZIONE
+• Malinconia ballabile = minore + valenza bassa + danceability alta.
+• Euforia da pista = energia alta + BPM 124+.
+• Intimità = acustico + energia bassa + tempo medio.
+
+Apri una scheda e guarda 'Anatomia della sensazione': vedi da quali numeri nasce l'emozione. Nel Quiz puoi allenarti a indovinarli!
+
+<button class="lez-ex" onclick="switchTab('quiz')">🎮 Vai al Quiz</button><button class="lez-ex" onclick="switchTab('stats')">📊 Statistiche</button>`}
 ];
 
 const GLOSSARIO = [
@@ -1580,26 +1651,38 @@ function renderMixFor(i){
 }
 
 /* ====== QUIZ ====== */
-let qScore=0,qTotal=0;
+let qScore=0,qTotal=0,qStreak=0,qBest=0;
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
 function bpmChoices(real){const set=[real];const d=[-30,-20,20,30,40];while(set.length<3){const v=real+d[Math.floor(Math.random()*d.length)];if(v>40&&set.indexOf(v)<0)set.push(v);}return shuffle(set);}
-function qWrap(q,opts,b){
+function qWrongs(pool,correct,n){return shuffle(pool.filter(x=>x&&x!==correct)).slice(0,n);}
+function qPts(){return 10+Math.min(qStreak,5)*5;}
+function qHead(){return `<div class="qstats"><span>⭐ ${qScore}</span><span class="${qStreak>=3?'qfire':''}">🔥 ${qStreak}</span><span>🏆 ${qBest}</span><span>🎮 ${qTotal}</span></div>`;}
+function qWrap(q,opts,b,sub){
   const play=(b&&b.preview)?`<div class="qplay"><button class="btn-ghost" onclick="playPreview(${BRANI.indexOf(b)})">▶ Ascolta indizio (30s)</button></div>`:'';
-  return `<div class="quiz"><div class="quiz-card"><div class="qn">Punteggio ${qScore}/${qTotal}</div><div class="qq">${q}</div>${play}<div class="opts">`+opts.map(o=>`<button class="qopt" data-correct="${o[1]?1:0}" onclick="answer(this)">${o[0]}</button>`).join('')+`</div><div class="next" id="qnext"></div></div></div>`;
+  return `<div class="quiz"><div class="quiz-card">${qHead()}<div class="qq">${q}</div>${sub?`<div class="qsub">${sub}</div>`:''}${play}<div class="opts">`+shuffle(opts).map(o=>`<button class="qopt" data-correct="${o[1]?1:0}" onclick="answer(this)">${o[0]}</button>`).join('')+`</div><div class="next" id="qnext"></div></div></div>`;
 }
 function answer(btn){
-  const correct=btn.dataset.correct==='1';qTotal++;if(correct)qScore++;
-  const opts=btn.parentNode.querySelectorAll('.qopt');
-  opts.forEach(o=>{o.style.pointerEvents='none';if(o.dataset.correct==='1')o.classList.add('ok')});
+  const correct=btn.dataset.correct==='1';qTotal++;let pts=0;
+  if(correct){qStreak++;pts=qPts();qScore+=pts;if(qScore>qBest)qBest=qScore;}else{qStreak=0;}
+  btn.parentNode.querySelectorAll('.qopt').forEach(o=>{o.style.pointerEvents='none';if(o.dataset.correct==='1')o.classList.add('ok')});
   if(!correct)btn.classList.add('no');
-  document.getElementById('qnext').innerHTML=`<div class="score">${correct?'✓ Esatto!':'✗ La risposta giusta è in verde.'}</div><button class="btn-green" style="margin-top:14px" onclick="newQuiz()">Prossima →</button>`;
+  const msg=correct?(qStreak>=5?`🔥 ${qStreak} di fila! +${pts} punti`:(qStreak>=3?`💪 Combo x${qStreak}! +${pts}`:`✓ Esatto! +${pts}`)):'✗ Ops! La risposta giusta è in verde. Streak azzerato.';
+  document.getElementById('qnext').innerHTML=`<div class="score">${msg}</div><button class="btn-green" style="margin-top:14px" onclick="newQuiz()">Prossima →</button>`;
 }
 function newQuiz(){
-  const types=['key','bpm','scena'],t=types[Math.floor(Math.random()*types.length)];
+  const types=['key','bpm','genere','sensazione','epoca','camelot'];
+  let t=types[Math.floor(Math.random()*types.length)];
   const b=BRANI[Math.floor(Math.random()*BRANI.length)];let html='';
-  if(t==='key'){const min=/min/i.test(b.key);html=qWrap(`«${b.titolo}» di ${b.artista} è in tonalità...`,shuffle([['Maggiore',!min],['Minore',min]]),b);}
-  else if(t==='bpm'&&b.bpmNum){html=qWrap(`Che velocità (circa) ha «${b.titolo}»?`,bpmChoices(b.bpmNum).map(o=>[o+' BPM',o===b.bpmNum]),b);}
-  else{const others=BRANI.filter(x=>x!==b);const wrong=others[Math.floor(Math.random()*others.length)];html=qWrap(`Quale artista appartiene a questa scena?<br><span style="color:var(--muted);font-size:14px">"${b.scena.slice(0,130)}…"</span>`,shuffle([[b.artista,true],[wrong?wrong.artista:'—',false]]),null);}
+  if(t==='bpm'&&!b.bpmNum)t='key';
+  if(t==='camelot'&&!b.camelot)t='key';
+  if(t==='sensazione'&&!(b.emozioni&&b.emozioni.length))t='key';
+  if(t==='epoca'&&(!b.epoca||b.epoca==='—'))t='key';
+  if(t==='key'){const min=/min/i.test(b.key);html=qWrap(`«${b.titolo}» di ${b.artista} è in tonalità…`,[['Maggiore',!min],['Minore',min]],b);}
+  else if(t==='bpm'){html=qWrap(`Che velocità ha (circa) «${b.titolo}»?`,bpmChoices(b.bpmNum).map(o=>[o+' BPM',o===b.bpmNum]),b);}
+  else if(t==='genere'){const fam=resolveGenre(b).nome;const all=[...new Set(Object.keys(GENRE_EVO).map(k=>GENRE_EVO[k].nome))];html=qWrap(`A che famiglia di genere appartiene «${b.titolo}»?`,[[fam,true]].concat(qWrongs(all,fam,3).map(w=>[w,false])),b,b.genere);}
+  else if(t==='sensazione'){const dom=b.emozioni.slice().sort((x,y)=>y.val-x.val)[0].emo;const all=[...new Set(BRANI.flatMap(x=>(x.emozioni||[]).map(e=>e.emo)))];html=qWrap(`Che sensazione domina in «${b.titolo}»?`,[[dom,true]].concat(qWrongs(all,dom,3).map(w=>[w,false])),b);}
+  else if(t==='epoca'){const all=[...new Set(BRANI.map(x=>x.epoca).filter(x=>x&&x!=='—'))];html=qWrap(`Di che epoca è «${b.titolo}» di ${b.artista}?`,[[b.epoca,true]].concat(qWrongs(all,b.epoca,3).map(w=>[w,false])),b);}
+  else{const comp=camCompat(b.camelot),good=comp[0],codes=[];for(let n=1;n<=12;n++){codes.push(n+'A',n+'B');}const bad=qWrongs(codes.filter(c=>c!==b.camelot&&comp.indexOf(c)<0),null,3);html=qWrap(`🎛️ Quale chiave mixa in armonia con «${b.titolo}» (${b.camelot})?`,[[good,true]].concat(bad.map(w=>[w,false])),b,'Sfida DJ · compatibilità sulla ruota Camelot');}
   document.getElementById('tab-quiz').innerHTML=html;
 }
 
