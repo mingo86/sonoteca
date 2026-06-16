@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sonoteca — il mio corso di musica</title>
+<meta name="description" content="Analisi approfondita dei brani che ascolto: genere, tonalità, voce, strumenti, scena, mood e playlist contestuali.">
+<style>
+  /* ====== TEMI ====== default = scuro; [data-theme=light] = chiaro */
+  :root{
+    --bg-grad:radial-gradient(1100px 520px at 82% -12%,#2a1d57 0%,transparent 60%),#0c0d12;
+    --sidebar:#121212; --panel:#181818; --panel2:#181818; --elev:#242424; --line:#2a2a2a;
+    --txt:#ffffff; --muted:#b3b3b3;
+    --content-grad:linear-gradient(180deg,#211d2e,#121212 240px);
+    --topbar-grad:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,0));
+    --info-bg:#101010; --track:#262626;
+    --chip-bg:#2a2433; --chip-bd:#3a3147; --chip-tx:#c7b6ff;
+    --ctx-grad:linear-gradient(135deg,#20182f,#1a1320); --ctx-bd:#34304a; --ctx-tx:#e4def5;
+    --sheet:#181818; --sheet-hero:linear-gradient(150deg,#3a2f6e,#181818 80%); --sheet-hero-tx:#fff; --sheet-hero-sub:#cbb8ff;
+    --player:#181818; --overlay:rgba(0,0,0,.7); --shadow:rgba(0,0,0,.45);
+    --gauge-needle:#ffffff; --gauge-track:#262626; --doc-tx:#dddddd;
+    --bigstat:linear-gradient(135deg,#241f3d,#141414);
+    --navhover:#1e1e1e; --navactive:#242424; --navactive-tx:#ffffff;
+    --green:#1db954; --green2:#1ed760; --accent:#a78bfa; --pink:#f472b6; --sun:#fbbf24; --sky:#38bdf8; --side:232px;
+  }
+  [data-theme="light"]{
+    --bg-grad:linear-gradient(135deg,#fff1e9 0%,#f3ecff 45%,#e6fbff 100%);
+    --sidebar:#ffffff; --panel:#ffffff; --panel2:#ffffff; --elev:#f2ecfb; --line:#e9e2f4;
+    --txt:#2a2440; --muted:#776f8a;
+    --content-grad:linear-gradient(180deg,#fbf7ff,#ffffff 260px);
+    --topbar-grad:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.5));
+    --info-bg:#faf7ff; --track:#ece6f7;
+    --chip-bg:#f3ecfe; --chip-bd:#e6d8fb; --chip-tx:#7c3aed;
+    --ctx-grad:linear-gradient(135deg,#f6efff,#fdeef7); --ctx-bd:#ecdcfb; --ctx-tx:#4b3f6b;
+    --sheet:#ffffff; --sheet-hero:linear-gradient(150deg,#ddd6fe,#fbcfe8 70%,#fed7aa); --sheet-hero-tx:#2a2440; --sheet-hero-sub:#4b3f6b;
+    --player:#ffffff; --overlay:rgba(42,30,70,.45); --shadow:rgba(124,58,237,.14);
+    --gauge-needle:#2a2440; --gauge-track:#ece6f7; --doc-tx:#4a4458;
+    --bigstat:linear-gradient(135deg,#ede9fe,#fce7f3);
+    --navhover:#f6f1fe; --navactive:#f0e8ff; --navactive-tx:#7c3aed;
+    --green:#16c172; --green2:#0fae64; --accent:#7c3aed; --pink:#ec4899; --sun:#f59e0b; --sky:#22b8cf;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--txt);line-height:1.5;background:var(--bg-grad);background-attachment:fixed}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit}
+  .app{display:grid;grid-template-columns:var(--side) 1fr;gap:10px;padding:10px;height:100vh}
+  .sidebar{background:var(--sidebar);border-radius:16px;padding:18px 12px;display:flex;flex-direction:column;gap:6px;overflow:auto;box-shadow:0 8px 26px var(--shadow)}
+  .logo{font-size:20px;font-weight:800;padding:6px 10px 14px;display:flex;align-items:center;gap:10px;color:var(--accent)}
+  .navbtn{display:flex;align-items:center;gap:14px;background:none;border:0;color:var(--muted);padding:11px 12px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;text-align:left;width:100%;transition:.15s}
+  .navbtn:hover{color:var(--txt);background:var(--navhover)}
+  .navbtn.active{color:var(--navactive-tx);background:var(--navactive)}
+  .navbtn svg{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:2}
+  .side-foot{margin-top:auto;padding:12px 12px 4px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+  .content{background:var(--content-grad);border-radius:16px;overflow:auto;position:relative;box-shadow:0 8px 26px var(--shadow)}
+  .topbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:14px;padding:16px 24px;background:var(--topbar-grad);backdrop-filter:blur(8px)}
+  .topbar h2{margin:0;font-size:24px;font-weight:800;color:var(--txt)}
+  .themebtn{background:var(--elev);border:1px solid var(--line);color:var(--txt);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:17px;flex:none;transition:.15s}
+  .themebtn:hover{border-color:var(--accent)}
+  .search{flex:1;max-width:340px;margin-left:auto}
+  .search input{width:100%;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:11px 16px;font-size:14px}
+  .search input:focus{outline:none;border-color:var(--accent)}
+  .body{padding:6px 24px 40px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 18px}
+  .filters select{background:var(--elev);color:var(--txt);border:1px solid var(--line);padding:9px 12px;border-radius:999px;font-size:13px;cursor:pointer}
+  .hero{display:flex;align-items:flex-end;gap:20px;padding:8px 0 22px}
+  .hero .art{width:128px;height:128px;border-radius:18px;background:linear-gradient(135deg,#f59e0b,#ec4899 55%,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:54px;box-shadow:0 12px 30px rgba(236,72,153,.32);flex:none}
+  .hero h1{margin:0;font-size:40px;font-weight:900;letter-spacing:-1px;background:linear-gradient(90deg,var(--accent),var(--pink),var(--sun));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{margin:8px 0 0;color:var(--muted);font-size:14px;max-width:560px}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--pink)}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;transition:.2s;position:relative;animation:fadeUp .5s both;box-shadow:0 4px 14px var(--shadow)}
+  .card:hover{transform:translateY(-3px);box-shadow:0 12px 26px var(--shadow)}
+  .cwrap{position:relative;margin-bottom:12px}
+  .cover{width:100%;aspect-ratio:1;border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#a78bfa,#f0abfc);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:34px;box-shadow:0 8px 18px rgba(124,58,237,.22)}
+  .cover img{width:100%;height:100%;object-fit:cover;display:block}
+  .card h3{margin:0 0 4px;font-size:15px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card .artist{color:var(--muted);font-size:13px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .playfab{position:absolute;right:8px;bottom:8px;width:46px;height:46px;border-radius:50%;border:0;background:var(--green);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(8px);transition:.2s;box-shadow:0 6px 14px rgba(22,193,114,.45)}
+  .card:hover .playfab{opacity:1;transform:translateY(0)}
+  .playfab:hover{transform:scale(1.08);background:var(--green2)}
+  .chips{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+  .chip{background:var(--chip-bg);border:1px solid var(--chip-bd);color:var(--chip-tx);font-size:11px;padding:3px 9px;border-radius:999px;font-weight:600}
+  .chip.click{cursor:pointer;transition:.15s}
+  .chip.click:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+  /* ---- barra filtri a tag ---- */
+  .filterbar{margin:6px 0 18px}
+  .taghead{display:flex;align-items:center;gap:12px;margin-bottom:11px;font-size:12px;color:var(--muted);min-height:24px;flex-wrap:wrap}
+  .taghint{font-style:italic}
+  .tagactive{font-weight:800;color:var(--accent)}
+  .tagclear{background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:5px 13px;font-size:12px;cursor:pointer;font-weight:700;transition:.15s}
+  .tagclear:hover{border-color:var(--pink);color:var(--pink)}
+  .tagbar{display:flex;flex-direction:column;gap:8px}
+  .tagrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .tagcat{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);width:78px;flex:none;font-weight:800}
+  .tagchip{display:inline-flex;align-items:center;gap:7px;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:6px 12px;font-size:12.5px;cursor:pointer;transition:.15s;font-weight:600;line-height:1}
+  .tagchip:hover{border-color:var(--tc);color:var(--tc);transform:translateY(-1px)}
+  .tagchip .tn{font-size:10px;color:var(--muted);background:var(--track);border-radius:999px;padding:1px 6px;min-width:17px;text-align:center;font-weight:700}
+  .tagchip.on{background:var(--tc);border-color:var(--tc);color:#fff;box-shadow:0 5px 14px var(--shadow)}
+  .tagchip.on .tn{background:rgba(255,255,255,.28);color:#fff}
+  .sheet-tags{display:flex;gap:7px;flex-wrap:wrap}
+  @media(max-width:780px){.tagcat{width:100%;margin-bottom:-2px}}
+  .moodgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .moodcard{border-radius:14px;padding:18px;cursor:pointer;min-height:96px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;background:linear-gradient(135deg,#8b5cf6,#6d28d9);transition:.2s;overflow:hidden;position:relative;box-shadow:0 8px 20px rgba(124,58,237,.22)}
+  .moodcard:nth-child(3n+1){background:linear-gradient(135deg,#22c55e,#0ea5a5)}
+  .moodcard:nth-child(3n+2){background:linear-gradient(135deg,#fb7185,#e8115b)}
+  .moodcard:nth-child(4n){background:linear-gradient(135deg,#f59e0b,#ef4444)}
+  .moodcard:hover{transform:translateY(-3px)}
+  .moodcard .big{font-size:18px;font-weight:800}
+  .moodcard .cnt{font-size:12px;opacity:.9}
+  .doc{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:22px 26px;white-space:pre-wrap;font-size:14px;color:var(--doc-tx);margin-bottom:16px;max-width:820px;box-shadow:0 4px 14px var(--shadow)}
+  .doc h3{color:var(--txt);margin-top:0}.doc b{color:var(--txt)}
+  .empty{color:var(--muted);padding:46px;text-align:center;border:1px dashed var(--line);border-radius:14px}
+  .modal{position:fixed;inset:0;background:var(--overlay);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow:auto;z-index:40;backdrop-filter:blur(3px)}
+  .modal.open{display:flex}
+  .sheet{background:var(--sheet);border:1px solid var(--line);border-radius:18px;max-width:820px;width:100%;overflow:hidden;animation:pop .25s both;box-shadow:0 24px 60px var(--shadow)}
+  .sheet-hero{display:flex;gap:20px;align-items:flex-end;padding:26px;background:var(--sheet-hero)}
+  .sheet-hero .cover{width:150px;height:150px;font-size:46px;flex:none}
+  .sheet-hero h2{margin:0;font-size:30px;font-weight:900;letter-spacing:-.5px;color:var(--sheet-hero-tx)}
+  .sheet-hero .artist{color:var(--sheet-hero-sub);margin-top:6px;font-size:14px}
+  .sheet-body{padding:8px 26px 26px}
+  .actions{display:flex;align-items:center;gap:12px;margin:18px 0 8px;flex-wrap:wrap}
+  .btn-green{display:inline-flex;align-items:center;gap:9px;background:var(--green);color:#fff;font-weight:800;border:0;border-radius:999px;padding:12px 22px;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(22,193,114,.35)}
+  .btn-green:hover{transform:scale(1.04);background:var(--green2)}
+  .btn-ghost{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:11px 18px;font-size:13px;cursor:pointer}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .ctx{background:var(--ctx-grad);border:1px solid var(--ctx-bd);border-radius:12px;padding:14px 16px;color:var(--ctx-tx);margin:14px 0}
+  table{width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:14px}
+  td{border-bottom:1px solid var(--line);padding:8px 6px;vertical-align:top}
+  td:first-child{color:var(--muted);width:40%}
+  .sec{margin:16px 0}
+  .sec h4{margin:0 0 8px;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--accent)}
+  .sec ul{margin:0;padding-left:18px}
+  .pl-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding:9px 2px}
+  .pl-item:last-child{border-bottom:none}
+  .pl-item a{color:var(--green2);font-size:12px;white-space:nowrap;font-weight:700}
+  .pill{display:inline-block;background:var(--elev);border:1px solid var(--line);border-radius:999px;padding:5px 11px;margin:2px 5px 2px 0;font-size:12px;color:var(--txt)}
+  .close{position:absolute;top:18px;right:18px;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:16px;z-index:2}
+  .player{position:fixed;left:0;right:0;bottom:0;display:none;align-items:center;gap:14px;padding:10px 16px;background:var(--player);border-top:1px solid var(--line);z-index:30;box-shadow:0 -6px 20px var(--shadow)}
+  .player.on{display:flex}
+  .player .pcov{width:46px;height:46px;border-radius:8px;object-fit:cover;flex:none;background:var(--elev)}
+  .player .pmeta{min-width:0}
+  .player .pt{font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .player .pa{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .player .pbtn{width:42px;height:42px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:16px;cursor:pointer;flex:none}
+  .player .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--green);width:0}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+  @keyframes growW{from{width:0}}
+  @keyframes eq{0%,100%{height:20%}50%{height:100%}}
+  .reveal{animation:fadeUp .5s both}
+  .wave{display:inline-flex;align-items:flex-end;gap:2px;height:18px}
+  .wave i{width:3px;background:var(--accent);border-radius:2px;animation:eq 1s ease-in-out infinite}
+  .wave i:nth-child(2){animation-delay:.15s}.wave i:nth-child(3){animation-delay:.3s}.wave i:nth-child(4){animation-delay:.45s}.wave i:nth-child(5){animation-delay:.6s}
+  .eqbox{display:none;align-items:flex-end;gap:2px;height:18px;width:20px;flex:none;margin-left:auto}
+  .eqbox.on{display:inline-flex}
+  .eqbox i{width:3px;background:var(--green);border-radius:2px;height:30%;animation:eq .8s ease-in-out infinite}
+  .eqbox i:nth-child(2){animation-delay:.2s}.eqbox i:nth-child(3){animation-delay:.4s}.eqbox i:nth-child(4){animation-delay:.1s}
+  .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:6px 0 4px}
+  .info-card{background:var(--info-bg);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .info-card .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px}
+  .gauge{position:relative;width:120px;margin:0 auto}
+  .gauge .gtrack{stroke:var(--gauge-track)} .gauge .needle{stroke:var(--gauge-needle)} .gauge .ndot{fill:var(--gauge-needle)}
+  .gauge .val{font-size:22px;font-weight:900;margin-top:2px;color:var(--txt)}
+  .gauge .sub{font-size:11px;color:var(--muted)}
+  .keybadge{width:64px;height:64px;border-radius:16px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+  .keybadge.min{background:linear-gradient(135deg,#3b82f6,#7c3aed)}
+  .keybadge.maj{background:linear-gradient(135deg,#fb923c,#ec4899)}
+  .meters{display:flex;flex-direction:column;gap:9px;text-align:left}
+  .meter .mt{display:flex;justify-content:space-between;font-size:12px;color:var(--txt);margin-bottom:3px}
+  .meter .track{height:8px;background:var(--track);border-radius:99px;overflow:hidden}
+  .meter .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--pink));animation:growW .9s ease both}
+  .anatomy{display:flex;height:34px;border-radius:8px;overflow:hidden;margin-top:6px;animation:growW 1s ease both}
+  .anatomy .seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#15121f;white-space:nowrap;overflow:hidden}
+  .anleg{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:var(--muted)}
+  .anleg span{display:inline-flex;align-items:center;gap:5px}
+  .anleg b{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .instr{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .instr div{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--muted);width:58px}
+  .instr .ic{font-size:24px}
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+  .bigstat{background:var(--bigstat);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .bigstat .n{font-size:34px;font-weight:900;line-height:1;color:var(--accent)}
+  .bigstat .l{color:var(--muted);font-size:13px;margin-top:6px}
+  .barlist{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px;max-width:640px;box-shadow:0 4px 14px var(--shadow)}
+  .barlist h4{margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--accent)}
+  .barrow{display:grid;grid-template-columns:130px 1fr 34px;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+  .barrow .bt{height:10px;background:var(--track);border-radius:99px;overflow:hidden}
+  .barrow .bf{height:100%;background:linear-gradient(90deg,var(--accent),var(--sky));border-radius:99px;animation:growW .9s ease both}
+  .barrow .nm{color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .barrow .vn{text-align:right;color:var(--muted)}
+  .tl{position:relative;margin:10px 0 0 8px;padding-left:26px;border-left:2px solid var(--line)}
+  .tl-era{position:relative;margin-bottom:26px}
+  .tl-era::before{content:'';position:absolute;left:-34px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 4px rgba(236,72,153,.18)}
+  .tl-era h3{margin:0 0 12px;font-size:20px;color:var(--txt)}
+  .tl-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .tl-item{display:flex;gap:12px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;transition:.2s}
+  .tl-item:hover{transform:translateY(-2px);box-shadow:0 10px 22px var(--shadow)}
+  .tl-item .cover{width:48px;height:48px;font-size:16px;flex:none;border-radius:8px}
+  .tl-item .ti{font-size:13px;font-weight:700;line-height:1.2;color:var(--txt)}
+  .tl-item .ta{font-size:12px;color:var(--muted)}
+  .quiz{max-width:600px}
+  .quiz-card{background:var(--panel2);border:1px solid var(--line);border-radius:18px;padding:24px;text-align:center;animation:pop .3s both;box-shadow:0 8px 24px var(--shadow)}
+  .quiz .qn{color:var(--muted);font-size:13px}
+  .quiz .qq{font-size:20px;font-weight:800;margin:10px 0 18px;color:var(--txt)}
+  .quiz .opts{display:grid;gap:10px}
+  .qopt{background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:14px;font-size:15px;cursor:pointer;transition:.15s}
+  .qopt:hover{border-color:var(--accent)}
+  .qopt.ok{background:rgba(22,193,114,.18);border-color:var(--green)}
+  .qopt.no{background:rgba(236,72,153,.16);border-color:var(--pink)}
+  .quiz .score{font-size:14px;color:var(--muted);margin-top:14px}
+  .qplay{margin:0 0 16px}
+  @media(max-width:780px){
+    .app{grid-template-columns:1fr;padding:0;gap:0;height:auto;min-height:100vh}
+    .sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;flex-direction:row;border-radius:0;padding:6px 4px;gap:0;justify-content:space-around;z-index:25;border-top:1px solid var(--line);background:var(--sidebar);overflow-x:auto;box-shadow:0 -4px 18px var(--shadow)}
+    .logo,.side-foot{display:none}
+    .navbtn{flex-direction:column;gap:3px;font-size:10px;padding:6px 4px;justify-content:center;text-align:center}
+    .navbtn.active{background:none;color:var(--accent)}
+    .navbtn .navlabel{font-size:10px}
+    .content{border-radius:0;height:auto;min-height:100vh}
+    .body{padding:4px 16px calc(96px + env(safe-area-inset-bottom))}
+    .topbar{padding:14px 16px;flex-wrap:wrap}.topbar h2{font-size:20px}
+    .search{max-width:none;width:100%;order:3}
+    .grid{grid-template-columns:repeat(2,1fr);gap:12px}
+    .moodgrid{grid-template-columns:repeat(2,1fr)}
+    .hero{flex-direction:column;align-items:flex-start;gap:14px}.hero h1{font-size:30px}.hero .art{width:96px;height:96px;font-size:40px}
+    .modal{padding:0}.sheet{border-radius:0;min-height:100vh;max-width:none}
+    .sheet-hero{flex-direction:column;align-items:flex-start;padding:50px 20px 22px}
+    .sheet-body{padding:8px 18px 120px}
+    .player{bottom:74px;margin:0 8px;border-radius:12px;border:1px solid var(--line)}
+  }
+
+  /* ---------- EVOLUZIONE ---------- */
+  .evo-sec{margin:6px 0 28px}
+  .evo-h{font-size:18px;margin:0 0 12px;color:var(--txt)}
+  .evo-p{color:var(--muted);font-size:13px;margin:-6px 0 12px}
+  .roots{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+  .root-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+  .rc-t{font-weight:800;font-size:13px}.rc-m{font-size:10px;color:var(--muted);margin:1px 0 4px}.rc-d{font-size:11px;color:var(--doc-tx);line-height:1.4}
+  .rootplus{align-self:center;color:var(--accent);font-weight:800;font-size:18px}
+  .evoline{display:flex;flex-direction:column;gap:8px}
+  .evo-node{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:8px 12px}
+  .evo-node::before{display:none}
+  .en-era{font-weight:800;font-size:13px}.en-desc{font-size:11.5px;color:var(--doc-tx);margin:3px 0 6px;line-height:1.4}.en-desc b{color:var(--txt)}
+  .worldgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+  .world-card{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:10px 12px}
+  .wc-flag{font-size:12.5px;font-weight:800}.wc-t{font-weight:800}.wc-d{font-size:11.5px;color:var(--doc-tx);margin:5px 0 7px;line-height:1.4}
+  .artsel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .artbtn{background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:8px 16px;font-size:14px;cursor:pointer;transition:.15s}
+  .artbtn:hover{border-color:var(--accent)}
+  .artbtn.sel{background:var(--accent);border-color:var(--accent);color:#fff}
+  .lineage{display:grid;grid-template-columns:1fr auto 1.1fr auto 1fr;align-items:stretch;gap:8px;margin-bottom:12px}
+  .lin-col{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px}
+  .lin-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px}
+  .lin-arrow{color:var(--accent);font-size:22px;font-weight:800;text-align:center}
+  .lin-center{background:linear-gradient(135deg,var(--accent),var(--pink));border-radius:14px;padding:20px 14px;text-align:center;color:#fff;box-shadow:0 8px 20px var(--shadow)}
+  .lin-name{font-size:18px;font-weight:900}
+  .phasebox{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+  .phase{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border-bottom:none}
+  .ph-y{font-weight:800;color:#fff;font-size:11px;padding:3px 9px;border-radius:999px;flex:none}
+  .ph-d{font-size:13px;color:var(--doc-tx)}
+  .evo-note{background:var(--ctx-grad);border:1px solid var(--ctx-bd);color:var(--ctx-tx);border-radius:12px;padding:12px 14px;font-size:13px}
+  @media(max-width:780px){.lineage{grid-template-columns:1fr;gap:8px}.lin-arrow{transform:rotate(90deg)}}
+
+  .evo-block{background:var(--info-bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 12px}
+  .evo-sub{display:inline-block;font-size:12px;font-weight:800;color:var(--ec,var(--accent));border-bottom:2px solid var(--ec,var(--accent));padding-bottom:3px;margin:0 0 10px;letter-spacing:.3px}
+  .evo-node.cur{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+  .hereb{background:var(--accent);color:#fff;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;vertical-align:middle}
+  .evo-toggle{margin-top:4px}
+
+  .emo{margin:0 0 13px}
+  .emo:last-child{margin-bottom:0}
+  .emo-top{display:flex;justify-content:space-between;align-items:center}
+  .emo-name{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;color:var(--txt)}
+  .emo-ic{font-size:18px}
+  .emo-val{font-weight:800;font-size:13px}
+  .emo-track{height:8px;background:var(--track);border-radius:99px;overflow:hidden;margin:6px 0 5px}
+  .emo-fill{height:100%;border-radius:99px;animation:growW .9s ease both}
+  .emo-why{font-size:12px;color:var(--doc-tx);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo"><span class="wave"><i style="height:40%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:65%"></i></span> Sonoteca</div>
+    <button class="navbtn active" data-tab="brani"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span class="navlabel">Brani</span></button>
+    <button class="navbtn" data-tab="mood"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9.5" r="1"/><circle cx="15" cy="9.5" r="1"/></svg><span class="navlabel">Mood</span></button>
+    <button class="navbtn" data-tab="timeline"><svg viewBox="0 0 24 24"><path d="M4 12h16"/><circle cx="7" cy="12" r="2"/><circle cx="17" cy="12" r="2"/></svg><span class="navlabel">Timeline</span></button>
+    <button class="navbtn" data-tab="stats"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span class="navlabel">Stats</span></button>
+    <button class="navbtn" data-tab="quiz"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .8-1 1.7M12 17h.01"/></svg><span class="navlabel">Quiz</span></button>
+    <button class="navbtn" data-tab="lezioni"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/></svg><span class="navlabel">Lezioni</span></button>
+    <button class="navbtn" data-tab="glossario"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H7a2 2 0 0 0-2 2z"/><path d="M9 8h7M9 12h7"/></svg><span class="navlabel">Glossario</span></button>
+    <button class="navbtn" data-tab="info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span class="navlabel">Info</span></button>
+    <div class="side-foot" id="sidefoot"></div>
+  </aside>
+  <main class="content" id="content">
+    <div class="topbar"><h2 id="secTitle">Brani</h2><div class="search" id="searchWrap"><input id="q" placeholder="Cerca titolo, artista, strumento, mood…" oninput="render()"></div><button id="themeBtn" class="themebtn" onclick="toggleTheme()" title="Tema chiaro/scuro">🌙</button></div>
+    <div class="body">
+      <section id="tab-brani">
+        <div class="hero"><div class="art">🎧</div><div><div class="eyebrow">Corso di musica personale</div><h1>La mia Sonoteca</h1><p>Ogni brano analizzato a fondo — genere, tonalità, voce, strumenti, scena — con mood, infografiche e playlist contestuali. Passa sopra una copertina per l'anteprima.</p></div></div>
+        <div class="filterbar">
+          <div class="taghead" id="taghead"></div>
+          <div class="tagbar" id="tagbar"></div>
+        </div>
+        <div id="grid" class="grid"></div>
+      </section>
+      <section id="tab-mood" style="display:none"><p style="color:var(--muted);margin-top:4px">Sfoglia per atmosfera. Tocca un mood per vedere i brani che lo evocano.</p><div id="moodgrid" class="moodgrid"></div></section>
+      <section id="tab-timeline" style="display:none"></section>
+      <section id="tab-stats" style="display:none"></section>
+      <section id="tab-quiz" style="display:none"></section>
+      <section id="tab-lezioni" style="display:none"></section>
+      <section id="tab-glossario" style="display:none"></section>
+      <section id="tab-info" style="display:none"></section>
+    </div>
+  </main>
+</div>
+<div class="player" id="player">
+  <img class="pcov" id="pcov" alt="">
+  <div class="pmeta"><div class="pt" id="pt"></div><div class="pa" id="pa"></div></div>
+  <span class="eqbox" id="eqbox"><i></i><i></i><i></i><i></i></span>
+  <button class="pbtn" id="pbtn" onclick="togglePlay()">⏸</button>
+  <div class="bar" id="pbar"></div>
+</div>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
+<script>
+/* ====== DATI ====== nuovi brani in cima ====== */
+const BRANI = [
+  {
+    titolo:"My Head Is a Jungle (Radio Edit)", artista:"Sam Hidd", data:"2026-06-16", fonte:"Spotify · ascolti recenti",
+    cover:"https://i.scdn.co/image/ab67616d00001e0211d431af5bad35b17f1d0773", trackId:"4lO6nX7iOGPSfkEE6FhT4C", preview:"https://p.scdn.co/mp3-preview/fcf8a5fbf9593c23018d62b8fa981c15ec19511f.mp3",
+    oneline:"Deep house ipnotico costruito sul ritornello di Emma Louise: groove caldo, basso rotondo e una vocalità folk che galleggia sul beat.",
+    genere:"Deep house / melodic house", epoca:"Anni 2010", key:"Sol minore", bpm:"~123", metro:"4/4", durata:"3:02",
+    produttore:"Sam Hidd (su Wankelmut & Emma Louise)",
+    bpmNum:123, metriche:{Energia:62,"Ballabilità":82,"Intimità":55,"Oscurità":48},
+    struttura:[["Intro",14],["Build",18],["Drop",30],["Break",16],["Drop 2",22]],
+    strumentiList:["Voce","Synth","Basso","Batteria"],
+    emozioni:[{ic:"🌿",emo:"Trance ipnotica",val:80,col:"#16c172",perche:"Loop vocale e groove four-on-the-floor ripetuti: la mente entra in uno stato fluttuante, da pista al tramonto."},{ic:"💧",emo:"Malinconia ballabile",val:62,col:"#22b8cf",perche:"La tonalità minore e la voce sospesa danno un velo agrodolce sotto al beat che invita a ballare."},{ic:"☀️",emo:"Calore estivo",val:58,col:"#f59e0b",perche:"Basso rotondo e pad morbidi profumano di terrazza e tramonto: euforia rilassata."}],
+    voce:"Voce femminile (Emma Louise nell'originale) trattata come strumento: frasi brevi, eteree, riverberate, ripetute in loop. Più texture che racconto, galleggia sopra il groove.",
+    strumenti:"Cassa dritta four-on-the-floor, basso rotondo e caldo, pad e synth-stab deep house, hi-hat sincopati. Produzione pulita e spaziosa, pensata per la pista.",
+    armonia:"Giro minore (Sol minore) ciclico su pochi accordi: niente sviluppo armonico, l'ipnosi nasce dalla ripetizione e dalle tensioni dei pad.",
+    scena:"Deep/melodic house anni 2010, eredità della scena Defected/MK. Sam Hidd, producer brasiliano, riprende il celebre ritornello di Wankelmut & Emma Louise (2012). House da club e da playlist 'sunset'.",
+    mood:["Tramonto in spiaggia","Pista da ballo","Notte d'estate","Guida notturna"],
+    contesto:"Da mettere al tramonto su una terrazza o in pista a tarda sera: il loop vocale ipnotico e il basso caldo creano quell'euforia rilassata tipica del deep house estivo. Amato da chi vive la club culture e le playlist 'sunset'.",
+    playlist:[["My Head Is a Jungle (MK Remix)","Wankelmut & Emma Louise"],["Need U (100%)","Duke Dumont"],["Cola","CamelPhat & Elderbrook"],["Latch","Disclosure"],["You & Me (Flume Remix)","Disclosure"],["In My Mind","Dynoro"]],
+    ascolta:["Il loop vocale: come la voce diventa uno strumento ripetuto","Il basso rotondo che 'respira' sotto la cassa","Lo stacco (break) e la ricostruzione del drop"],
+    simili:["Wankelmut & Emma Louise — My Head Is a Jungle","Duke Dumont — Need U (100%)","CamelPhat & Elderbrook — Cola","Disclosure — Latch"],
+    tags:["house","four-on-the-floor","loop vocale","Defected","estate","cover"]
+  },
+  {
+    titolo:"Hallelujah Anyway (Larse Vocal)", artista:"Candi Staton & Larse", data:"2026-06-16", fonte:"Spotify · ascolti recenti",
+    cover:"https://i.scdn.co/image/ab67616d00001e0269b8ba27d684af0748bbbc9f", trackId:"2oH90rd7HT1j3h6XQWp5Ia", preview:"https://p.scdn.co/mp3-preview/505aa842b65d831f6b5984c82afcbb670dbfa357.mp3",
+    oneline:"Soulful house da chiesa laica: la voce gospel di Candi Staton su un groove deep di Larse, sei minuti che salgono come una preghiera ballabile.",
+    genere:"Soulful house / deep house", epoca:"Anni 2010", key:"Reb minore", bpm:"~120", metro:"4/4", durata:"6:49",
+    produttore:"Larse (Defected)",
+    bpmNum:120, metriche:{Energia:64,"Ballabilità":80,"Intimità":60,"Oscurità":40},
+    struttura:[["Intro",12],["Strofa",24],["Ritornello",26],["Break",14],["Vamp",24]],
+    strumentiList:["Voce","Tastiere","Basso","Batteria"],
+    emozioni:[{ic:"🙌",emo:"Elevazione gospel",val:88,col:"#f59e0b",perche:"La voce di Candi Staton porta il fervore della chiesa in pista: senti la spinta a 'salire'."},{ic:"💃",emo:"Euforia da club",val:72,col:"#ec4899",perche:"Cassa dritta e groove deep ininterrotto: il corpo si muove da solo per sei minuti."},{ic:"🕊️",emo:"Speranza serena",val:65,col:"#22b8cf",perche:"Il messaggio ('hallelujah anyway') e gli accordi caldi trasmettono conforto e leggerezza."}],
+    voce:"Candi Staton, voce soul/gospel di razza (la stessa di 'You Got the Love'): grana calda, vibrato, melismi e ad-lib da chiesa del Sud. Qui canta su un tappeto house, fondendo sacro e pista.",
+    strumenti:"Deep house classico: cassa four-on-the-floor, basso morbido, accordi di piano/Rhodes, archi sintetici e pad. Lunga costruzione con break e vamp finale in stile gospel-house.",
+    armonia:"Giro minore (Reb minore) con accordi di settima caldi: colore soul sotto al beat. Struttura ciclica che lascia spazio alla voce di improvvisare nel finale.",
+    scena:"Soulful house targato Defected, l'etichetta-tempio della house vocale. Larse (Lars Sandberg) producer norvegese deep house; Candi Staton, leggenda soul/gospel e voce di 'You Got the Love'. Ponte tra gospel anni 70 e dancefloor moderno.",
+    mood:["Pista da ballo","Domenica mattina","Euforia","Gospel sudato"],
+    contesto:"Il pezzo da club che fa 'alzare le mani': perfetto a tarda sera in pista o la domenica mattina come inno laico. La voce gospel di Candi Staton trasforma la house in qualcosa di quasi spirituale. Per chi ama la soulful house di Defected.",
+    playlist:[["You Got the Love","Candi Staton"],["Finally","Kings of Tomorrow"],["Show Me Love","Robin S"],["Gypsy Woman","Crystal Waters"],["Promised Land","Joe Smooth"],["Music Sounds Better with You","Stardust"]],
+    ascolta:["I melismi e gli ad-lib gospel di Candi Staton","Come la cassa dritta tiene insieme i sei minuti","Il finale in vamp: la voce che improvvisa libera"],
+    simili:["Candi Staton — You Got the Love","Kings of Tomorrow — Finally","Robin S — Show Me Love","Crystal Waters — Gypsy Woman"],
+    tags:["house","soulful house","gospel","four-on-the-floor","Defected","vocal house"]
+  },
+  {
+    titolo:"Hymn (Radio-Trance-Mix)", artista:"Cabballero", data:"2026-06-16", fonte:"Spotify · ascolti recenti",
+    cover:"https://i.scdn.co/image/ab67616d00001e02d8f6eafa9570be0760678085", trackId:"1UiltFvkTsPNyVvk9KMtWi", preview:"https://p.scdn.co/mp3-preview/5ecad5cceaf7cb67195ba24edd1f30ef539ccf10.mp3",
+    oneline:"Trance anni 90 euforico e drammatico: la melodia di 'Hymn' degli Ultravox trasformata in un anthem da pista, supersaw e cassa a 144.",
+    genere:"Trance / Eurodance", epoca:"Anni 90", key:"Fa minore", bpm:"144", metro:"4/4", durata:"3:55",
+    produttore:"Cabballero",
+    bpmNum:144, metriche:{Energia:90,"Ballabilità":78,"Intimità":20,"Oscurità":55},
+    struttura:[["Intro",14],["Build",20],["Drop",30],["Break",16],["Drop 2",20]],
+    strumentiList:["Synth","Batteria","Basso"],
+    emozioni:[{ic:"⚡",emo:"Euforia da rave",val:92,col:"#ef4444",perche:"Il tempo veloce (144) e il lead supersaw che esplode dopo il break creano la classica scarica adrenalinica del trance."},{ic:"🌌",emo:"Epica malinconica",val:70,col:"#7c3aed",perche:"La melodia minore di 'Hymn' è solenne e nostalgica: euforia con una lacrima, marchio del trance melodico."},{ic:"🏃",emo:"Spinta in avanti",val:75,col:"#22b8cf",perche:"Cassa dritta incessante e build continui: l'energia ti porta avanti senza sosta."}],
+    voce:"Strumentale (questo radio-trance-mix): nessun cantato, la 'voce' è il lead synth che porta la melodia. La versione full vocal aggiunge un cantato; qui comanda la melodia.",
+    strumenti:"Arsenale trance anni 90: lead supersaw, pad enormi, cassa dritta a 144 BPM, basso offbeat, rullante 'rolling' nei build. Riverberi ampi, dinamica build→break→drop.",
+    armonia:"Fa minore, solenne ed epico: la melodia di 'Hymn' (Ultravox, 1982) riarmonizzata su giro minore tipico del trance. Tensione/rilascio costruita con filtri e accumuli.",
+    scena:"Trance/eurodance europeo di fine anni 90, l'epoca d'oro delle compilation da discoteca. Cabballero reinterpreta in chiave rave 'Hymn' degli Ultravox. Mondo lontano dall'R&B: qui contano BPM alti e melodie da stadio.",
+    mood:["Pista da ballo","Rave","Nostalgia '90","Adrenalina"],
+    contesto:"Pura euforia da discoteca anni 90: da alzare a tutto volume quando serve una scarica di energia. Il trance melodico vive di quel mix di adrenalina e malinconia, nostalgia pura per chi ha vissuto le compilation e le notti di fine millennio.",
+    playlist:[["Hymn","Ultravox"],["Children","Robert Miles"],["9PM (Till I Come)","ATB"],["Sandstorm","Darude"],["For an Angel","Paul van Dyk"],["Adagio for Strings","Tiësto"]],
+    ascolta:["Il build prima del drop: la tensione che sale","L'ingresso del lead supersaw dopo il break","La cassa dritta a 144: prova a contare il tempo"],
+    simili:["Robert Miles — Children","ATB — 9PM (Till I Come)","Darude — Sandstorm","Paul van Dyk — For an Angel"],
+    tags:["trance","eurodance","supersaw","strumentale","cover","rave"]
+  },
+  {
+    titolo:"Only Love Can Break Your Heart", artista:"Saint Etienne", data:"2026-06-16", fonte:"Spotify · ascolti recenti",
+    cover:"https://i.scdn.co/image/ab67616d00001e02db369330ed6f02b24f8c5f0b", trackId:"2l2JonC9Mmrqs5sC7G0SlD", preview:"https://p.scdn.co/mp3-preview/aa7d84c69e14b6a71281b5b76de14cfd173ab3a1.mp3",
+    oneline:"Indie dance del 1990: il classico di Neil Young trasformato in sogno baggy, beat dritto, organo e una voce eterea che galleggia.",
+    genere:"Indie dance / dream pop", epoca:"Anni 90", key:"Sol maggiore", bpm:"~102", metro:"4/4", durata:"4:29",
+    produttore:"Saint Etienne (Foxbase Alpha)",
+    bpmNum:102, metriche:{Energia:55,"Ballabilità":68,"Intimità":62,"Oscurità":30},
+    struttura:[["Intro",12],["Strofa",28],["Ritornello",28],["Break",14],["Outro",18]],
+    strumentiList:["Voce","Tastiere","Basso","Batteria"],
+    emozioni:[{ic:"🌫️",emo:"Sogno ovattato",val:82,col:"#22b8cf",perche:"La voce eterea e il riverbero avvolgente creano un'atmosfera sospesa, da sogno a occhi aperti."},{ic:"🕺",emo:"Groove rilassato",val:60,col:"#16c172",perche:"Il beat dance dritto ma morbido (102 BPM) fa muovere senza fretta: malinconia che balla."},{ic:"💔",emo:"Dolceamaro nostalgico",val:58,col:"#ec4899",perche:"È pur sempre una canzone sulla rottura: la cover dance ne addolcisce la tristezza in nostalgia."}],
+    voce:"Voce femminile (Moira Lambert nell'originale 1990) dolce ed eterea, quasi sussurrata, immersa nel riverbero. Stile dream pop: più atmosfera che potenza.",
+    strumenti:"Estetica baggy/Madchester: beat dance dritto e morbido, basso melodico, organo e tastiere vintage, campioni e tappeti riverberati. Suono caldo e analogico di inizio anni 90.",
+    armonia:"Sol maggiore luminoso ma con malinconia di fondo (è una canzone d'addio). Giro pop semplice avvolto in tastiere e riverbero da dream pop.",
+    scena:"Saint Etienne, trio londinese pioniere dell'indie dance: il debutto 'Foxbase Alpha' (1991) fonde pop, dance e cultura dei club. Questa è una cover di Neil Young in chiave dancefloor. Scena UK baggy/Madchester di inizio decennio.",
+    mood:["Sogno a occhi aperti","Pomeriggio piovoso","Nostalgia '90","Indie club"],
+    contesto:"Da ascoltare in un pomeriggio sospeso o in un club indie a luci basse: la voce ovattata e il beat morbido fanno galleggiare. Una canzone triste resa ballabile e sognante. Amata dai cultori del pop UK e dell'indie dance dei primi anni 90.",
+    playlist:[["Only Love Can Break Your Heart","Neil Young"],["Loaded","Primal Scream"],["Fools Gold","The Stone Roses"],["Step On","Happy Mondays"],["Nothing Can Stop Us","Saint Etienne"],["Dreams","The Cranberries"]],
+    ascolta:["La voce immersa nel riverbero: più texture che parole","Il beat dance dritto sotto una melodia malinconica","L'organo e le tastiere vintage che colorano lo sfondo"],
+    simili:["Saint Etienne — Nothing Can Stop Us","Primal Scream — Loaded","The Stone Roses — Fools Gold","Neil Young — Only Love Can Break Your Heart"],
+    tags:["indie dance","dream pop","baggy","Madchester","cover","UK"]
+  },
+  {
+    titolo:"You're Makin' Me High", artista:"Toni Braxton", data:"2026-06-14", fonte:"richiesta diretta",
+    cover:"https://i.scdn.co/image/ab67616d00001e025bc7429f54c5f6745c225fc6", trackId:"5bJ796cOnGBzSN5bm4mwMj", preview:"https://p.scdn.co/mp3-preview/f856ee8d86aad54fe2fbad21dc14a2d40fce6f70.mp3",
+    oneline:"Mid-tempo R&B '96: groove asciutto e moderno, tutto spazio per il contralto scuro e vellutato di Braxton.",
+    genere:"R&B / hip-hop soul", epoca:"Anni 90", key:"Sib minore", bpm:"~92", metro:"4/4", durata:"~4:00",
+    produttore:"Babyface & Bryce Wilson (LaFace)",
+    bpmNum:92, metriche:{Energia:55,"Ballabilità":70,"Intimità":78,"Oscurità":62},
+    struttura:[["Intro",8],["Strofa",30],["Ritornello",34],["Bridge",12],["Outro",16]],
+    strumentiList:["Voce","Batteria","Basso","Tastiere"],
+    emozioni:[{ic:"🌹",emo:"Sensualità",val:90,col:"#ec4899",perche:"Tempo medio (92 BPM) + tonalità minore + voce vellutata nei gravi: il corpo si rilassa e l'atmosfera diventa intima."},{ic:"😌",emo:"Sicurezza seducente",val:70,col:"#7c3aed",perche:"La produzione minimale lascia 'comandare' la voce: trasmette controllo e disinvoltura."},{ic:"🌙",emo:"Malinconia velata",val:45,col:"#22b8cf",perche:"Il modo minore aggiunge un'ombra agrodolce sotto la dolcezza del groove."}],
+    voce:"Contralto profondo e affumicato, quasi 'maschile' nei gravi. Canto controllato e sensuale, riff & runs misurati, armonizzazioni multiple di sé stessa. Scuola soul/gospel raffreddata in chiave pop.",
+    strumenti:"Produzione minimale: batteria secca, basso sintetico profondo, pochi tappeti. Tanto spazio vuoto ('less is more' di Babyface). Suono lucido e radiofonico.",
+    armonia:"Sib minore: colore notturno/sensuale nonostante il tempo non lento. Pochi accordi con settime/none, sapore soul.",
+    scena:"Atlanta/LaFace metà '90, galassia di TLC e Usher. Babyface architetto dell'R&B adulto patinato. Ponte tra quiet storm e hip-hop soul. Premiata ai Grammy.",
+    mood:["Notte in città","Sensuale","Glam '90","Cena a lume di candela"],
+    contesto:"Da mettere a luci basse, dopo le 22: aperitivo elegante che scivola verso qualcosa di più, o guida notturna in città con i finestrini abbassati. Amata dagli intenditori di R&B 'grown & sexy' e da chi adora le voci profonde alla Sade.",
+    playlist:[["No Ordinary Love","Sade"],["One in a Million","Aaliyah"],["Sittin' Up in My Room","Brandy"],["Use Your Heart","SWV"],["Anytime, Any Place","Janet Jackson"],["Ascension","Maxwell"]],
+    ascolta:["La zona grave della voce nelle strofe","Lo spazio: quanti pochi suoni ci sono","Le armonizzazioni sovrapposte nel ritornello"],
+    simili:["Toni Braxton — He Wasn't Man Enough","Brandy — Sittin' Up in My Room","Sade — No Ordinary Love","Aaliyah — One in a Million"],
+    tags:["R&B","contralto","quiet storm","produzione minimale","LaFace"]
+  },
+  {
+    titolo:"Freek'n You", artista:"Jodeci", data:"2026-06-14", fonte:"richiesta diretta",
+    cover:"", trackId:"43sNw9nvGYGLYnNiwI8oMZ", preview:"",
+    oneline:"Slow jam esplicito del '95, cupo e gospel: voci maschili roventi su una produzione scura di DeVante Swing.",
+    genere:"R&B / new jack swing, slow jam", epoca:"Anni 90", key:"Fa minore", bpm:"~134 (feel half-time, ≈67)", metro:"4/4", durata:"6:19",
+    produttore:"DeVante Swing (Uptown/MCA)",
+    bpmNum:67, metriche:{Energia:48,"Ballabilità":42,"Intimità":95,"Oscurità":85},
+    struttura:[["Intro",6],["Strofa",28],["Ritornello",30],["Bridge",10],["Vamp",26]],
+    strumentiList:["Voce","Batteria","Basso","Synth"],
+    emozioni:[{ic:"🔥",emo:"Desiderio / tensione",val:95,col:"#ef4444",perche:"Groove half-time pesante e acuti gospel laceranti creano urgenza fisica ed emotiva."},{ic:"😮‍💨",emo:"Struggimento catartico",val:80,col:"#7c3aed",perche:"I melismi gridati 'alla chiesa' sono un rilascio emotivo: senti lo sfogo."},{ic:"🌑",emo:"Oscurità notturna",val:78,col:"#22b8cf",perche:"Fa minore e synth ombrosi tingono tutto di cupo e di notte fonda."}],
+    voce:"K-Ci: voce roca e gridata 'alla chiesa', grandi melismi, acuti laceranti, vibrato largo (gospel del Sud). JoJo nella zona liscia. Canto maschile drammatico ed esibito, stile 'testify'.",
+    strumenti:"Produzione scura e densa: batteria half-time pesante, basso profondo, synth ombrosi. Atmosfera notturna, calda e cruda. Marchio DeVante ruvido, lontano dalla lucidità LaFace.",
+    armonia:"Fa minore, cupa e sensuale. Pochi accordi in loop ipnotico (estetica più hip-hop che pop). Struttura lunga con vamp gospel finale.",
+    scena:"Jodeci + DeVante Swing: pionieri del new jack swing più grezzo e street, etichetta Uptown (come Mary J. Blige). DeVante crebbe Timbaland e Missy Elliott: radice del suono R&B/hip-hop di fine '90.",
+    mood:["After-hours","Camera da letto","Gospel sudato","Tarda notte"],
+    contesto:"Slow jam da fine serata, luci spente: l'inno delle feste R&B 'baby-making' degli anni 90. Radici nella chiesa del Sud degli USA — se ami il soul gridato e drammatico, qui sei a casa.",
+    playlist:[["Bump n' Grind","R. Kelly"],["Forever My Lady","Jodeci"],["Freak Me","Silk"],["Knockin' Da Boots","H-Town"],["I'll Make Love to You","Boyz II Men"],["All My Life","K-Ci & JoJo"]],
+    ascolta:["I melismi e gli acuti 'sporchi' di K-Ci","Il groove half-time: rullante lento e pesante","Il finale in vamp con ad-lib improvvisati"],
+    simili:["Jodeci — Forever My Lady","K-Ci & JoJo — All My Life","R. Kelly — Bump n' Grind","Mary J. Blige — I'm Goin' Down"],
+    tags:["R&B","new jack swing","slow jam","gospel","half-time","Uptown"]
+  },
+  {
+    titolo:"Waterfalls", artista:"TLC", data:"2026-06-14", fonte:"esempio dimostrativo",
+    cover:"https://i.scdn.co/image/ab67616d00001e023ae63e3e2d9da8366e33fdab", trackId:"6qspW4YKycviDFjHBOaqUY", preview:"https://p.scdn.co/mp3-preview/ff22b8293acc52010d8532be5415348c9ed78756.mp3",
+    oneline:"Mid-tempo R&B di Atlanta '95: groove rilassato, fiati live, testo serissimo dentro una melodia dolce.",
+    genere:"R&B / hip-hop soul", epoca:"Anni 90", key:"Reb maggiore", bpm:"~86 (half-time)", metro:"4/4", durata:"4:40",
+    produttore:"Organized Noize (LaFace)",
+    bpmNum:86, metriche:{Energia:58,"Ballabilità":66,"Intimità":50,"Oscurità":35},
+    struttura:[["Intro",10],["Strofa",30],["Ritornello",30],["Rap",18],["Outro",12]],
+    strumentiList:["Voce","Fiati","Batteria","Basso","Tastiere"],
+    emozioni:[{ic:"🌅",emo:"Nostalgia calda",val:82,col:"#f59e0b",perche:"Fiati live e suono analogico in tonalità maggiore: profumo di estate e di ricordo."},{ic:"🙂",emo:"Gioia agrodolce",val:60,col:"#16c172",perche:"Melodia solare ma testo grave (AIDS, spaccio): felicità mista a consapevolezza."},{ic:"🧘",emo:"Serenità riflessiva",val:55,col:"#22b8cf",perche:"Il groove half-time rilassato invita a lasciarsi andare e a pensare."}],
+    voce:"Voci femminili afroamericane, estetica soul/gospel ma trattenuta. T-Boz contralto roco; Chilli zona acuta e riff & runs. Sezione rap di Left Eye.",
+    strumenti:"Fiati veri (gancio dell'intro), batteria half-time, basso rotondo, tappeti caldi tipo Rhodes. Suono analogico, intimo.",
+    armonia:"Reb maggiore con colore agrodolce: accordi di settima che ammorbidiscono. Ritornello ciclico su pochi accordi.",
+    scena:"Atlanta metà '90, team Organized Noize, etichetta LaFace. CrazySexyCool tra i dischi R&B più venduti. Message song su AIDS e spaccio.",
+    mood:["Pomeriggio d'estate","Nostalgia '90","Finestrini giù","Block party"],
+    contesto:"Pomeriggio d'estate, finestrini abbassati, sole basso: un classico da block party americano e da radio estiva. Adorata da chi è cresciuto negli anni 90, con un messaggio serio nascosto sotto la melodia solare.",
+    playlist:[["Don't Let Go (Love)","En Vogue"],["Player's Ball","OutKast"],["Doo Wop (That Thing)","Lauryn Hill"],["Weak","SWV"],["Whatta Man","Salt-N-Pepa"],["Fantasy","Mariah Carey"]],
+    ascolta:["Intro 0:00–0:15: la frase dei fiati","Entrata batteria: rullante 'in ritardo' (half-time)","Passaggio cantato→rap senza cambio di groove"],
+    simili:["OutKast — Player's Ball","En Vogue — Don't Let Go","Lauryn Hill — Doo Wop","SWV — Weak"],
+    tags:["R&B","fiati live","half-time","cantato+rap","Atlanta"]
+  }
+];
+
+const LEZIONI = [
+  {titolo:"Lezione 1 — La scena R&B degli anni 90",
+   testo:`L'idea: gli anni 90 sono l'età d'oro dell'R&B moderno, dal NEW JACK SWING (R&B + ritmi hip-hop) al NEO-SOUL di fine decennio. Filo conduttore: fusione tra canto soul/gospel e groove dell'hip-hop.
+
+LE TRE ONDATE
+• New jack swing (1988–93): batterie campionate dure + voci soul. Teddy Riley, Jimmy Jam & Terry Lewis, DeVante Swing.
+• Hip-hop soul (1993–96): più morbido e live — TLC, Mary J. Blige, SWV, Toni Braxton, Brandy.
+• Neo-soul (1997–2000): strumenti veri, groove alla J Dilla, testi intimi — D'Angelo, Erykah Badu, Lauryn Hill, Maxwell.
+
+COME SI RICONOSCE
+• Voce: riff & runs e melismi (gospel), armonizzazioni a 3-4 voci.
+• Ritmo: half-time, swing, batterie che 'respirano'.
+• Armonia: accordi di settima/nona che addolciscono tutto.
+• Struttura: spesso un verso rap dentro un brano cantato.
+
+LA "VOCE DELL'EST": filone diverso da affiancare. Il pop dell'Europa orientale/balcanica usa scale modali (frigio, minore armonica) e melismi turco-balcanici/rom. Quando arriverà un brano così, la scheda lo collegherà qui per sentire la differenza col melisma gospel.`}
+];
+
+const GLOSSARIO = [
+  ["Tonalità (key)","La 'casa' armonica del brano (es. Sol minore). Determina quali note suonano stabili."],
+  ["Maggiore / minore","Maggiore = aperto/luminoso; minore = cupo/malinconico. Punto di partenza, non regola ferrea."],
+  ["BPM","Battiti per minuto = velocità. ~70 ballad, ~90-100 R&B, ~120-128 dance, 140+ trap/dnb."],
+  ["Half-time","Il rullante cade ogni 2 movimenti: il pezzo sembra più lento e pesante."],
+  ["Swing / shuffle","Ritmo non dritto: gli ottavi 'zoppicano' (blues, neo-soul, J Dilla)."],
+  ["Melisma","Una sillaba cantata su molte note in rapida successione. Firma di R&B 90 e gospel."],
+  ["Riff & runs","Gli abbellimenti vocali rapidi tipici di R&B/gospel."],
+  ["Falsetto","Registro acuto e leggero, 'ovattato'."],
+  ["Belting","Cantare forte in zona acuta col registro di petto."],
+  ["Contralto","La voce femminile più grave (zona scura, quasi 'maschile'). Es. Toni Braxton, Sade."],
+  ["Accordo di settima","Accordo che aggiunge una nota in più: addolcisce, dà colore soul/jazz."],
+  ["Modo dorico/frigio","Scale modali: colori diversi dal minore classico (soul, funk, pop dell'Est)."],
+  ["Rhodes / Wurlitzer","Piani elettrici dal suono caldo, marchio di soul e neo-soul."],
+  ["Sample / campione","Frammento di un altro disco riusato: cardine di hip-hop e R&B."],
+  ["TR-808","Drum machine Roland: sub-bass e clap di hip-hop/trap."],
+  ["Sidechain","Il volume 'respira' a tempo con cassa/basso (dance moderna)."],
+  ["Quiet storm","R&B notturno, lento e sensuale (radio anni 80): atmosfere morbide da 'tarda serata'."],
+  ["Slow jam","Brano R&B lento e sensuale, 'da camera da letto'. Spesso lungo, con ad-lib finali."],
+  ["Vamp","Sezione finale che ripete pochi accordi mentre la voce improvvisa (eredità gospel)."],
+  ["Ad-lib","Improvvisazioni vocali libere, spesso a fine brano o tra le frasi."],
+  ["Laid-back ('dietro il tempo')","Cantare/suonare leggermente in ritardo sul beat → rilassatezza e groove."],
+  ["New jack swing","Fine '80–primi '90: R&B unito ai ritmi swingati dell'hip-hop (Teddy Riley, DeVante Swing)."]
+];
+
+const INFO = `COS'È — Una 'sonoteca' personale: una piccola enciclopedia dei brani che ascolto, per imparare la musica partendo da quello che mi piace davvero.
+
+OGNI SCHEDA contiene: carta d'identità tecnica, analisi visiva (BPM, tonalità, carattere, anatomia, strumenti), voce, produzione, armonia, scena storica, momenti da riascoltare e brani imparentati.
+
+MOOD & PLAYLIST — Ogni brano ha un'atmosfera (es. 'al tramonto', 'in un garage', 'amata in Brasile') e una playlist contestuale con link a Spotify.
+
+ANTEPRIME — Dove disponibile, il pulsante riproduce 30 secondi del brano nel sito.
+
+ALTRE VISTE — Timeline per epoca, Statistiche d'insieme e un Quiz di ear-training per allenare l'orecchio.
+
+COME CRESCE — Si aggiungono brani man mano che li ascolto o li segnalo; glossario e lezioni si espandono di conseguenza.`;
+
+/* ====== HELPERS ====== */
+function spotifyTrack(b){return b.trackId?("https://open.spotify.com/track/"+b.trackId):("https://open.spotify.com/search/"+encodeURIComponent(b.artista+" "+b.titolo))}
+function spotifySearch(t,a){return "https://open.spotify.com/search/"+encodeURIComponent(a+" "+t)}
+function initials(s){return s.split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase()}
+function coverHTML(b,cls){return b.cover?`<div class="cover ${cls||''}"><img src="${b.cover}" alt="" loading="lazy"></div>`:`<div class="cover ${cls||''}">${initials(b.artista)}</div>`}
+function uniq(a){return [...new Set(a)].sort((x,y)=>x.localeCompare(y))}
+function fill(id,vals){const s=document.getElementById(id);vals.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o)})}
+document.getElementById('sidefoot').textContent=BRANI.length+" brani in archivio";
+
+/* ====== MOTORE TAG ====== ogni dato del brano diventa un tag cercabile ====== */
+const TAGCATS={
+  genere:{lbl:'Genere',col:'#16c172'},
+  epoca:{lbl:'Epoca',col:'#a78bfa'},
+  tonalita:{lbl:'Tonalità',col:'#22b8cf'},
+  ritmo:{lbl:'Ritmo',col:'#f59e0b'},
+  mood:{lbl:'Mood',col:'#ec4899'},
+  emozione:{lbl:'Emozione',col:'#ef4444'},
+  strumento:{lbl:'Strumenti',col:'#0ea5a5'},
+  tag:{lbl:'Altro',col:'#7c3aed'}
+};
+const CATORDER=['genere','epoca','tonalita','ritmo','mood','emozione','strumento','tag'];
+function splitGenere(g){return (g||'').split(/[\/,]/).map(s=>s.trim()).filter(Boolean);}
+function modeLabel(key){return /min/i.test(key||'')?'Minore':'Maggiore';}
+function tagsOf(b){
+  const out=[],seen=new Set();
+  const add=(t,c)=>{if(t==null)return;t=(''+t).trim();const k=t.toLowerCase();if(!t||seen.has(k))return;seen.add(k);out.push({t,c});};
+  splitGenere(b.genere).forEach(g=>add(g,'genere'));
+  add(b.epoca,'epoca');
+  if(b.key){add(b.key,'tonalita');add(modeLabel(b.key),'tonalita');}
+  add(b.metro,'ritmo');
+  if(b.bpmNum){add(b.bpmNum+' BPM','ritmo');add(bpmLabel(b.bpmNum),'ritmo');}
+  (b.mood||[]).forEach(m=>add(m,'mood'));
+  (b.emozioni||[]).forEach(e=>add(e.emo,'emozione'));
+  (b.strumentiList||[]).forEach(s=>add(s,'strumento'));
+  (b.tags||[]).forEach(t=>add(t,'tag'));
+  return out;
+}
+const TAGSET=new Map();   // brano -> Set(label)
+const TAGINDEX={};        // label -> {t,c,n}
+BRANI.forEach(b=>{const s=new Set();tagsOf(b).forEach(({t,c})=>{s.add(t);const e=TAGINDEX[t]||(TAGINDEX[t]={t,c,n:0});e.n++;});TAGSET.set(b,s);});
+const activeTags=new Set();
+function esc(s){return (''+s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function toggleTag(t){activeTags.has(t)?activeTags.delete(t):activeTags.add(t);renderTagbar();render();}
+function clearTags(){activeTags.clear();renderTagbar();render();}
+function goTag(t){activeTags.clear();activeTags.add(t);switchTab('brani');var q=document.getElementById('q');if(q)q.value='';renderTagbar();render();document.getElementById('content').scrollTo({top:0,behavior:'smooth'});}
+function renderTagbar(){
+  const bar=document.getElementById('tagbar');if(!bar)return;
+  const byCat={};Object.values(TAGINDEX).forEach(e=>{(byCat[e.c]=byCat[e.c]||[]).push(e);});
+  bar.innerHTML=CATORDER.filter(c=>byCat[c]).map(c=>{
+    const arr=byCat[c].sort((a,b)=>b.n-a.n||a.t.localeCompare(b.t));
+    return `<div class="tagrow"><span class="tagcat">${TAGCATS[c].lbl}</span>`+arr.map(e=>{
+      const on=activeTags.has(e.t);
+      return `<button class="tagchip${on?' on':''}" style="--tc:${TAGCATS[c].col}" onclick="toggleTag('${esc(e.t)}')">${e.t}<span class="tn">${e.n}</span></button>`;
+    }).join('')+`</div>`;
+  }).join('');
+  const head=document.getElementById('taghead');
+  if(head)head.innerHTML=activeTags.size
+    ?`<span class="tagactive">🎯 ${activeTags.size} filtro/i attivi</span><button class="tagclear" onclick="clearTags()">✕ Pulisci</button>`
+    :`<span class="taghint">Combina più tag (tonalità, ritmo, mood, emozione…) per trovare i brani giusti.</span>`;
+}
+
+/* ====== RENDER BRANI ====== */
+function domEmo(b){return (b.emozioni&&b.emozioni.length)?b.emozioni.slice().sort((x,y)=>y.val-x.val)[0]:null;}
+function render(){
+  const q=document.getElementById('q').value.toLowerCase();
+  const grid=document.getElementById('grid');grid.innerHTML='';
+  const list=BRANI.filter(b=>{
+    const hay=(b.titolo+b.artista+b.strumenti+(b.tags||[]).join(' ')+b.mood.join(' ')).toLowerCase();
+    if(q&&!hay.includes(q))return false;
+    if(activeTags.size){const s=TAGSET.get(b);for(const t of activeTags)if(!s.has(t))return false;}
+    return true;
+  });
+  if(!list.length){grid.innerHTML='<div class="empty">Nessun brano con questi filtri.'+(activeTags.size?'<br><button class="tagclear" style="margin-top:12px" onclick="clearTags()">✕ Azzera filtri</button>':'')+'</div>';return}
+  list.forEach((b,n)=>{
+    const idx=BRANI.indexOf(b);
+    const el=document.createElement('div');el.className='card';el.style.animationDelay=(n*0.05)+'s';el.onclick=()=>openSheet(idx);
+    const fab=b.preview?`<button class="playfab" onclick="event.stopPropagation();playPreview(${idx})">▶</button>`:'';
+    const d=domEmo(b);
+    const domChip=d?`<span class="chip" style="background:${d.col}22;border-color:${d.col}66;color:${d.col};font-weight:700">${d.ic} ${d.emo}</span>`:'';
+    const moodChips=b.mood.slice(0,2).map(t=>`<span class="chip click" onclick="event.stopPropagation();goTag('${esc(t)}')">${t}</span>`).join('');
+    el.innerHTML=`<div class="cwrap">${coverHTML(b)}${fab}</div><h3>${b.titolo}</h3><div class="artist">${b.artista} · ${b.epoca}</div><div class="chips">${domChip}${moodChips}</div>`;
+    grid.appendChild(el);
+  });
+}
+
+/* ====== MODAL ====== */
+function openSheet(i){
+  const b=BRANI[i];
+  const prev=b.preview?`<button class="btn-ghost" onclick="playPreview(${i})">▶ Anteprima 30s</button>`:'';
+  document.getElementById('sheet').innerHTML=
+    `<button class="close" onclick="closeModal()">✕</button>`+
+    `<div class="sheet-hero">${coverHTML(b)}<div><div class="eyebrow">${b.genere}</div><h2>${b.titolo}</h2><div class="artist">${b.artista} · ${b.epoca}</div></div></div>`+
+    `<div class="sheet-body">`+
+      `<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}</div>`+
+      `<div class="ctx"><b>Mood —</b> ${b.contesto}<div class="chips" style="margin-top:8px">${b.mood.map(x=>`<span class="chip click" onclick="goTag('${esc(x)}')">${x}</span>`).join('')}</div></div>`+
+      `<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>`<button class="tagchip" style="--tc:${TAGCATS[t.c].col}" onclick="goTag('${esc(t.t)}')">${t.t}</button>`).join('')}</div></div>`+
+      `<table><tr><td>Genere</td><td>${b.genere}</td></tr><tr><td>Tonalità</td><td>${b.key}</td></tr><tr><td>BPM</td><td>${b.bpm}</td></tr><tr><td>Metro</td><td>${b.metro}</td></tr><tr><td>Durata</td><td>${b.durata}</td></tr><tr><td>Produttore</td><td>${b.produttore||'—'}</td></tr></table>`+
+      infografica(b)+
+      emozioniHTML(b)+
+      `<div class="sec"><h4>La voce</h4><div>${b.voce}</div></div>`+
+      `<div class="sec"><h4>Strumenti e produzione</h4><div>${b.strumenti}</div></div>`+
+      `<div class="sec"><h4>Armonia e struttura</h4><div>${b.armonia}</div></div>`+
+      `<div class="sec"><h4>Il contesto (la scena)</h4><div>${b.scena}</div></div>`+
+      `<div class="sec"><h4>Genere &amp; da dove arriva</h4><div style="margin-bottom:10px;color:var(--muted)">${b.genere}</div><button class="btn-ghost evo-toggle" onclick="toggleEvo('g')">🧬 Scopri da dove arriva e come si è evoluto</button><div id="evo-g" style="display:none;margin-top:16px">`+genreEvoHTML(b)+`</div></div>`+
+      `<div class="sec"><h4>L'artista nel tempo</h4><button class="btn-ghost evo-toggle" onclick="toggleEvo('a')">🎤 Cosa faceva ${b.artista} prima e dopo</button><div id="evo-a" style="display:none;margin-top:16px">`+artistEvoHTML(b.artista)+`</div></div>`+
+      `<div class="sec"><h4>Per orecchio: cosa ascoltare</h4><ul>${b.ascolta.map(x=>`<li>${x}</li>`).join('')}</ul></div>`+
+      `<div class="sec"><h4>🎵 Playlist consigliata · ${b.mood[0]}</h4>${b.playlist.map(p=>`<div class="pl-item"><span>${p[0]} — <span style="color:var(--muted)">${p[1]}</span></span><a href="${spotifySearch(p[0],p[1])}" target="_blank" rel="noopener">▶ Spotify</a></div>`).join('')}</div>`+
+      `<div class="sec"><h4>Se ti piace, ascolta anche</h4><div>${b.simili.map(x=>`<span class="pill">${x}</span>`).join('')}</div></div>`+
+    `</div>`;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+
+/* ====== MINI PLAYER ====== */
+let audio=new Audio(),curIdx=-1;
+function playPreview(i){
+  const b=BRANI[i];if(!b.preview)return;
+  const pl=document.getElementById('player');
+  if(curIdx===i&&!audio.paused){audio.pause();document.getElementById('pbtn').textContent='▶';return}
+  if(curIdx===i&&audio.paused){audio.play();document.getElementById('pbtn').textContent='⏸';return}
+  curIdx=i;audio.src=b.preview;audio.play();
+  document.getElementById('pcov').src=b.cover||'';
+  document.getElementById('pt').textContent=b.titolo;
+  document.getElementById('pa').textContent=b.artista;
+  document.getElementById('pbtn').textContent='⏸';
+  pl.classList.add('on');
+}
+function togglePlay(){if(audio.paused){audio.play();document.getElementById('pbtn').textContent='⏸'}else{audio.pause();document.getElementById('pbtn').textContent='▶'}}
+audio.addEventListener('timeupdate',()=>{const p=audio.duration?audio.currentTime/audio.duration*100:0;document.getElementById('pbar').style.width=p+'%'});
+audio.addEventListener('ended',()=>{document.getElementById('pbtn').textContent='▶'});
+
+/* ====== MOOD / DOCS ====== */
+function renderMood(){
+  const counts={};BRANI.forEach(b=>b.mood.forEach(m=>counts[m]=(counts[m]||0)+1));
+  document.getElementById('moodgrid').innerHTML=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).map(m=>`<div class="moodcard" onclick="goMood('${m.replace(/'/g,"\\'")}')"><div class="big">${m}</div><div class="cnt">${counts[m]} brano/i</div></div>`).join('');
+}
+function goMood(m){goTag(m);}
+function renderLezioni(){document.getElementById('tab-lezioni').innerHTML=LEZIONI.map(l=>`<div class="doc"><h3>${l.titolo}</h3>${l.testo}</div>`).join('')}
+function renderGlossario(){document.getElementById('tab-glossario').innerHTML='<div class="doc"><h3>Glossario</h3>'+GLOSSARIO.map(p=>`<p><b>${p[0]}</b> — ${p[1]}</p>`).join('')+'</div>'}
+function renderInfo(){document.getElementById('tab-info').innerHTML='<div class="doc"><h3>Come funziona</h3>'+INFO+'</div>'}
+
+/* ====== TABS ====== */
+const TITLES={brani:'Brani',mood:'Mood',timeline:'Timeline',stats:'Statistiche',quiz:'Quiz · ear-training',lezioni:'Lezioni',glossario:'Glossario',info:'Info'};
+function switchTab(t){
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  ['brani','mood','timeline','stats','quiz','lezioni','glossario','info'].forEach(x=>document.getElementById('tab-'+x).style.display=(x===t?'':'none'));
+  document.getElementById('secTitle').textContent=TITLES[t];
+  document.getElementById('searchWrap').style.display=(t==='brani'?'':'none');
+  if(t==='quiz')newQuiz();
+  document.getElementById('content').scrollTo({top:0,behavior:'auto'});
+}
+document.querySelectorAll('.navbtn').forEach(btn=>btn.onclick=()=>switchTab(btn.dataset.tab));
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('sonoteca-theme',t)}catch(e){}var b=document.getElementById('themeBtn');if(b)b.textContent=(t==='light'?'🌙':'☀️');}
+function toggleTheme(){var cur=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';setTheme(cur==='light'?'dark':'light');}
+(function(){var s='light';try{s=localStorage.getItem('sonoteca-theme')||'light'}catch(e){}setTheme(s);})();
+
+/* ====== INFOGRAFICHE ====== */
+function bpmLabel(n){return n<75?'Lento':n<100?'Medio':n<130?'Sostenuto':'Veloce'}
+function gauge(n){
+  const min=50,max=170,frac=Math.max(0,Math.min(1,(n-min)/(max-min)));
+  const ang=-90+frac*180, rad=ang*Math.PI/180;
+  const x=(60+42*Math.sin(rad)).toFixed(1), y=(60-42*Math.cos(rad)).toFixed(1);
+  return `<div class="gauge"><svg viewBox="0 0 120 70" style="width:120px;height:66px">
+    <path d="M10 60 A50 50 0 0 1 110 60" fill="none" class="gtrack" stroke-width="9" stroke-linecap="round"/>
+    <path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="url(#gg)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(frac*157).toFixed(1)} 157"/>
+    <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#1db954"/></linearGradient></defs>
+    <line x1="60" y1="60" x2="${x}" y2="${y}" class="needle" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="60" r="4" class="ndot"/></svg>
+    <div class="val">${n}<span class="sub"> BPM</span></div><div class="sub">${bpmLabel(n)}</div></div>`;
+}
+function keyBadge(key){
+  const min=/min/i.test(key);const short=key.replace(/\s*(minore|maggiore)/i,'').trim();
+  return `<div class="keybadge ${min?'min':'maj'}">${short}</div><div class="sub" style="margin-top:8px;font-size:11px;color:var(--muted)">${min?'Minore · cupo':'Maggiore · luminoso'}</div>`;
+}
+function meters(m){return `<div class="meters">`+Object.keys(m).map(k=>`<div class="meter"><div class="mt"><span>${k}</span><span>${m[k]}</span></div><div class="track"><div class="fill" style="width:${m[k]}%"></div></div></div>`).join('')+`</div>`;}
+const ANCOL={Intro:'#22d3ee',Strofa:'#8b5cf6',Ritornello:'#1db954',Bridge:'#fb923c',Rap:'#e8115b',Vamp:'#f59e0b',Outro:'#64748b',Build:'#0ea5a5',Drop:'#1db954','Drop 2':'#16a34a',Break:'#fb923c'};
+function anatomy(st){
+  const bars=st.map(s=>`<div class="seg" style="width:${s[1]}%;background:${ANCOL[s[0]]||'#666'}" title="${s[0]} ${s[1]}%">${s[1]>=12?s[0]:''}</div>`).join('');
+  const leg=st.map(s=>`<span><b style="background:${ANCOL[s[0]]||'#666'}"></b>${s[0]}</span>`).join('');
+  return `<div class="anatomy">${bars}</div><div class="anleg">${leg}</div>`;
+}
+const INSTRIC={Voce:'🎤',Batteria:'🥁',Basso:'🎸',Tastiere:'🎹',Synth:'🎛️',Fiati:'🎺',Chitarra:'🎸',Piano:'🎹',Archi:'🎻'};
+function instruments(list){return `<div class="instr">`+list.map(n=>`<div><span class="ic">${INSTRIC[n]||'🎵'}</span>${n}</div>`).join('')+`</div>`;}
+function infografica(b){
+  if(!b.bpmNum)return '';
+  return `<div class="sec"><h4>📊 Analisi visiva</h4>
+    <div class="info-grid">
+      <div class="info-card"><div class="lbl">Tempo</div>${gauge(b.bpmNum)}</div>
+      <div class="info-card"><div class="lbl">Tonalità</div>${keyBadge(b.key)}</div>
+      <div class="info-card"><div class="lbl">Strumenti</div>${instruments(b.strumentiList||[])}</div>
+    </div>
+    <div class="info-card" style="margin-top:14px;text-align:left"><div class="lbl">Carattere</div>${meters(b.metriche||{})}</div>
+    <div class="info-card" style="margin-top:14px;text-align:left"><div class="lbl">Anatomia del brano</div>${anatomy(b.struttura||[])}</div>
+  </div>`;
+}
+
+function emozioniHTML(b){
+  if(!b.emozioni)return '';
+  return `<div class="sec"><h4>🎭 Cosa dovresti sentire</h4>`+b.emozioni.map(e=>`<div class="emo"><div class="emo-top"><span class="emo-name"><span class="emo-ic">${e.ic}</span>${e.emo}</span><span class="emo-val" style="color:${e.col}">${e.val}%</span></div><div class="emo-track"><div class="emo-fill" style="width:${e.val}%;background:${e.col}"></div></div><div class="emo-why">${e.perche}</div></div>`).join('')+`</div>`;
+}
+/* ====== DASHBOARD ====== */
+function renderStats(){
+  const n=BRANI.length, withBpm=BRANI.filter(b=>b.bpmNum);
+  const bpmAvg=withBpm.length?Math.round(withBpm.reduce((s,b)=>s+b.bpmNum,0)/withBpm.length):0;
+  const minorPct=Math.round(BRANI.filter(b=>/min/i.test(b.key)).length/n*100);
+  const moodN=new Set(BRANI.flatMap(b=>b.mood)).size;
+  function count(arr){const c={};arr.forEach(x=>c[x]=(c[x]||0)+1);return Object.keys(c).map(k=>[k,c[k]]).sort((a,b)=>b[1]-a[1]);}
+  function bars(title,data){const max=Math.max.apply(null,data.map(d=>d[1]));return `<div class="barlist"><h4>${title}</h4>`+data.map(d=>`<div class="barrow"><span class="nm">${d[0]}</span><div class="bt"><div class="bf" style="width:${d[1]/max*100}%"></div></div><span class="vn">${d[1]}</span></div>`).join('')+`</div>`;}
+  document.getElementById('tab-stats').innerHTML=
+    `<div class="stat-row"><div class="bigstat reveal"><div class="n">${n}</div><div class="l">brani in archivio</div></div><div class="bigstat reveal"><div class="n">${bpmAvg}</div><div class="l">BPM medio</div></div><div class="bigstat reveal"><div class="n">${minorPct}%</div><div class="l">in tonalità minore</div></div><div class="bigstat reveal"><div class="n">${moodN}</div><div class="l">mood diversi</div></div></div>`+
+    bars('Generi',count(BRANI.map(b=>b.genere)))+bars('Epoche',count(BRANI.map(b=>b.epoca)))+bars('Mood ricorrenti',count(BRANI.flatMap(b=>b.mood)).slice(0,8));
+}
+
+/* ====== TIMELINE ====== */
+function renderTimeline(){
+  const groups={};BRANI.forEach(b=>{const k=b.epoca||'—';(groups[k]=groups[k]||[]).push(b)});
+  const keys=Object.keys(groups).sort();
+  document.getElementById('tab-timeline').innerHTML='<div class="tl">'+keys.map(k=>{
+    const items=groups[k].map(b=>{const i=BRANI.indexOf(b);return `<div class="tl-item" onclick="openSheet(${i})">${coverHTML(b)}<div><div class="ti">${b.titolo}</div><div class="ta">${b.artista}</div></div></div>`}).join('');
+    return `<div class="tl-era"><h3>${k}</h3><div class="tl-items">${items}</div></div>`;
+  }).join('')+'</div>';
+}
+
+/* ====== QUIZ ====== */
+let qScore=0,qTotal=0;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function bpmChoices(real){const set=[real];const d=[-30,-20,20,30,40];while(set.length<3){const v=real+d[Math.floor(Math.random()*d.length)];if(v>40&&set.indexOf(v)<0)set.push(v);}return shuffle(set);}
+function qWrap(q,opts,b){
+  const play=(b&&b.preview)?`<div class="qplay"><button class="btn-ghost" onclick="playPreview(${BRANI.indexOf(b)})">▶ Ascolta indizio (30s)</button></div>`:'';
+  return `<div class="quiz"><div class="quiz-card"><div class="qn">Punteggio ${qScore}/${qTotal}</div><div class="qq">${q}</div>${play}<div class="opts">`+opts.map(o=>`<button class="qopt" data-correct="${o[1]?1:0}" onclick="answer(this)">${o[0]}</button>`).join('')+`</div><div class="next" id="qnext"></div></div></div>`;
+}
+function answer(btn){
+  const correct=btn.dataset.correct==='1';qTotal++;if(correct)qScore++;
+  const opts=btn.parentNode.querySelectorAll('.qopt');
+  opts.forEach(o=>{o.style.pointerEvents='none';if(o.dataset.correct==='1')o.classList.add('ok')});
+  if(!correct)btn.classList.add('no');
+  document.getElementById('qnext').innerHTML=`<div class="score">${correct?'✓ Esatto!':'✗ La risposta giusta è in verde.'}</div><button class="btn-green" style="margin-top:14px" onclick="newQuiz()">Prossima →</button>`;
+}
+function newQuiz(){
+  const types=['key','bpm','scena'],t=types[Math.floor(Math.random()*types.length)];
+  const b=BRANI[Math.floor(Math.random()*BRANI.length)];let html='';
+  if(t==='key'){const min=/min/i.test(b.key);html=qWrap(`«${b.titolo}» di ${b.artista} è in tonalità...`,shuffle([['Maggiore',!min],['Minore',min]]),b);}
+  else if(t==='bpm'&&b.bpmNum){html=qWrap(`Che velocità (circa) ha «${b.titolo}»?`,bpmChoices(b.bpmNum).map(o=>[o+' BPM',o===b.bpmNum]),b);}
+  else{const others=BRANI.filter(x=>x!==b);const wrong=others[Math.floor(Math.random()*others.length)];html=qWrap(`Quale artista appartiene a questa scena?<br><span style="color:var(--muted);font-size:14px">"${b.scena.slice(0,130)}…"</span>`,shuffle([[b.artista,true],[wrong?wrong.artista:'—',false]]),null);}
+  document.getElementById('tab-quiz').innerHTML=html;
+}
+
+/* ====== EQUALIZZATORE + AVVIO ====== */
+audio.addEventListener('play',()=>{const e=document.getElementById('eqbox');if(e)e.classList.add('on')});
+audio.addEventListener('pause',()=>{const e=document.getElementById('eqbox');if(e)e.classList.remove('on')});
+audio.addEventListener('ended',()=>{const e=document.getElementById('eqbox');if(e)e.classList.remove('on')});
+
+/* ====== EVOLUZIONE ====== */
+const GENRE_EVO={
+  nome:"R&B",
+  radici:[["Gospel","Chiese afroamericane, USA","'20–'40","La matrice vocale: call & response, melismi."],["Blues","Sud USA","'20–'40","Forma, 'blue notes', fraseggio espressivo."],["Jazz & Doo-wop","USA urbano","'40–'50","Armonie ricche e armonizzazioni di gruppo."]],
+  timeline:[
+    {era:"'50–'60 · Rhythm & Blues / Soul",luogo:"USA (Memphis, Detroit)",desc:"Il gospel diventa secolare: nasce il Soul (Motown, Stax).",esempi:["Ray Charles","Aretha Franklin"]},
+    {era:"'70 · Funk & Quiet Storm",luogo:"USA",desc:"+ Funk (groove, basso) e il 'quiet storm' notturno e sensuale.",esempi:["Marvin Gaye","Smokey Robinson"]},
+    {era:"Fine '80 · New Jack Swing",luogo:"New York / USA",desc:"R&B + batterie e attitudine HIP-HOP: la svolta ritmica.",esempi:["Teddy Riley","Bobby Brown","Jodeci"]},
+    {era:"'90 · Hip-hop soul",luogo:"NY · Atlanta · Minneapolis",desc:"Voci soul su groove hip-hop, spesso con un verso rap. (← qui stanno i tuoi brani)",esempi:["TLC","Toni Braxton","Mary J. Blige"]},
+    {era:"Fine '90 · Neo-soul",luogo:"USA (Philadelphia, NY)",desc:"+ strumenti veri, groove 'sporco' alla J Dilla, testi intimi.",esempi:["D'Angelo","Erykah Badu","Lauryn Hill"]},
+    {era:"2010s · Alternative R&B",luogo:"USA / Canada",desc:"+ elettronica e indie: atmosfere notturne e sperimentali.",esempi:["The Weeknd","Frank Ocean","SZA"]},
+    {era:"2020s · R&B globale",luogo:"Mondo",desc:"Confini liquidi: UK bass, Afrobeats, hyperpop, K-R&B.",esempi:["Steve Lacy","Cleo Sol"]}
+  ],
+  mondo:[
+    {luogo:"🇺🇸 USA",titolo:"Il tronco",desc:"Da gospel/blues a soul, new jack, neo-soul e alt-R&B: la radice di tutto.",esempi:["D'Angelo","SZA"],col:"#7c3aed"},
+    {luogo:"🇬🇧 UK",titolo:"UK R&B / 2-step",desc:"+ garage, jungle e bass britannico: groove sincopati e produzione fredda.",esempi:["Sade","Craig David","Jorja Smith"],col:"#22b8cf"},
+    {luogo:"🇳🇬 Nigeria",titolo:"Alté & Afro-R&B",desc:"+ Afrobeats e dancehall: R&B 'individualista', termine coniato dai DRB LasGidi.",esempi:["Tems","Wizkid"],col:"#16c172"},
+    {luogo:"🇰🇷 Corea",titolo:"K-R&B",desc:"+ K-pop e produzione lucida: ballad soul e groove morbidi.",esempi:["Dean","Crush"],col:"#ec4899"},
+    {luogo:"🇧🇷 Brasile",titolo:"R&B brasiliano",desc:"+ samba-soul, MPB e bossa: armonie calde, ritmica sincopata.",esempi:["Xênia França","IZA"],col:"#f59e0b"},
+    {luogo:"🇰🇪 Africa Est",titolo:"Scena emergente",desc:"+ sonorità locali (benga): nuova ondata R&B negli anni 2020.",esempi:["Kenya/Tanzania"],col:"#38bdf8"}
+  ]
+};
+const ARTIST_EVO={
+  "Candi Staton & Larse":{influenze:["Gospel del Sud","Soul di Muscle Shoals","Disco anni 70","Deep house (Larse)"],eredita:["Florence + the Machine (cover di You Got the Love)","Soulful house di Defected"],
+    fasi:[["1969","Esordio soul a Muscle Shoals: 'I'd Rather Be an Old Man's Sweetheart'"],["1976","'Young Hearts Run Free': inno disco-soul"],["1991","'You Got the Love' diventa un classico dei club"],["2012","Voci soul/gospel su deep house con producer come Larse"]],
+    nota:"Da regina del soul del Sud a icona della house vocale: una voce che ha attraversato gospel, disco e dancefloor."},
+  "Saint Etienne":{influenze:["Neil Young","Northern soul","Dusty Springfield","Cultura dei club UK"],eredita:["Dubstar","La Roux","indie dance UK"],
+    fasi:[["1991","Foxbase Alpha: indie dance e cover sognanti"],["1993","So Tough: pop più maturo e cinematografico"],["1998","Good Humor: virata pop-soul più live"]],
+    nota:"Trio londinese che ha fuso pop, dance e cultura dei club: tra i padri dell'indie dance britannico."},
+  "Toni Braxton":{influenze:["Aretha Franklin","Sade","Anita Baker","Babyface (prod.)"],eredita:["Destiny's Child","Monica","Jennifer Lopez"],
+    fasi:[["1993","Debutto: contralto + ballad firmate Babyface"],["1996","Secrets: R&B più sensuale e radiofonico"],["2000","The Heat: groove più ritmico e uptempo"]],
+    nota:"Ha aperto la strada alle voci femminili gravi e 'grown & sexy' del decennio."},
+  "Jodeci":{influenze:["Gospel del Sud","Boyz II Men","New jack swing (Teddy Riley)"],eredita:["R. Kelly","Drake","Trey Songz","Timbaland & Missy (Swing Mob)"],
+    fasi:[["1991","Forever My Lady: ballad gospel-R&B"],["1993","Diary of a Mad Band: più sperimentale, esordi di Timbaland/Missy"],["1995","The Show…: slow jam espliciti, sound più scuro"]],
+    nota:"Dal collettivo Swing Mob di DeVante nascono Timbaland, Missy e Ginuwine: radice del R&B di fine '90."},
+  "TLC":{influenze:["Hip-hop soul","Funk/Soul anni '70","Organized Noize (prod.)"],eredita:["Destiny's Child","3LW","Blaque"],
+    fasi:[["1992","Ooooooohhh: new jack giocoso"],["1994","CrazySexyCool: R&B maturo, fiati live"],["1999","FanMail: produzione più futuristica/elettronica"]],
+    nota:"Il trio R&B più venduto di sempre: modello per i girl group successivi."}
+};
+function genreEvoHTML(b){
+  if(b&&!/R&B/i.test(b.genere||''))return `<div class="evo-note">🧭 Questo brano è <b>${b.genere}</b>: la mappa di evoluzione del genere per ora è tracciata per l'R&B. La aggiungerò per ${b.genere} man mano che la sonoteca cresce in questa direzione.</div>`;
+  const g=GENRE_EVO, P=['#7c3aed','#ec4899','#f59e0b','#16c172','#22b8cf','#ef4444','#0ea5a5'], RC=['#16c172','#22b8cf','#f59e0b'];
+  const roots=g.radici.map((r,i)=>`<div class="root-card" style="border-top:3px solid ${RC[i%3]}"><div class="rc-t" style="color:${RC[i%3]}">${r[0]}</div><div class="rc-m">${r[1]} · ${r[2]}</div><div class="rc-d">${r[3]}</div></div>`).join('');
+  const tl=g.timeline.map((e,i)=>{const c=P[i%P.length];const cur=/hip-hop soul/i.test(e.era);
+    return `<div class="evo-node${cur?' cur':''}" style="border-left-color:${c}"><div class="en-era" style="color:${c}">${e.era}${cur?' <span class="hereb">★ qui</span>':''}</div><div class="en-desc"><b>${e.luogo}</b> · ${e.desc}</div><div class="chips">${e.esempi.map(x=>`<span class="chip" style="background:${c}22;border-color:${c}66;color:${c}">${x}</span>`).join('')}</div></div>`;}).join('');
+  const world=g.mondo.map(w=>`<div class="world-card" style="border-left-color:${w.col}"><div class="wc-flag">${w.luogo} <span class="wc-t" style="color:${w.col}">${w.titolo}</span></div><div class="wc-d">${w.desc}</div><div class="chips">${w.esempi.map(x=>`<span class="chip" style="background:${w.col}22;border-color:${w.col}66;color:${w.col}">${x}</span>`).join('')}</div></div>`).join('');
+  return `<div class="evo-block"><div class="evo-sub" style="--ec:#16c172">🌱 LE RADICI</div><div class="roots">${roots}</div></div>`+
+    `<div class="evo-block"><div class="evo-sub" style="--ec:#7c3aed">🧬 COME SI È EVOLUTO</div><div class="evoline">${tl}</div></div>`+
+    `<div class="evo-block"><div class="evo-sub" style="--ec:#ec4899">🌍 NEL MONDO</div><div class="worldgrid">${world}</div></div>`;
+}
+function artistEvoHTML(name){
+  const a=ARTIST_EVO[name];
+  if(!a)return `<div class="evo-note">Genealogia non ancora disponibile per ${name}: la aggiungo quando analizziamo altri suoi brani.</div>`;
+  const PY=['#7c3aed','#ec4899','#f59e0b','#16c172','#22b8cf'];
+  const inf=a.influenze.map(x=>`<span class="pill" style="background:#22b8cf1f;border-color:#22b8cf55;color:#0e7490">${x}</span>`).join('');
+  const er=a.eredita.map(x=>`<span class="pill" style="background:#ec48991f;border-color:#ec489955;color:#be185d">${x}</span>`).join('');
+  const ph=a.fasi.map((p,i)=>`<div class="phase"><span class="ph-y" style="background:${PY[i%PY.length]}">${p[0]}</span><span class="ph-d">${p[1]}</span></div>`).join('');
+  return `<div class="lineage"><div class="lin-col" style="border-top:3px solid #22b8cf"><div class="lin-lbl">Prima · influenze</div>${inf}</div><div class="lin-arrow">→</div><div class="lin-center"><div class="lin-name">${name}</div></div><div class="lin-arrow">→</div><div class="lin-col" style="border-top:3px solid #ec4899"><div class="lin-lbl">Dopo · eredità</div>${er}</div></div>`+
+    `<div class="evo-block" style="margin-top:2px"><div class="evo-sub" style="--ec:#f59e0b">📈 COME SI È EVOLUTO IL SUONO</div><div class="phasebox" style="background:none;border:none;padding:0;margin:0">${ph}</div></div>`+
+    `<div class="evo-note">💡 ${a.nota}</div>`;
+}
+function toggleEvo(k){const e=document.getElementById('evo-'+k);if(e)e.style.display=(e.style.display==='none'?'':'none');}
+function renderEvo(){
+  const g=GENRE_EVO;
+  const roots=g.radici.map(r=>`<div class="root-card"><div class="rc-t">${r[0]}</div><div class="rc-m">${r[1]} · ${r[2]}</div><div class="rc-d">${r[3]}</div></div>`).join('<span class="rootplus">+</span>');
+  const tl=g.timeline.map((e,i)=>`<div class="evo-node reveal" style="animation-delay:${i*0.05}s"><div class="en-era">${e.era}</div><div class="en-luogo">📍 ${e.luogo}</div><div class="en-desc">${e.desc}</div><div class="chips">${e.esempi.map(x=>`<span class="chip">${x}</span>`).join('')}</div></div>`).join('');
+  const world=g.mondo.map(w=>`<div class="world-card" style="border-left-color:${w.col}"><div class="wc-flag">${w.luogo}</div><div class="wc-t">${w.titolo}</div><div class="wc-d">${w.desc}</div><div class="chips">${w.esempi.map(x=>`<span class="chip">${x}</span>`).join('')}</div></div>`).join('');
+  const names=Object.keys(ARTIST_EVO);
+  const sel=names.map((n,i)=>`<button class="artbtn ${i===0?'sel':''}" onclick="selArtist(this,'${n.replace(/'/g,"\\'")}')">${n}</button>`).join('');
+  document.getElementById('tab-evoluzione').innerHTML=
+    `<div class="evo-sec"><h3 class="evo-h">🌱 Le radici dell'R&B</h3><div class="roots">${roots}</div></div>`+
+    `<div class="evo-sec"><h3 class="evo-h">🧬 Evoluzione nel tempo — stesso posto, nuove influenze</h3><div class="evoline">${tl}</div></div>`+
+    `<div class="evo-sec"><h3 class="evo-h">🌍 Lo stesso genere nel mondo</h3><p class="evo-p">Come l'R&B ha preso colori diversi assorbendo le musiche locali.</p><div class="worldgrid">${world}</div></div>`+
+    `<div class="evo-sec"><h3 class="evo-h">🎤 Genealogia dell'artista</h3><div class="artsel">${sel}</div><div id="artevo"></div></div>`;
+  selArtist(null,names[0]);
+}
+function selArtist(btn,name){
+  document.querySelectorAll('.artbtn').forEach(b=>b.classList.remove('sel'));
+  if(btn){btn.classList.add('sel');}else{const all=document.querySelectorAll('.artbtn');all.forEach(x=>{if(x.textContent===name)x.classList.add('sel')});}
+  const a=ARTIST_EVO[name];
+  const inf=a.influenze.map(x=>`<span class="pill">${x}</span>`).join('');
+  const er=a.eredita.map(x=>`<span class="pill">${x}</span>`).join('');
+  const ph=a.fasi.map(p=>`<div class="phase"><span class="ph-y">${p[0]}</span><span class="ph-d">${p[1]}</span></div>`).join('');
+  document.getElementById('artevo').innerHTML=
+    `<div class="lineage"><div class="lin-col"><div class="lin-lbl">Influenze</div>${inf}</div><div class="lin-arrow">→</div><div class="lin-center"><div class="lin-lbl" style="color:rgba(255,255,255,.8)">Artista</div><div class="lin-name">${name}</div></div><div class="lin-arrow">→</div><div class="lin-col"><div class="lin-lbl">Eredità</div>${er}</div></div>`+
+    `<div class="phasebox"><div class="lin-lbl">Evoluzione del suono</div>${ph}</div>`+
+    `<div class="evo-note">💡 ${a.nota}</div>`;
+}
+
+renderTagbar();render();renderMood();renderLezioni();renderGlossario();renderInfo();renderStats();renderTimeline();newQuiz();
+</script>
+</body>
+</html>
