@@ -572,6 +572,7 @@
 </div>
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
 <div class="modal" id="cmpModal" onclick="if(event.target===this)closeCmp()"><div class="sheet" id="cmpSheet" style="max-width:480px"></div></div>
+<div class="modal" id="radioModal" onclick="if(event.target===this)closeRadio()"><div class="sheet" id="radioSheet" style="max-width:540px"></div></div>
 <script>
 /* ====== DATI ====== nuovi brani in cima ====== */
 const BRANI = [
@@ -1506,7 +1507,7 @@ function openSheet(i){
     `<button class="close" onclick="closeModal()">✕</button>`+
     `<div class="sheet-hero">${coverHTML(b)}<div><div class="eyebrow">${b.genere}</div><h2>${b.titolo}</h2><div class="artist">${b.artista} · ${b.epoca}</div></div></div>`+
     `<div class="sheet-body">`+
-      `<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost" onclick="toggleFav('${esc(b.trackId)}',this)">${fav?'❤️ Nei preferiti':'🤍 Preferito'}</button></div>`+
+      `<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost" onclick="toggleFav('${esc(b.trackId)}',this)">${fav?'❤️ Nei preferiti':'🤍 Preferito'}</button><button class="btn-ghost" onclick="openRadio(${i})">📻 Radio</button></div>`+
       embed+
       `<div class="ctx"><b>Mood —</b> ${b.contesto}<div class="chips" style="margin-top:8px">${b.mood.map(x=>`<span class="chip click" onclick="goTag('${esc(x)}')">${x}</span>`).join('')}</div></div>`+
       `<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>`<button class="tagchip" style="--tc:${TAGCATS[t.c].col}" onclick="goTag('${esc(t.t)}')">${t.t}</button>`).join('')}</div></div>`+
@@ -1669,7 +1670,9 @@ function renderMix(){
   if(!list.length){host.innerHTML='<div class="empty">Servono brani con BPM e tonalità per il mixaggio.</div>';return;}
   host.innerHTML=`<p class="mixhint">Scegli un brano (o clicca una chiave sulla ruota): compatibili per <b>Camelot</b> e <b>BPM</b>, e genera un <b>set a catena</b>.</p>
     <select id="mixSel" class="mixsel" onchange="renderMixFor(+this.value)">${list.map(b=>`<option value="${BRANI.indexOf(b)}">${b.titolo} — ${b.artista} · ${b.camelot} · ${b.bpmNum} BPM</option>`).join('')}</select>
-    <div id="mixWheel" style="display:flex;justify-content:center;margin:4px 0 14px"></div>
+    <div id="mixWheel" style="display:flex;justify-content:center;margin:4px 0 10px"></div>
+    <div style="text-align:center;margin-bottom:14px"><button class="btn-ghost" onclick="toggleMatrix()">📐 Matrice di compatibilità</button></div>
+    <div id="mixMatrix"></div>
     <div id="mixOut"></div>`;
   renderMixFor(BRANI.indexOf(list[0]));
 }
@@ -1851,6 +1854,7 @@ function renderScorciatoie(){
   const favs=favBrani();
   const favHtml=favs.length?favs.slice(0,20).map(b=>{const j=BRANI.indexOf(b);return `<div class="ctx-row" onclick="openSheet(${j})">${coverHTML(b)}<div style="flex:1;min-width:0"><div class="ti">${b.titolo}</div><div class="ta">${b.artista}</div></div></div>`;}).join(''):'<div class="rail-hint">Nessun preferito ancora. Apri un brano e tocca 🤍 Preferito.</div>';
   host.innerHTML=`<button class="sc-btn" onclick="sorprendimi()">🎲 Sorprendimi</button>`+
+    `<button class="sc-btn" onclick="openRadio(Math.floor(Math.random()*BRANI.length))">📻 Radio casuale</button>`+
     `<button class="sc-btn" onclick="clearTags();switchTab('brani')">🧹 Azzera filtri</button>`+
     `<button class="sc-btn" onclick="switchTab('mixaggio')">🎛️ Vai al mixaggio</button>`+
     `<div class="rail-h">❤️ Preferiti (${favs.length})</div>${favHtml}`+
@@ -1965,6 +1969,28 @@ function renderCostellazione(seed){
   const center=`<circle cx="${cx}" cy="${cy}" r="36" fill="#1db954"/><text x="${cx}" y="${cy}" font-size="8.5" fill="#000" text-anchor="middle" font-weight="700"><tspan x="${cx}">${esc((b.titolo||'').slice(0,15))}</tspan></text>`;
   host.innerHTML=`<p class="mixhint">Costellazione per affinità di tag — clicca un nodo per ricentrare. Centro: <b>${b.titolo} — ${b.artista}</b> <button class="btn-ghost" style="margin-left:8px" onclick="openSheet(${seed})">apri scheda</button></p><svg viewBox="0 0 600 480" style="width:100%;max-width:780px">${links}${center}${nodes}</svg>`;
 }
+/* ====== RADIO INFINITA ====== coda per affinità di tag ====== */
+let radioQ=[];
+function radioStep(used,cur){const sims=similiByTag(cur,30).filter(o=>!used.has(BRANI.indexOf(o.x)));if(!sims.length)return null;return sims[Math.floor(Math.random()*Math.min(5,sims.length))].x;}
+function openRadio(i){const start=BRANI[i];if(!start)return;const used=new Set([i]);radioQ=[start];let cur=start;while(radioQ.length<25){const nx=radioStep(used,cur);if(!nx)break;used.add(BRANI.indexOf(nx));radioQ.push(nx);cur=nx;}renderRadio();document.getElementById('radioModal').classList.add('open');}
+function radioMore(){if(!radioQ.length)return;const used=new Set(radioQ.map(x=>BRANI.indexOf(x)));let cur=radioQ[radioQ.length-1];for(let k=0;k<15;k++){const nx=radioStep(used,cur);if(!nx)break;used.add(BRANI.indexOf(nx));radioQ.push(nx);cur=nx;}renderRadio();}
+function closeRadio(){document.getElementById('radioModal').classList.remove('open');}
+function renderRadio(){
+  const rows=radioQ.map((x,n)=>{const j=BRANI.indexOf(x);const fab=x.preview?`<button class="btn-ghost" style="padding:6px 11px;flex:none" onclick="event.stopPropagation();playPreview(${j})">▶</button>`:'';return `<div class="ctx-row" onclick="openSheet(${j})"><span class="chain-n" style="background:var(--elev);color:var(--muted)">${n+1}</span>${coverHTML(x)}<div style="flex:1;min-width:0"><div class="ti">${x.titolo}</div><div class="ta">${x.artista} · ${x.camelot||''} ${x.bpmNum?x.bpmNum+' BPM':''}</div></div>${fab}</div>`;}).join('');
+  document.getElementById('radioSheet').innerHTML=`<button class="close" onclick="closeRadio()">✕</button><div style="padding:22px"><h2 style="margin:0 0 4px;font-size:22px">📻 Radio</h2><div class="rail-hint" style="margin-bottom:12px">Coda infinita per affinità da «${radioQ[0]?radioQ[0].titolo:''}». Clicca per aprire, ▶ per l'anteprima.</div><div class="chain">${rows}</div><button class="btn-green" style="margin-top:12px" onclick="radioMore()">↻ Carica altri 15</button></div>`;
+}
+/* ====== MATRICE DI COMPATIBILITÀ (Camelot) ====== */
+function compatMatrix(){
+  const codes=[];for(let n=1;n<=12;n++)codes.push(n+'A');for(let n=1;n<=12;n++)codes.push(n+'B');
+  const cnt={};codes.forEach(c=>cnt[c]=BRANI.filter(b=>b.camelot===c&&b.bpmNum).length);
+  const maxc=Math.max(1,...codes.map(c=>cnt[c]));const cell=18,pad=36,W=pad+codes.length*cell+8,H=pad+codes.length*cell+8;
+  let g='',lab='';
+  codes.forEach((ci,r)=>{const comp=[ci].concat(camCompat(ci));
+    codes.forEach((cj,c)=>{if(comp.indexOf(cj)<0)return;const v=Math.min(cnt[ci],cnt[cj]);if(!v)return;const op=(0.18+0.82*v/maxc).toFixed(2);g+=`<rect x="${pad+c*cell}" y="${pad+r*cell}" width="${cell-1}" height="${cell-1}" rx="2" fill="#1db954" fill-opacity="${op}"><title>${ci} → ${cj}: ${v} brani in comune</title></rect>`;});});
+  codes.forEach((c,i)=>{lab+=`<text x="${pad-4}" y="${pad+i*cell+12}" font-size="8" fill="var(--muted)" text-anchor="end">${c}</text><text x="${pad+i*cell+9}" y="${pad-6}" font-size="8" fill="var(--muted)" text-anchor="middle" transform="rotate(-90 ${pad+i*cell+9} ${pad-6})">${c}</text>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:660px">${g}${lab}</svg>`;
+}
+function toggleMatrix(){const m=document.getElementById('mixMatrix');if(!m)return;m.innerHTML=m.innerHTML?'':`<h4 class="mixh">📐 Matrice di compatibilità — verde = chiavi mixabili, intensità = quanti brani hai</h4>${compatMatrix()}`;}
 renderShelves();renderTagbar();render();renderMood();renderLezioni();renderGlossario();renderInfo();renderStats();renderTimeline();newQuiz();railTab('filtri');applyHash();
 </script>
 </body>
