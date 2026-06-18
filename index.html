@@ -14,56 +14,57 @@
      Due temi curati: scuro (default) e chiaro (allegro, NON tutto bianco).
      =================================================================== */
   :root{
-    /* --- accenti (stile Spotify: verde) --- */
-    --green:#1db954; --green2:#1ed760; --accent:#1db954; --accent2:#1ed760;
-    --pink:#f472b6; --sun:#fbbf24; --sky:#38bdf8; --side:236px;
-    --brand:linear-gradient(90deg,#1ed760,#1db954);
-    /* --- superfici (scuro Spotify) --- */
-    --bg-grad:#121212;
-    --sidebar:#000000; --panel:#181818; --panel2:#181818; --elev:#282828; --line:#2a2a2a;
-    --txt:#ffffff; --muted:#b3b3b3;
-    --content-grad:linear-gradient(180deg,#262626 0%,#121212 300px);
-    --topbar-grad:linear-gradient(180deg,rgba(0,0,0,.7),rgba(0,0,0,0));
-    --info-bg:#1a1a1a; --track:#2a2a2a;
-    --chip-bg:#232323; --chip-bd:#3a3a3a; --chip-tx:#e6e6e6;
-    --ctx-grad:linear-gradient(135deg,#202020,#181818); --ctx-bd:#333333; --ctx-tx:#e6e6e6;
-    --sheet:#181818; --sheet-hero:linear-gradient(150deg,#3a3a3a 0%,#222222 50%,#121212 100%); --sheet-hero-tx:#fff; --sheet-hero-sub:#c8c8c8;
-    --player:#181818f2; --overlay:rgba(0,0,0,.72);
-    --gauge-needle:#ffffff; --gauge-track:#2a2a2a; --doc-tx:#c8c8c8;
-    --bigstat:linear-gradient(135deg,#232323,#181818);
-    --navhover:#1a1a1a; --navactive:#232323; --navactive-tx:#ffffff;
+    /* --- accenti (stile Deezer: viola/magenta) --- */
+    --green:#1db954; --green2:#1ed760; --accent:#a238ff; --accent2:#c77dff;
+    --pink:#ff5db1; --sun:#ffb14e; --sky:#3ec6ff; --side:236px;
+    --brand:linear-gradient(90deg,#ff5db1,#a238ff 58%,#7b2ff7);
+    /* --- superfici (scuro colorato) --- */
+    --bg-grad:radial-gradient(1100px 560px at 84% -10%,#3a1d6e 0%,transparent 56%),radial-gradient(900px 520px at -8% 6%,#5a1d57 0%,transparent 55%),#14101f;
+    --sidebar:#0f0b1a; --panel:#1a1530; --panel2:#1a1530; --elev:#251d44; --line:#322a52;
+    --txt:#f6f2ff; --muted:#b3a8d0;
+    --content-grad:linear-gradient(180deg,#241a40 0%,#14101f 300px);
+    --topbar-grad:linear-gradient(180deg,rgba(15,11,26,.85),rgba(15,11,26,0));
+    --info-bg:#181230; --track:#322a52;
+    --chip-bg:#2a2150; --chip-bd:#3d3270; --chip-tx:#dcc9ff;
+    --ctx-grad:linear-gradient(135deg,#2a1d52,#3a1d4a); --ctx-bd:#3d3270; --ctx-tx:#efe6ff;
+    --sheet:#1a1530; --sheet-hero:linear-gradient(150deg,#7b2ff7 0%,#ff5db1 55%,#1a1530 100%); --sheet-hero-tx:#fff; --sheet-hero-sub:#e8d6ff;
+    --player:#1a1530f2; --overlay:rgba(10,6,22,.72);
+    --gauge-needle:#ffffff; --gauge-track:#322a52; --doc-tx:#ded6f2;
+    --bigstat:linear-gradient(135deg,#3a2570,#241a40);
+    --navhover:#221a40; --navactive:linear-gradient(135deg,#7b2ff7,#a238ff); --navactive-tx:#ffffff;
     /* --- ombre --- */
-    --sh-1:0 2px 8px rgba(0,0,0,.4);
-    --sh-2:0 8px 24px rgba(0,0,0,.5);
-    --sh-3:0 16px 44px rgba(0,0,0,.6);
-    --shadow:rgba(0,0,0,.5);
-    --glow:0 8px 30px rgba(29,185,84,.28);
-    /* --- raggi (Spotify: piccoli) --- */
-    --r-sm:8px; --r:12px; --r-lg:16px; --r-xl:20px;
-    /* --- tipografia --- */
-    --fs-hero:clamp(32px,5vw,48px); --fs-h2:24px;
+    --sh-1:0 2px 8px rgba(0,0,0,.35);
+    --sh-2:0 10px 28px rgba(40,10,60,.5);
+    --sh-3:0 18px 48px rgba(40,10,60,.6);
+    --shadow:rgba(20,5,40,.5);
+    --glow:0 8px 30px rgba(162,56,255,.34);
+    /* --- raggi --- */
+    --r-sm:10px; --r:14px; --r-lg:18px; --r-xl:24px;
+    /* --- tipografia (Deezer: grande e grassa) --- */
+    --fs-hero:clamp(36px,6vw,64px); --fs-h2:26px;
   }
   [data-theme="light"]{
-    --green:#0fae64; --green2:#0a9b58; --accent:#7c3aed; --accent2:#a78bfa;
-    --pink:#ec4899; --sun:#f59e0b; --sky:#0ea5c9;
-    --bg-grad:radial-gradient(1100px 560px at 84% -12%,#ffe3d0 0%,transparent 56%),radial-gradient(900px 520px at -6% 6%,#e8ddff 0%,transparent 55%),linear-gradient(135deg,#fff6ef 0%,#f4ecff 48%,#e6fbff 100%);
-    --sidebar:#fffdfbe6; --panel:#ffffff; --panel2:#ffffff; --elev:#f4eeff; --line:#ece4f7;
-    --txt:#2a2440; --muted:#766e8c;
-    --content-grad:linear-gradient(180deg,#fdf9ff 0%,#fffdff 300px);
-    --topbar-grad:linear-gradient(180deg,rgba(255,253,255,.9),rgba(255,253,255,.4));
-    --info-bg:#faf6ff; --track:#ede5f8;
-    --chip-bg:#f4ebfe; --chip-bd:#e7d8fb; --chip-tx:#6d28d9;
-    --ctx-grad:linear-gradient(135deg,#f4ecff,#ffe9f5); --ctx-bd:#eedcfb; --ctx-tx:#4b3f6b;
-    --sheet:#ffffff; --sheet-hero:linear-gradient(150deg,#d9ccff 0%,#fbc9e6 55%,#ffd9b8 100%); --sheet-hero-tx:#2a2440; --sheet-hero-sub:#5b4f7c;
-    --player:#fffdffe6; --overlay:rgba(42,30,70,.42);
-    --gauge-needle:#2a2440; --gauge-track:#ede5f8; --doc-tx:#4a4458;
-    --bigstat:linear-gradient(135deg,#efe7ff,#ffe5f2);
-    --navhover:#f6f0ff; --navactive:linear-gradient(135deg,#efe5ff,#ffe6f3); --navactive-tx:#7c3aed;
-    --sh-1:0 2px 8px rgba(124,58,237,.08);
-    --sh-2:0 12px 30px rgba(124,58,237,.14);
-    --sh-3:0 24px 56px rgba(124,58,237,.18);
-    --shadow:rgba(124,58,237,.14);
-    --glow:0 10px 34px rgba(236,72,153,.22);
+    --green:#0fae64; --green2:#0a9b58; --accent:#8b1ad6; --accent2:#a238ff;
+    --pink:#ff4fa3; --sun:#ff9e2c; --sky:#1bb6e0;
+    --brand:linear-gradient(90deg,#ff4fa3,#a238ff 58%,#7b2ff7);
+    --bg-grad:radial-gradient(1000px 520px at 86% -10%,#ffe0f0 0%,transparent 55%),radial-gradient(900px 520px at -6% 4%,#ece0ff 0%,transparent 55%),#ffffff;
+    --sidebar:#ffffffe6; --panel:#ffffff; --panel2:#ffffff; --elev:#f3edff; --line:#ece4fb;
+    --txt:#1d1633; --muted:#6b6390;
+    --content-grad:linear-gradient(180deg,#faf6ff 0%,#ffffff 280px);
+    --topbar-grad:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.4));
+    --info-bg:#faf6ff; --track:#ece4fb;
+    --chip-bg:#f3e9ff; --chip-bd:#e4d2fb; --chip-tx:#7b2ff7;
+    --ctx-grad:linear-gradient(135deg,#f3e9ff,#ffe6f4); --ctx-bd:#eedcfb; --ctx-tx:#3d2f6b;
+    --sheet:#ffffff; --sheet-hero:linear-gradient(150deg,#c9a3ff 0%,#ffb3da 55%,#ffd9b8 100%); --sheet-hero-tx:#1d1633; --sheet-hero-sub:#5b4f7c;
+    --player:#ffffffe6; --overlay:rgba(40,20,70,.4);
+    --gauge-needle:#1d1633; --gauge-track:#ece4fb; --doc-tx:#3d3458;
+    --bigstat:linear-gradient(135deg,#efe2ff,#ffe2f1);
+    --navhover:#f5eeff; --navactive:linear-gradient(135deg,#a238ff,#ff4fa3); --navactive-tx:#ffffff;
+    --sh-1:0 2px 8px rgba(123,47,247,.08);
+    --sh-2:0 12px 30px rgba(123,47,247,.14);
+    --sh-3:0 24px 56px rgba(123,47,247,.18);
+    --shadow:rgba(123,47,247,.16);
+    --glow:0 10px 34px rgba(255,79,163,.24);
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
@@ -390,17 +391,24 @@
   .mixbadges{display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:none}
   .mixb{background:var(--elev);border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700;color:var(--txt)}
   .mixtag{font-size:11px;font-weight:700;color:var(--muted)}
-  /* ====== TWEAK STILE SPOTIFY SCURO ====== */
-  [data-theme="dark"] .hero h1{-webkit-text-fill-color:#fff;color:#fff;background:none}
-  [data-theme="dark"] .card{background:#181818}
-  [data-theme="dark"] .card:hover{background:#282828;transform:translateY(-2px)}
-  [data-theme="dark"] .topbar{background:#000;backdrop-filter:none}
-  [data-theme="dark"] .btn-green,[data-theme="dark"] .playfab{color:#000}
-  [data-theme="dark"] .playfab{box-shadow:0 8px 18px rgba(0,0,0,.5)}
-  [data-theme="dark"] .eyebrow{color:var(--green2)}
-  [data-theme="dark"] .navactive,[data-theme="dark"] .topnav .navbtn.active{color:#fff}
-  [data-theme="dark"] .barrow .bf{background:linear-gradient(90deg,#1ed760,#1db954)}
-  [data-theme="dark"] .meter .fill,[data-theme="dark"] .grow .gf{background:linear-gradient(90deg,#1ed760,#1db954)}
+  /* ====== TWEAK STILE DEEZER (colorato, tipografia grande) ====== */
+  h1,.hero h1{font-weight:900;letter-spacing:-1.5px;line-height:.98}
+  .topnav .navbtn{font-weight:800}
+  .card:hover{transform:translateY(-4px)}
+  .btn-green,.playfab{color:#000}
+  .eyebrow{color:var(--pink)}
+  .topbar .logo{font-size:21px}
+  .viewhead h2{font-size:30px;font-weight:900;letter-spacing:-1px}
+  .shelf-h h3,.grid-h{font-weight:900;letter-spacing:-.5px}
+  /* Flow circles (Deezer) */
+  .flow-h{font-size:22px;font-weight:900;letter-spacing:-.5px;margin:6px 0 14px}
+  .flow-row{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}
+  .flow-row::-webkit-scrollbar{display:none}
+  .flow-c{flex:none;width:118px;height:118px;border:0;border-radius:50%;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-shadow:0 12px 26px var(--shadow);transition:.18s}
+  .flow-c:hover{transform:scale(1.07) rotate(-2deg)}
+  .flow-e{font-size:36px;line-height:1}
+  .flow-n{font-size:12px;font-weight:800;text-align:center;padding:0 10px;line-height:1.15;text-shadow:0 1px 5px rgba(0,0,0,.35)}
+  .moodcard .mood-emo{font-size:30px;line-height:1;margin-bottom:6px}
   /* caroselli stile Spotify */
   .grid-h{margin:18px 0 12px;font-size:20px;font-weight:800;color:var(--txt)}
   .shelf{margin:6px 0 24px}
@@ -528,6 +536,7 @@
       <div class="viewhead"><h2 id="secTitle">Brani</h2><span class="side-foot" id="sidefoot"></span></div>
       <section id="tab-brani">
         <div class="hero"><div class="art">🎧</div><div><div class="eyebrow">Corso di musica personale</div><h1>La mia Sonoteca</h1><p>Ogni brano analizzato a fondo — genere, tonalità, voce, strumenti, scena — con mood, infografiche e playlist contestuali. Passa sopra una copertina per l'anteprima.</p></div></div>
+        <div id="flow"></div>
         <div id="shelves"></div>
         <h3 class="grid-h" id="gridHead">Tutti i brani</h3>
         <div id="grid" class="grid"></div>
@@ -1463,8 +1472,9 @@ function renderShelves(){
 }
 function render(){
   const q=document.getElementById('q').value.toLowerCase();
-  var _f=q||activeTags.size,_sh=document.getElementById('shelves'),_gh=document.getElementById('gridHead');
+  var _f=q||activeTags.size,_sh=document.getElementById('shelves'),_gh=document.getElementById('gridHead'),_fl=document.getElementById('flow');
   if(_sh)_sh.style.display=_f?'none':'';
+  if(_fl)_fl.style.display=_f?'none':'';
   if(_gh)_gh.textContent=_f?'Risultati':'Tutti i brani';
   syncHash();
   const grid=document.getElementById('grid');grid.innerHTML='';
@@ -1482,7 +1492,7 @@ function render(){
     const fab=b.preview?`<button class="playfab" onclick="event.stopPropagation();playPreview(${idx})">▶</button>`:'';
     const d=domEmo(b);
     const domChip=d?`<span class="chip" style="background:${d.col}22;border-color:${d.col}66;color:${d.col};font-weight:700">${d.ic} ${d.emo}</span>`:'';
-    const moodChips=b.mood.slice(0,2).map(t=>`<span class="chip click" onclick="event.stopPropagation();goTag('${esc(t)}')">${t}</span>`).join('');
+    const moodChips=b.mood.slice(0,2).map(t=>moodChip(t)).join('');
     el.innerHTML=`<div class="cwrap">${coverHTML(b)}${fab}</div><h3>${b.titolo}</h3><div class="artist">${b.artista} · ${b.epoca}</div><div class="chips">${domChip}${moodChips}</div>`;
     grid.appendChild(el);
   });
@@ -1509,7 +1519,7 @@ function openSheet(i){
     `<div class="sheet-body">`+
       `<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost" onclick="toggleFav('${esc(b.trackId)}',this)">${fav?'❤️ Nei preferiti':'🤍 Preferito'}</button><button class="btn-ghost" onclick="openRadio(${i})">📻 Radio</button></div>`+
       embed+
-      `<div class="ctx"><b>Mood —</b> ${b.contesto}<div class="chips" style="margin-top:8px">${b.mood.map(x=>`<span class="chip click" onclick="goTag('${esc(x)}')">${x}</span>`).join('')}</div></div>`+
+      `<div class="ctx"><b>Mood —</b> ${b.contesto}<div class="chips" style="margin-top:8px">${b.mood.map(x=>moodChip(x)).join('')}</div></div>`+
       `<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>`<button class="tagchip" style="--tc:${TAGCATS[t.c].col}" onclick="goTag('${esc(t.t)}')">${t.t}</button>`).join('')}</div></div>`+
       `<table><tr><td>Genere</td><td>${b.genere}</td></tr><tr><td>Tonalità</td><td>${b.key}</td></tr><tr><td>BPM</td><td>${b.bpm}</td></tr><tr><td>Metro</td><td>${b.metro}</td></tr><tr><td>Durata</td><td>${b.durata}</td></tr><tr><td>Produttore</td><td>${b.produttore||'—'}</td></tr></table>`+
       infografica(b)+
@@ -1549,9 +1559,20 @@ audio.addEventListener('timeupdate',()=>{const p=audio.duration?audio.currentTim
 audio.addEventListener('ended',()=>{document.getElementById('pbtn').textContent='▶'});
 
 /* ====== MOOD / DOCS ====== */
+function moodIcon(m){const s=(m||'').toLowerCase();
+  const map=[['lume di candela','🕯️'],['cena','🍷'],['sensual','🌹'],['tramonto','🌅'],['spiaggia','🏖️'],['estat','☀️'],['notte in citt','🌃'],['guida nott','🚗'],['tarda notte','🌙'],['after','🌙'],['camera','🛏️'],['intim','🕯️'],['gospel','🙌'],['domenica','☕'],['pista','🕺'],['ballare','💃'],['rave','⚡'],['adrenalin','⚡'],['euforia','🤩'],['malincon','🌧️'],['riflessiv','🌫️'],['sogno','💭'],['piovos','🌧️'],['nostalgia','📼'],['glam','✨'],['block party','🎉'],['finestrini','🚗'],['indie club','🪩'],['strumental','🎛️'],['solare','😎'],['disteso','🧘'],['felice','😄'],['triste','😢'],['notte','🌙'],['mattin','🌤️']];
+  for(let i=0;i<map.length;i++)if(s.indexOf(map[i][0])>=0)return map[i][1];
+  return '🎵';}
+function moodChip(m){return `<span class="chip click" onclick="event.stopPropagation();goTag('${esc(m)}')">${moodIcon(m)} ${m}</span>`;}
+const FLOWG=['#ff5db1,#a238ff','#a238ff,#7b2ff7','#ffb14e,#ff5db1','#3ec6ff,#a238ff','#1ed760,#3ec6ff','#ff4fa3,#ffb14e','#7b2ff7,#3ec6ff','#ffb14e,#ff4fa3','#c77dff,#ff5db1','#3ec6ff,#1ed760'];
+function renderFlow(){const host=document.getElementById('flow');if(!host)return;
+  const c={};BRANI.forEach(b=>(b.mood||[]).forEach(m=>c[m]=(c[m]||0)+1));
+  const top=Object.keys(c).sort((a,b)=>c[b]-c[a]).slice(0,12);
+  host.innerHTML=`<div class="flow-h">▶ Scegli come ti senti</div><div class="flow-row">`+top.map((m,i)=>`<button class="flow-c" style="background:linear-gradient(135deg,${FLOWG[i%FLOWG.length]})" onclick="goTag('${esc(m)}')"><span class="flow-e">${moodIcon(m)}</span><span class="flow-n">${m}</span></button>`).join('')+`</div>`;
+}
 function renderMood(){
   const counts={};BRANI.forEach(b=>b.mood.forEach(m=>counts[m]=(counts[m]||0)+1));
-  document.getElementById('moodgrid').innerHTML=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).map(m=>`<div class="moodcard" onclick="goMood('${m.replace(/'/g,"\\'")}')"><div class="big">${m}</div><div class="cnt">${counts[m]} brano/i</div></div>`).join('');
+  document.getElementById('moodgrid').innerHTML=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).map(m=>`<div class="moodcard" onclick="goMood('${m.replace(/'/g,"\\'")}')"><div class="mood-emo">${moodIcon(m)}</div><div class="big">${m}</div><div class="cnt">${counts[m]} brano/i</div></div>`).join('');
 }
 function goMood(m){goTag(m);}
 function renderLezioni(){document.getElementById('tab-lezioni').innerHTML=LEZIONI.map(l=>`<div class="doc"><h3>${l.titolo}</h3>${l.testo}</div>`).join('')}
@@ -1991,7 +2012,7 @@ function compatMatrix(){
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:660px">${g}${lab}</svg>`;
 }
 function toggleMatrix(){const m=document.getElementById('mixMatrix');if(!m)return;m.innerHTML=m.innerHTML?'':`<h4 class="mixh">📐 Matrice di compatibilità — verde = chiavi mixabili, intensità = quanti brani hai</h4>${compatMatrix()}`;}
-renderShelves();renderTagbar();render();renderMood();renderLezioni();renderGlossario();renderInfo();renderStats();renderTimeline();newQuiz();railTab('filtri');applyHash();
+renderFlow();renderShelves();renderTagbar();render();renderMood();renderLezioni();renderGlossario();renderInfo();renderStats();renderTimeline();newQuiz();railTab('filtri');applyHash();
 </script>
 </body>
 </html>
