@@ -406,13 +406,12 @@
   .flow-row::-webkit-scrollbar{display:none}
   .flow-c{flex:none;width:118px;height:118px;border:0;border-radius:50%;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-shadow:0 12px 26px var(--shadow);transition:.18s}
   .flow-c:hover{transform:scale(1.07) rotate(-2deg)}
-  .flow-e{font-size:36px;line-height:1}
-  .flow-n{font-size:12px;font-weight:800;text-align:center;padding:0 10px;line-height:1.15;text-shadow:0 1px 5px rgba(0,0,0,.35)}
-  .moodcard .mood-emo{font-size:30px;line-height:1;margin-bottom:6px}
-  /* mood card grandi stile categoria */
-  .moodcard{min-height:150px;border-radius:20px;justify-content:flex-end}
-  .moodcard .mood-emo{font-size:52px;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25))}
-  .moodcard .big{font-size:21px;font-weight:900;letter-spacing:-.3px}
+  .flow-n{font-size:15px;font-weight:900;text-align:center;padding:0 12px;line-height:1.1;letter-spacing:-.2px;text-shadow:0 1px 6px rgba(0,0,0,.3)}
+  /* mood card grandi stile categoria (solo gradiente + nome) */
+  .moodcard{min-height:140px;border-radius:20px;justify-content:flex-end;position:relative;overflow:hidden}
+  .moodcard::after{content:"";position:absolute;inset:0;background:radial-gradient(130% 90% at 80% -10%,rgba(255,255,255,.22),transparent 55%)}
+  .moodcard>*{position:relative;z-index:1}
+  .moodcard .mood-name{font-size:24px;font-weight:900;letter-spacing:-.5px;line-height:1.05}
   .moodgrid{gap:16px}
   /* vista lista densa (Beatport) */
   .gridbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 12px}
@@ -441,7 +440,7 @@
   .card.story h3{color:#fff;margin:12px 0 2px;font-weight:800}
   .card.story .artist{color:rgba(255,255,255,.82);-webkit-line-clamp:1}
   .story-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;min-height:26px}
-  .story-emo{font-size:24px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+  .story-gen{font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.85);background:rgba(0,0,0,.2);padding:3px 9px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
   .story-pill{font-size:11px;font-weight:800;background:rgba(0,0,0,.28);color:#fff;padding:3px 9px;border-radius:999px}
   .story-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
   .story-cta{font-size:12px;font-weight:800;background:#fff;color:#15121f;padding:7px 14px;border-radius:999px;white-space:nowrap}
@@ -1575,7 +1574,7 @@ function render(){
     const el=document.createElement('div');el.className='card story';el.style.animationDelay=(n*0.05)+'s';el.style.background=genreGrad(b);el.onclick=()=>openSheet(idx);
     const fab=b.preview?`<button class="playfab" onclick="event.stopPropagation();playPreview(${idx})">▶</button>`:'';
     const d=domEmo(b);
-    el.innerHTML=`<div class="story-top"><span class="story-emo">${d?d.ic:moodIcon(b.mood&&b.mood[0])}</span>${b.bpmNum?`<span class="story-pill">${b.bpmNum} BPM</span>`:''}</div><div class="cwrap">${coverHTML(b)}${fab}</div><h3>${b.titolo}</h3><div class="artist">${b.artista}</div><div class="story-foot">${b.camelot?`<span class="story-pill">${b.camelot}</span>`:'<span></span>'}<span class="story-cta">▶ Ascolta</span></div>`;
+    el.innerHTML=`<div class="story-top"><span class="story-gen">${((b.genere||'').split(/[\/,]/)[0]||'').trim()}</span>${b.bpmNum?`<span class="story-pill">${b.bpmNum} BPM</span>`:''}</div><div class="cwrap">${coverHTML(b)}${fab}</div><h3>${b.titolo}</h3><div class="artist">${b.artista}</div><div class="story-foot">${b.camelot?`<span class="story-pill">${b.camelot}</span>`:'<span></span>'}<span class="story-cta">▶ Ascolta</span></div>`;
     grid.appendChild(el);
   });
 }
@@ -1647,16 +1646,16 @@ function moodIcon(m){const s=(m||'').toLowerCase();
   const map=[['lume di candela','🕯️'],['cena','🍷'],['sensual','🌹'],['tramonto','🌅'],['spiaggia','🏖️'],['estat','☀️'],['notte in citt','🌃'],['guida nott','🚗'],['tarda notte','🌙'],['after','🌙'],['camera','🛏️'],['intim','🕯️'],['gospel','🙌'],['domenica','☕'],['pista','🕺'],['ballare','💃'],['rave','⚡'],['adrenalin','⚡'],['euforia','🤩'],['malincon','🌧️'],['riflessiv','🌫️'],['sogno','💭'],['piovos','🌧️'],['nostalgia','📼'],['glam','✨'],['block party','🎉'],['finestrini','🚗'],['indie club','🪩'],['strumental','🎛️'],['solare','😎'],['disteso','🧘'],['felice','😄'],['triste','😢'],['notte','🌙'],['mattin','🌤️']];
   for(let i=0;i<map.length;i++)if(s.indexOf(map[i][0])>=0)return map[i][1];
   return '🎵';}
-function moodChip(m){return `<span class="chip click" onclick="event.stopPropagation();goTag('${esc(m)}')">${moodIcon(m)} ${m}</span>`;}
+function moodChip(m){return `<span class="chip click" onclick="event.stopPropagation();goTag('${esc(m)}')">${m}</span>`;}
 const FLOWG=['#ff5db1,#a238ff','#a238ff,#7b2ff7','#ffb14e,#ff5db1','#3ec6ff,#a238ff','#1ed760,#3ec6ff','#ff4fa3,#ffb14e','#7b2ff7,#3ec6ff','#ffb14e,#ff4fa3','#c77dff,#ff5db1','#3ec6ff,#1ed760'];
 function renderFlow(){const host=document.getElementById('flow');if(!host)return;
   const c={};BRANI.forEach(b=>(b.mood||[]).forEach(m=>c[m]=(c[m]||0)+1));
   const top=Object.keys(c).sort((a,b)=>c[b]-c[a]).slice(0,12);
-  host.innerHTML=`<div class="flow-h">▶ Scegli come ti senti</div><div class="flow-row">`+top.map((m,i)=>`<button class="flow-c" style="background:linear-gradient(135deg,${FLOWG[i%FLOWG.length]})" onclick="goTag('${esc(m)}')"><span class="flow-e">${moodIcon(m)}</span><span class="flow-n">${m}</span></button>`).join('')+`</div>`;
+  host.innerHTML=`<div class="flow-h">▶ Scegli come ti senti</div><div class="flow-row">`+top.map((m,i)=>`<button class="flow-c" style="background:linear-gradient(135deg,${FLOWG[i%FLOWG.length]})" onclick="goTag('${esc(m)}')"><span class="flow-n">${m}</span></button>`).join('')+`</div>`;
 }
 function renderMood(){
   const counts={};BRANI.forEach(b=>b.mood.forEach(m=>counts[m]=(counts[m]||0)+1));
-  document.getElementById('moodgrid').innerHTML=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).map(m=>`<div class="moodcard" onclick="goMood('${m.replace(/'/g,"\\'")}')"><div class="mood-emo">${moodIcon(m)}</div><div class="big">${m}</div><div class="cnt">${counts[m]} brano/i</div></div>`).join('');
+  document.getElementById('moodgrid').innerHTML=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).map(m=>`<div class="moodcard" onclick="goMood('${m.replace(/'/g,"\\'")}')"><div class="mood-name">${m}</div><div class="cnt">${counts[m]} brano/i</div></div>`).join('');
 }
 function goMood(m){goTag(m);}
 function renderLezioni(){document.getElementById('tab-lezioni').innerHTML=LEZIONI.map(l=>`<div class="doc"><h3>${l.titolo}</h3>${l.testo}</div>`).join('')}
