@@ -47,10 +47,10 @@
   [data-theme="dark"]{
     --accent:#cc785c; --accent2:#e8a55a; --green:#5db872; --pink:#cc785c; --sun:#e8a55a; --sky:#5db8a6;
     --brand:linear-gradient(90deg,#cc785c,#a9583e);
-    --bg-grad:#1F1F1E;
+    --bg-grad:#1F1F1D;
     --sidebar:#262626; --panel:#1f1e1b; --panel2:#1f1e1b; --elev:#252320; --line:#2e2c28;
     --txt:#faf9f5; --muted:#a09d96;
-    --content-grad:#1F1F1E;
+    --content-grad:#1F1F1D;
     --topbar-grad:linear-gradient(180deg,rgba(20,19,18,.92),rgba(20,19,18,0));
     --info-bg:#1f1e1b; --track:#2e2c28;
     --chip-bg:#252320; --chip-bd:#2e2c28; --chip-tx:#faf9f5;
@@ -93,6 +93,8 @@
   .navbtn.active svg{stroke:currentColor}
   .side-foot{margin-top:auto;padding:14px 12px 4px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);font-weight:600}
   .content{background:var(--content-grad);border:1px solid var(--line);border-radius:var(--r-xl);overflow:auto;position:relative;box-shadow:var(--sh-2)}
+  [data-theme="dark"] .content{box-shadow:none;border:0;border-radius:0}
+  [data-theme="dark"] .sidebar{border:1px solid #363636}
   .topbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:14px;padding:18px 26px;background:var(--topbar-grad);backdrop-filter:blur(14px) saturate(1.4)}
   .topbar h2{margin:0;font-size:var(--fs-h2);font-weight:850;letter-spacing:-.4px;color:var(--txt)}
   .themebtn{background:var(--elev);border:1px solid var(--line);color:var(--txt);width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:18px;flex:none;transition:.2s;display:flex;align-items:center;justify-content:center}
