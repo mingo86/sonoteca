@@ -658,6 +658,10 @@
   .cst-wrap{position:relative;width:100%;max-width:820px;margin:10px 0}
   .cst-cv{display:block;width:100%;border-radius:14px;background:radial-gradient(120% 90% at 50% 0%,#272336,#1a191f 72%);cursor:default}
   .cst-tip{position:absolute;pointer-events:none;background:rgba(18,17,22,.94);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;line-height:1.3;color:#fff;z-index:5;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.45)}
+  .sens-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .detail-evos{display:flex;flex-direction:column;gap:14px;padding:0 0 30px}
+  .detail-evos .sec{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+  @media(max-width:780px){.sens-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -1716,11 +1720,11 @@ function openSheet(i){
   const prev=b.preview?`<button class="btn-ghost" onclick="playPreview(${i})">▶ Anteprima 30s</button>`:'';
   const fav=isFav(b.trackId);
   const embed=b.trackId?`<div class="sec"><h4>Ascolta su Spotify</h4><iframe class="spembed" src="https://open.spotify.com/embed/track/${b.trackId}" width="100%" height="152" frameborder="0" loading="lazy" allow="encrypted-media"></iframe></div>`:'';
-  const facts=[];if(b.camelot)facts.push(['Camelot',b.camelot]);facts.push(['BPM',b.bpm],['Tonalità',b.key],['Metro',b.metro],['Durata',b.durata],['Epoca',b.epoca]);
+  const facts=[];if(b.camelot)facts.push(['Camelot',b.camelot]);facts.push(['BPM',b.bpm],['Tonalità',b.key],['Metro',b.metro],['Durata',b.durata],['Epoca',b.epoca]);if(b.produttore)facts.push(['Produttore',b.produttore]);
   const factsHTML=facts.filter(f=>f[1]).map(f=>`<span class="dfact"><b>${f[1]}</b>${f[0]}</span>`).join('');
   const actions=`<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost" onclick="toggleFav('${esc(b.trackId)}',this)">${fav?'❤️ Nei preferiti':'🤍 Preferito'}</button><button class="btn-ghost" onclick="openRadio(${i})">📻 Radio</button></div>`;
   const tags=`<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>{let col,tg='';if(t.c==='genere'){const pr=GENRE_GRAD[genreKey({genere:t.t})]||GENRE_GRAD['pop-other'];col=pr[0];tg=`;--tg:linear-gradient(135deg,${pr[0]},${pr[1]})`;}else col=TAGCATS[t.c].col;return `<button class="tagchip" style="--tc:${col}${tg}" onclick="goTag('${esc(t.t)}')"><span class="tl">${t.t}</span></button>`;}).join('')}</div></div>`;
-  const tech=`<div class="sec"><h4>Scheda tecnica</h4><table><tr><td>Genere</td><td>${b.genere}</td></tr><tr><td>Tonalità</td><td>${b.key}</td></tr><tr><td>BPM</td><td>${b.bpm}</td></tr><tr><td>Metro</td><td>${b.metro}</td></tr><tr><td>Durata</td><td>${b.durata}</td></tr><tr><td>Produttore</td><td>${b.produttore||'—'}</td></tr></table></div>`;
+  const carattere=b.metriche?`<div class="sec"><h4>Carattere</h4>${meters(b.metriche)}</div>`:'';
   document.getElementById('tab-detail').innerHTML=
     `<div class="detail-bar"><button class="dback" onclick="closeDetail()">← Torna</button></div>`+
     `<div class="detail-hero" style="--hg:${genreGrad(b)}">${coverHTML(b)}<div class="dh-meta"><div class="eyebrow">${b.genere}</div><h1>${b.titolo}</h1><div class="dh-artist">${b.artista} · ${b.epoca}</div><div class="dh-facts">${factsHTML}</div>${actions}</div></div>`+
@@ -1728,7 +1732,7 @@ function openSheet(i){
       `<div class="dcol dcol-main">`+
         `<div class="sec"><h4>Mood &amp; atmosfera</h4><div class="ctx">${b.contesto}<div class="chips" style="margin-top:10px">${b.mood.map(x=>moodChip(x)).join('')}</div></div></div>`+
         infografica(b)+
-        emozioniHTML(b)+anatomiaSensazione(b,i)+
+        `<div class="sens-row">`+emozioniHTML(b)+anatomiaSensazione(b,i)+`</div>`+
         (b.voce?`<div class="sec"><h4>La voce</h4><div>${b.voce}</div></div>`:'')+
         (b.strumenti?`<div class="sec"><h4>Strumenti e produzione</h4><div>${b.strumenti}</div></div>`:'')+
         (b.armonia?`<div class="sec"><h4>Armonia e struttura</h4><div>${b.armonia}</div></div>`:'')+
@@ -1736,14 +1740,16 @@ function openSheet(i){
         tags+
       `</div>`+
       `<div class="dcol dcol-side">`+
-        tech+embed+
-        `<div class="sec"><h4>Genere &amp; da dove arriva</h4><button class="btn-ghost evo-toggle" onclick="toggleEvo('g')">🧬 Scopri da dove arriva e come si è evoluto</button><div id="evo-g" style="display:none;margin-top:16px">`+genreEvoHTML(b)+`</div></div>`+
-        `<div class="sec"><h4>L'artista nel tempo</h4><button class="btn-ghost evo-toggle" onclick="toggleEvo('a')">🎤 Cosa faceva ${b.artista} prima e dopo</button><div id="evo-a" style="display:none;margin-top:16px">`+artistEvoHTML(b.artista)+`</div></div>`+
+        carattere+
         ((b.playlist&&b.playlist.length)?`<div class="sec"><h4>🎵 Playlist consigliata · ${b.mood[0]||''}</h4>${b.playlist.map(p=>`<div class="pl-item"><span>${p[0]} — <span style="color:var(--muted)">${p[1]}</span></span><a href="${spotifySearch(p[0],p[1])}" target="_blank" rel="noopener">▶ Spotify</a></div>`).join('')}</div>`:'')+
         ((b.ascolta&&b.ascolta.length)?`<div class="sec"><h4>Per orecchio: cosa ascoltare</h4><ul>${b.ascolta.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:'')+
         ((b.simili&&b.simili.length)?`<div class="sec"><h4>Se ti piace, ascolta anche</h4><div>${b.simili.map(x=>`<span class="pill">${x}</span>`).join('')}</div></div>`:'')+
         `<div class="sec"><h4>🔗 Simili per affinità</h4><div class="tl-items">${similiByTag(b,6).map(o=>{const j=BRANI.indexOf(o.x);return `<div class="tl-item" onclick="openSheet(${j})">${coverHTML(o.x)}<div style="flex:1;min-width:0"><div class="ti">${o.x.titolo}</div><div class="ta">${o.x.artista}</div></div><span class="mixb">${o.shared} tag</span></div>`;}).join('')}</div></div>`+
       `</div>`+
+    `</div>`+
+    `<div class="detail-evos">`+
+      `<div class="sec"><h4>Genere &amp; da dove arriva</h4><button class="btn-ghost evo-toggle" onclick="toggleEvo('g')">🧬 Scopri da dove arriva e come si è evoluto</button><div id="evo-g" style="display:none;margin-top:16px">`+genreEvoHTML(b)+`</div></div>`+
+      `<div class="sec"><h4>L'artista nel tempo</h4><button class="btn-ghost evo-toggle" onclick="toggleEvo('a')">🎤 Cosa faceva ${b.artista} prima e dopo</button><div id="evo-a" style="display:none;margin-top:16px">`+artistEvoHTML(b.artista)+`</div></div>`+
     `</div>`;
   const cur=document.querySelector('.navbtn.active');window.__prevTab=cur?cur.dataset.tab:'brani';
   ['brani','mood','timeline','mixaggio','costellazione','stats','quiz','lezioni','glossario','info'].forEach(x=>{var e=document.getElementById('tab-'+x);if(e)e.style.display='none';});
@@ -1871,7 +1877,6 @@ function infografica(b){
       <div class="info-card"><div class="lbl">Tonalità</div>${keyBadge(b.key)}</div>
       ${cam}${instrCard}
     </div>
-    <div class="info-card" style="margin-top:14px;text-align:left"><div class="lbl">Carattere</div>${meters(b.metriche||{})}</div>
     ${anat}
   </div>`;
 }
