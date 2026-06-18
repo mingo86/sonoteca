@@ -98,7 +98,7 @@
   .themebtn{background:var(--elev);border:1px solid var(--line);color:var(--txt);width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:18px;flex:none;transition:.2s;display:flex;align-items:center;justify-content:center}
   .themebtn:hover{border-color:var(--accent);transform:rotate(-12deg) scale(1.06);box-shadow:var(--glow)}
   .search{flex:1;max-width:360px;margin-left:auto}
-  .search input{width:100%;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:12px 18px;font-size:14px;transition:.2s}
+  .search input{width:100%;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:var(--r);padding:9px 14px;font-size:14px;transition:.2s}
   .search input::placeholder{color:var(--muted)}
   .search input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 18%,transparent)}
   .body{padding:8px 26px 48px}
@@ -519,7 +519,7 @@
   :root{--rail:340px;--side:240px}
   body{height:auto;min-height:100%}
   .shell{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh}
-  .sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;padding:16px 12px 14px;background:var(--sidebar,var(--panel));border-right:1px solid var(--line);overflow:auto;z-index:20}
+  .sidebar{position:sticky;top:56px;height:calc(100vh - 56px);display:flex;flex-direction:column;gap:4px;padding:14px 12px;background:var(--sidebar,var(--panel));border-right:1px solid var(--line);overflow:auto;z-index:20}
   .sidebar .logo{font-size:19px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:9px;color:#ededf0;background:none;-webkit-text-fill-color:#ededf0;padding:6px 8px 16px;white-space:nowrap}
   .sidenav{display:flex;flex-direction:column;gap:2px;flex:1}
   .sidenav .navsec{font-size:11px;font-weight:600;color:var(--muted);padding:15px 11px 5px;letter-spacing:.2px}
@@ -545,7 +545,7 @@
   .cc-user-tx b{font-size:13px;font-weight:600;color:var(--txt)}
   .cc-user-tx span{font-size:12px;color:var(--muted)}
   .cc-chev{width:16px;height:16px;flex:none;stroke:var(--muted);fill:none;stroke-width:1.8}
-  .themebtn-top{background:var(--elev);border:1px solid var(--line);color:var(--txt);width:40px;height:40px;border-radius:11px;cursor:pointer;font-size:16px;flex:none;transition:.15s}
+  .themebtn-top{background:var(--elev);border:1px solid var(--line);color:var(--txt);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:15px;flex:none;transition:.15s}
   .themebtn-top:hover{border-color:var(--accent)}
   .nav-collapsed .cc-tab span,.nav-collapsed .cc-up-tx,.nav-collapsed .cc-user-tx,.nav-collapsed .cc-arrow,.nav-collapsed .cc-chev{display:none}
   .nav-collapsed .cc-tabs{flex-direction:column;gap:4px;background:none;padding:0}
@@ -564,12 +564,15 @@
   .nav-collapsed .sidebar .themebtn{justify-content:center;padding:12px 0}
   .nav-collapsed .sidebar .themebtn .themetx{display:none}
   .main{display:flex;flex-direction:column;min-width:0}
-  .topbar{position:sticky;top:0;z-index:18;display:flex;align-items:center;gap:12px;padding:11px 18px;background:var(--content-grad);border-bottom:1px solid var(--line);backdrop-filter:none}
-  .crumb{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;color:var(--txt);white-space:nowrap;flex:none}
-  .crumb .wave{height:15px}
+  .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:11px;padding:9px 16px;background:var(--content-grad);border-bottom:1px solid var(--line);backdrop-filter:none}
+  .crumb{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;flex:none}
+  .crumb .wave{height:14px}
+  .tbnav{display:flex;gap:2px;flex:none}
+  .tbic{width:30px;height:30px;border-radius:7px;background:none;border:0;color:var(--muted);font-size:21px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s}
+  .tbic:hover{background:var(--navhover);color:var(--txt)}
   .topbar .search{flex:1;max-width:520px;margin:0}
   .topbar .search input{width:100%}
-  .railtoggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--elev);border:1px solid var(--line);color:var(--txt);height:40px;padding:0 15px;border-radius:11px;cursor:pointer;font-size:14px;font-weight:700;flex:none;margin-left:auto;transition:.15s}
+  .railtoggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--elev);border:1px solid var(--line);color:var(--txt);height:36px;padding:0 13px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:600;flex:none;transition:.15s}
   .railtoggle:hover{border-color:var(--accent);color:var(--accent)}
   .layout{padding:0}
   .content{background:var(--content-grad);border:0;border-radius:0;box-shadow:none;overflow:visible;min-height:calc(100vh - 58px)}
@@ -645,6 +648,13 @@
 </style>
 </head>
 <body>
+<header class="topbar">
+  <div class="crumb"><span class="wave"><i style="height:40%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:65%"></i></span><b>Sonoteca</b></div>
+  <div class="tbnav"><button class="tbic" onclick="history.back()" title="Indietro" aria-label="Indietro">‹</button><button class="tbic" onclick="history.forward()" title="Avanti" aria-label="Avanti">›</button></div>
+  <div class="search" id="searchWrap"><input id="q" placeholder="Cerca…" oninput="render()"></div>
+  <button id="themeBtn" class="themebtn-top" onclick="toggleTheme()" title="Tema chiaro/scuro">🌙</button>
+  <button class="railtoggle" onclick="toggleRail()" title="Mostra/nascondi pannello laterale">☰ Filtri</button>
+</header>
 <div class="shell">
 <aside class="sidebar" id="sidebar">
   <div class="cc-tabs">
@@ -672,12 +682,6 @@
   </div>
 </aside>
 <div class="main">
-<header class="topbar">
-  <div class="crumb"><span class="wave"><i style="height:40%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:65%"></i></span><b>Sonoteca</b></div>
-  <div class="search" id="searchWrap"><input id="q" placeholder="Cerca…" oninput="render()"></div>
-  <button id="themeBtn" class="themebtn-top" onclick="toggleTheme()" title="Tema chiaro/scuro">🌙</button>
-  <button class="railtoggle" onclick="toggleRail()" title="Mostra/nascondi pannello laterale">☰ Filtri</button>
-</header>
 <div class="layout">
   <main class="content" id="content">
     <div class="body">
