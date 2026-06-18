@@ -521,6 +521,17 @@
   .sidenav{display:flex;flex-direction:column;gap:3px;flex:1}
   .sidebar .themebtn{margin-top:10px;width:100%;display:flex;align-items:center;gap:10px;justify-content:flex-start;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:11px 13px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s}
   .sidebar .themebtn:hover{border-color:var(--accent);color:var(--accent)}
+  .shell{transition:grid-template-columns .24s ease}
+  .nav-collapsed .shell{grid-template-columns:74px 1fr}
+  .nav-collapsed .sidebar{padding:16px 8px 14px;align-items:center}
+  .nav-collapsed .sidebar .logo{justify-content:center;padding:4px 0 14px;gap:0}
+  .nav-collapsed .sidebar .logo-tx{display:none}
+  .nav-collapsed .sidenav{width:100%}
+  .nav-collapsed .sidenav .navbtn{justify-content:center;padding:12px 0;gap:0}
+  .nav-collapsed .sidenav .navlabel{display:none}
+  .nav-collapsed .navbtn.active::before{display:none}
+  .nav-collapsed .sidebar .themebtn{justify-content:center;padding:12px 0}
+  .nav-collapsed .sidebar .themebtn .themetx{display:none}
   .main{display:flex;flex-direction:column;min-width:0}
   .topbar{position:sticky;top:0;z-index:18;display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--topbar-grad);backdrop-filter:blur(14px) saturate(1.4)}
   .topbar .search{flex:1;max-width:520px;margin:0}
@@ -603,7 +614,7 @@
 <body>
 <div class="shell">
 <aside class="sidebar" id="sidebar">
-  <div class="logo"><span class="wave"><i style="height:40%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:65%"></i></span> Sonoteca</div>
+  <div class="logo"><span class="wave"><i style="height:40%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:65%"></i></span><span class="logo-tx">Sonoteca</span></div>
   <nav class="sidenav">
     <button class="navbtn active" data-tab="brani"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span class="navlabel">Brani</span></button>
     <button class="navbtn" data-tab="mood"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9.5" r="1"/><circle cx="15" cy="9.5" r="1"/></svg><span class="navlabel">Mood</span></button>
@@ -1674,6 +1685,7 @@ function openSheet(i){
   const cur=document.querySelector('.navbtn.active');window.__prevTab=cur?cur.dataset.tab:'brani';
   ['brani','mood','timeline','mixaggio','costellazione','stats','quiz','lezioni','glossario','info'].forEach(x=>{var e=document.getElementById('tab-'+x);if(e)e.style.display='none';});
   document.getElementById('tab-detail').style.display='';
+  document.body.classList.add('nav-collapsed');
   var vh=document.querySelector('.content .viewhead');if(vh)vh.style.display='none';
   var sw=document.getElementById('searchWrap');if(sw)sw.style.display='none';
   var ct=document.getElementById('content');if(ct&&ct.scrollTo)ct.scrollTo({top:0});if(window.scrollTo)window.scrollTo(0,0);
@@ -1730,6 +1742,7 @@ const TITLES={brani:'Brani',mood:'Mood',timeline:'Timeline',mixaggio:'Mixaggio',
 function switchTab(t){
   toggleDrawer(false);
   var dv=document.getElementById('tab-detail');if(dv)dv.style.display='none';
+  document.body.classList.remove('nav-collapsed');
   var vh=document.querySelector('.content .viewhead');if(vh)vh.style.display='';
   document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
   ['brani','mood','timeline','mixaggio','costellazione','stats','quiz','lezioni','glossario','info'].forEach(x=>document.getElementById('tab-'+x).style.display=(x===t?'':'none'));
@@ -1742,7 +1755,7 @@ function switchTab(t){
   syncHash();
 }
 document.querySelectorAll('.navbtn').forEach(btn=>btn.onclick=()=>switchTab(btn.dataset.tab));
-function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('sonoteca-theme',t)}catch(e){}var b=document.getElementById('themeBtn');if(b)b.textContent=(t==='light'?'🌙 Tema':'☀️ Tema');}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('sonoteca-theme',t)}catch(e){}var b=document.getElementById('themeBtn');if(b)b.innerHTML=(t==='light'?'🌙':'☀️')+'<span class="themetx"> Tema</span>';}
 function toggleTheme(){var cur=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';setTheme(cur==='light'?'dark':'light');}
 (function(){var s='dark';try{s=localStorage.getItem('sonoteca-theme')||'dark'}catch(e){}setTheme(s);})();
 
