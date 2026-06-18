@@ -536,6 +536,28 @@
   .railscrim.on{opacity:1;visibility:visible}
   .rail{position:fixed;top:0;right:0;height:100%;width:var(--rail);max-width:92vw;background:var(--sidebar,var(--panel));border-left:1px solid var(--line);display:flex;flex-direction:column;box-shadow:-14px 0 44px var(--shadow);transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:45}
   .rail.open{transform:translateX(0)}
+  /* ====== SCHEDA BRANO A PAGINA INTERA (stile Discogs) ====== */
+  .detail-bar{display:flex;align-items:center;gap:10px;padding:6px 0 0}
+  .dback{display:inline-flex;align-items:center;gap:7px;background:var(--elev);border:1px solid var(--line);color:var(--txt);padding:9px 15px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s}
+  .dback:hover{border-color:var(--accent);color:var(--accent);transform:translateX(-2px)}
+  .detail-hero{position:relative;display:flex;gap:24px;align-items:flex-end;margin:12px 0 0;padding:30px;border-radius:20px;overflow:hidden;background:var(--hg,var(--sheet-hero));box-shadow:0 16px 40px var(--shadow)}
+  .detail-hero::after{content:"";position:absolute;inset:0;background:radial-gradient(130% 100% at 82% -12%,rgba(255,255,255,.22),transparent 55%);pointer-events:none}
+  .detail-hero>*{position:relative;z-index:1}
+  .detail-hero .cover{width:184px;height:184px;font-size:54px;flex:none;border-radius:16px;box-shadow:0 18px 38px rgba(0,0,0,.36)}
+  .dh-meta{color:#fff;min-width:0}
+  .dh-meta .eyebrow{color:rgba(255,255,255,.88);font-weight:800}
+  .dh-meta h1{margin:6px 0 4px;font-size:clamp(28px,4vw,46px);font-weight:900;letter-spacing:-1px;line-height:1.02;color:#fff}
+  .dh-artist{color:rgba(255,255,255,.92);font-size:15px;font-weight:600}
+  .dh-facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+  .dfact{display:inline-flex;flex-direction:column;gap:1px;background:rgba(10,4,22,.26);border:1px solid rgba(255,255,255,.2);border-radius:11px;padding:6px 13px;color:#fff;font-size:10px;line-height:1.3;text-transform:uppercase;letter-spacing:.4px}
+  .dfact b{font-size:15px;font-weight:800;letter-spacing:0;text-transform:none}
+  .detail-hero .actions{margin:18px 0 0;display:flex;flex-wrap:wrap;gap:9px}
+  .detail-grid{display:grid;grid-template-columns:minmax(0,1fr) 332px;gap:18px;padding:18px 0 30px;align-items:start}
+  .detail-grid>.dcol{min-width:0;display:flex;flex-direction:column;gap:14px}
+  .detail-grid .sec{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+  .detail-grid .sec .ctx{margin:0;background:none;border:0;padding:0}
+  @media(max-width:980px){.detail-grid{grid-template-columns:1fr}}
+  @media(max-width:780px){.detail-hero{flex-direction:column;align-items:flex-start;padding:22px}.detail-hero .cover{width:120px;height:120px}}
   .rail-seg{display:flex;gap:2px;padding:8px;border-bottom:1px solid var(--line);flex:none}
   .rail-seg button{flex:1;background:none;border:0;color:var(--muted);font-size:11px;font-weight:700;padding:9px 3px;border-radius:9px;cursor:pointer;transition:.15s}
   .rail-seg button:hover{color:var(--txt);background:var(--navhover)}
@@ -622,6 +644,7 @@
       <section id="tab-lezioni" style="display:none"></section>
       <section id="tab-glossario" style="display:none"></section>
       <section id="tab-info" style="display:none"></section>
+      <section id="tab-detail" style="display:none"></section>
     </div>
   </main>
   <aside class="rail" id="rail">
@@ -1618,32 +1641,45 @@ function openSheet(i){
   const b=BRANI[i];
   const prev=b.preview?`<button class="btn-ghost" onclick="playPreview(${i})">▶ Anteprima 30s</button>`:'';
   const fav=isFav(b.trackId);
-  const embed=b.trackId?`<iframe class="spembed" src="https://open.spotify.com/embed/track/${b.trackId}" width="100%" height="80" frameborder="0" loading="lazy" allow="encrypted-media"></iframe>`:'';
-  document.getElementById('sheet').innerHTML=
-    `<button class="close" onclick="closeModal()">✕</button>`+
-    `<div class="sheet-hero">${coverHTML(b)}<div><div class="eyebrow">${b.genere}</div><h2>${b.titolo}</h2><div class="artist">${b.artista} · ${b.epoca}</div></div></div>`+
-    `<div class="sheet-body">`+
-      `<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost" onclick="toggleFav('${esc(b.trackId)}',this)">${fav?'❤️ Nei preferiti':'🤍 Preferito'}</button><button class="btn-ghost" onclick="openRadio(${i})">📻 Radio</button></div>`+
-      embed+
-      `<div class="ctx"><b>Mood —</b> ${b.contesto}<div class="chips" style="margin-top:8px">${b.mood.map(x=>moodChip(x)).join('')}</div></div>`+
-      `<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>{let col,tg='';if(t.c==='genere'){const pr=GENRE_GRAD[genreKey({genere:t.t})]||GENRE_GRAD['pop-other'];col=pr[0];tg=`;--tg:linear-gradient(135deg,${pr[0]},${pr[1]})`;}else col=TAGCATS[t.c].col;return `<button class="tagchip" style="--tc:${col}${tg}" onclick="goTag('${esc(t.t)}')"><span class="tl">${t.t}</span></button>`;}).join('')}</div></div>`+
-      `<table><tr><td>Genere</td><td>${b.genere}</td></tr><tr><td>Tonalità</td><td>${b.key}</td></tr><tr><td>BPM</td><td>${b.bpm}</td></tr><tr><td>Metro</td><td>${b.metro}</td></tr><tr><td>Durata</td><td>${b.durata}</td></tr><tr><td>Produttore</td><td>${b.produttore||'—'}</td></tr></table>`+
-      infografica(b)+
-      emozioniHTML(b)+anatomiaSensazione(b,i)+
-      (b.voce?`<div class="sec"><h4>La voce</h4><div>${b.voce}</div></div>`:'')+
-      (b.strumenti?`<div class="sec"><h4>Strumenti e produzione</h4><div>${b.strumenti}</div></div>`:'')+
-      (b.armonia?`<div class="sec"><h4>Armonia e struttura</h4><div>${b.armonia}</div></div>`:'')+
-      (b.scena?`<div class="sec"><h4>Il contesto (la scena)</h4><div>${b.scena}</div></div>`:'')+
-      `<div class="sec"><h4>Genere &amp; da dove arriva</h4><div style="margin-bottom:10px;color:var(--muted)">${b.genere}</div><button class="btn-ghost evo-toggle" onclick="toggleEvo('g')">🧬 Scopri da dove arriva e come si è evoluto</button><div id="evo-g" style="display:none;margin-top:16px">`+genreEvoHTML(b)+`</div></div>`+
-      `<div class="sec"><h4>L'artista nel tempo</h4><button class="btn-ghost evo-toggle" onclick="toggleEvo('a')">🎤 Cosa faceva ${b.artista} prima e dopo</button><div id="evo-a" style="display:none;margin-top:16px">`+artistEvoHTML(b.artista)+`</div></div>`+
-      ((b.ascolta&&b.ascolta.length)?`<div class="sec"><h4>Per orecchio: cosa ascoltare</h4><ul>${b.ascolta.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:'')+
-      ((b.playlist&&b.playlist.length)?`<div class="sec"><h4>🎵 Playlist consigliata · ${b.mood[0]||''}</h4>${b.playlist.map(p=>`<div class="pl-item"><span>${p[0]} — <span style="color:var(--muted)">${p[1]}</span></span><a href="${spotifySearch(p[0],p[1])}" target="_blank" rel="noopener">▶ Spotify</a></div>`).join('')}</div>`:'')+
-      ((b.simili&&b.simili.length)?`<div class="sec"><h4>Se ti piace, ascolta anche</h4><div>${b.simili.map(x=>`<span class="pill">${x}</span>`).join('')}</div></div>`:'')+
-      `<div class="sec"><h4>🔗 Simili per affinità (tag condivisi)</h4><div class="tl-items">${similiByTag(b,6).map(o=>{const j=BRANI.indexOf(o.x);return `<div class="tl-item" onclick="openSheet(${j})">${coverHTML(o.x)}<div style="flex:1;min-width:0"><div class="ti">${o.x.titolo}</div><div class="ta">${o.x.artista}</div></div><span class="mixb">${o.shared} tag</span></div>`;}).join('')}</div></div>`+
+  const embed=b.trackId?`<div class="sec"><h4>Ascolta su Spotify</h4><iframe class="spembed" src="https://open.spotify.com/embed/track/${b.trackId}" width="100%" height="152" frameborder="0" loading="lazy" allow="encrypted-media"></iframe></div>`:'';
+  const facts=[];if(b.camelot)facts.push(['Camelot',b.camelot]);facts.push(['BPM',b.bpm],['Tonalità',b.key],['Metro',b.metro],['Durata',b.durata],['Epoca',b.epoca]);
+  const factsHTML=facts.filter(f=>f[1]).map(f=>`<span class="dfact"><b>${f[1]}</b>${f[0]}</span>`).join('');
+  const actions=`<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost" onclick="toggleFav('${esc(b.trackId)}',this)">${fav?'❤️ Nei preferiti':'🤍 Preferito'}</button><button class="btn-ghost" onclick="openRadio(${i})">📻 Radio</button></div>`;
+  const tags=`<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>{let col,tg='';if(t.c==='genere'){const pr=GENRE_GRAD[genreKey({genere:t.t})]||GENRE_GRAD['pop-other'];col=pr[0];tg=`;--tg:linear-gradient(135deg,${pr[0]},${pr[1]})`;}else col=TAGCATS[t.c].col;return `<button class="tagchip" style="--tc:${col}${tg}" onclick="goTag('${esc(t.t)}')"><span class="tl">${t.t}</span></button>`;}).join('')}</div></div>`;
+  const tech=`<div class="sec"><h4>Scheda tecnica</h4><table><tr><td>Genere</td><td>${b.genere}</td></tr><tr><td>Tonalità</td><td>${b.key}</td></tr><tr><td>BPM</td><td>${b.bpm}</td></tr><tr><td>Metro</td><td>${b.metro}</td></tr><tr><td>Durata</td><td>${b.durata}</td></tr><tr><td>Produttore</td><td>${b.produttore||'—'}</td></tr></table></div>`;
+  document.getElementById('tab-detail').innerHTML=
+    `<div class="detail-bar"><button class="dback" onclick="closeDetail()">← Torna</button></div>`+
+    `<div class="detail-hero" style="--hg:${genreGrad(b)}">${coverHTML(b)}<div class="dh-meta"><div class="eyebrow">${b.genere}</div><h1>${b.titolo}</h1><div class="dh-artist">${b.artista} · ${b.epoca}</div><div class="dh-facts">${factsHTML}</div>${actions}</div></div>`+
+    `<div class="detail-grid">`+
+      `<div class="dcol dcol-main">`+
+        `<div class="sec"><h4>Mood &amp; atmosfera</h4><div class="ctx">${b.contesto}<div class="chips" style="margin-top:10px">${b.mood.map(x=>moodChip(x)).join('')}</div></div></div>`+
+        infografica(b)+
+        emozioniHTML(b)+anatomiaSensazione(b,i)+
+        (b.voce?`<div class="sec"><h4>La voce</h4><div>${b.voce}</div></div>`:'')+
+        (b.strumenti?`<div class="sec"><h4>Strumenti e produzione</h4><div>${b.strumenti}</div></div>`:'')+
+        (b.armonia?`<div class="sec"><h4>Armonia e struttura</h4><div>${b.armonia}</div></div>`:'')+
+        (b.scena?`<div class="sec"><h4>Il contesto (la scena)</h4><div>${b.scena}</div></div>`:'')+
+        tags+
+      `</div>`+
+      `<div class="dcol dcol-side">`+
+        tech+embed+
+        `<div class="sec"><h4>Genere &amp; da dove arriva</h4><button class="btn-ghost evo-toggle" onclick="toggleEvo('g')">🧬 Scopri da dove arriva e come si è evoluto</button><div id="evo-g" style="display:none;margin-top:16px">`+genreEvoHTML(b)+`</div></div>`+
+        `<div class="sec"><h4>L'artista nel tempo</h4><button class="btn-ghost evo-toggle" onclick="toggleEvo('a')">🎤 Cosa faceva ${b.artista} prima e dopo</button><div id="evo-a" style="display:none;margin-top:16px">`+artistEvoHTML(b.artista)+`</div></div>`+
+        ((b.playlist&&b.playlist.length)?`<div class="sec"><h4>🎵 Playlist consigliata · ${b.mood[0]||''}</h4>${b.playlist.map(p=>`<div class="pl-item"><span>${p[0]} — <span style="color:var(--muted)">${p[1]}</span></span><a href="${spotifySearch(p[0],p[1])}" target="_blank" rel="noopener">▶ Spotify</a></div>`).join('')}</div>`:'')+
+        ((b.ascolta&&b.ascolta.length)?`<div class="sec"><h4>Per orecchio: cosa ascoltare</h4><ul>${b.ascolta.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:'')+
+        ((b.simili&&b.simili.length)?`<div class="sec"><h4>Se ti piace, ascolta anche</h4><div>${b.simili.map(x=>`<span class="pill">${x}</span>`).join('')}</div></div>`:'')+
+        `<div class="sec"><h4>🔗 Simili per affinità</h4><div class="tl-items">${similiByTag(b,6).map(o=>{const j=BRANI.indexOf(o.x);return `<div class="tl-item" onclick="openSheet(${j})">${coverHTML(o.x)}<div style="flex:1;min-width:0"><div class="ti">${o.x.titolo}</div><div class="ta">${o.x.artista}</div></div><span class="mixb">${o.shared} tag</span></div>`;}).join('')}</div></div>`+
+      `</div>`+
     `</div>`;
-  document.getElementById('modal').classList.add('open');
+  const cur=document.querySelector('.navbtn.active');window.__prevTab=cur?cur.dataset.tab:'brani';
+  ['brani','mood','timeline','mixaggio','costellazione','stats','quiz','lezioni','glossario','info'].forEach(x=>{var e=document.getElementById('tab-'+x);if(e)e.style.display='none';});
+  document.getElementById('tab-detail').style.display='';
+  var vh=document.querySelector('.content .viewhead');if(vh)vh.style.display='none';
+  var sw=document.getElementById('searchWrap');if(sw)sw.style.display='none';
+  var ct=document.getElementById('content');if(ct&&ct.scrollTo)ct.scrollTo({top:0});if(window.scrollTo)window.scrollTo(0,0);
   window.__ctx=i;renderContesto(i);
 }
+function closeDetail(){var dv=document.getElementById('tab-detail');if(dv)dv.style.display='none';switchTab(window.__prevTab||'brani');}
 function closeModal(){document.getElementById('modal').classList.remove('open')}
 
 /* ====== MINI PLAYER ====== */
@@ -1693,6 +1729,8 @@ function renderInfo(){document.getElementById('tab-info').innerHTML='<div class=
 const TITLES={brani:'Brani',mood:'Mood',timeline:'Timeline',mixaggio:'Mixaggio',costellazione:'Costellazione',stats:'Statistiche',quiz:'Quiz · ear-training',lezioni:'Lezioni',glossario:'Glossario',info:'Info'};
 function switchTab(t){
   toggleDrawer(false);
+  var dv=document.getElementById('tab-detail');if(dv)dv.style.display='none';
+  var vh=document.querySelector('.content .viewhead');if(vh)vh.style.display='';
   document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
   ['brani','mood','timeline','mixaggio','costellazione','stats','quiz','lezioni','glossario','info'].forEach(x=>document.getElementById('tab-'+x).style.display=(x===t?'':'none'));
   document.getElementById('secTitle').textContent=TITLES[t];
@@ -1704,7 +1742,7 @@ function switchTab(t){
   syncHash();
 }
 document.querySelectorAll('.navbtn').forEach(btn=>btn.onclick=()=>switchTab(btn.dataset.tab));
-function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('sonoteca-theme',t)}catch(e){}var b=document.getElementById('themeBtn');if(b)b.textContent=(t==='light'?'🌙':'☀️');}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('sonoteca-theme',t)}catch(e){}var b=document.getElementById('themeBtn');if(b)b.textContent=(t==='light'?'🌙 Tema':'☀️ Tema');}
 function toggleTheme(){var cur=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';setTheme(cur==='light'?'dark':'light');}
 (function(){var s='dark';try{s=localStorage.getItem('sonoteca-theme')||'dark'}catch(e){}setTheme(s);})();
 
