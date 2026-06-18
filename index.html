@@ -690,6 +690,10 @@
   .btn-ico:hover{border-color:var(--accent);color:var(--accent)}
   .btn-ico.faved{color:var(--accent);border-color:var(--accent)}
   .btn-ico.faved svg{fill:currentColor}
+  .evo-head{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;user-select:none}
+  .evo-chev{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2;transition:transform .2s;flex:none}
+  .evo-sec:hover .evo-chev{stroke:var(--accent)}
+  .evo-collapsed .evo-chev{transform:rotate(-90deg)}
 </style>
 </head>
 <body>
@@ -1777,8 +1781,8 @@ function openSheet(i){
       `</div>`+
     `</div>`+
     `<div class="detail-evos">`+
-      `<div class="sec"><h4>Genere &amp; da dove arriva</h4><button class="btn-ghost evo-toggle" onclick="toggleEvo('g')">🧬 Scopri da dove arriva e come si è evoluto</button><div id="evo-g" style="display:none;margin-top:16px">`+genreEvoHTML(b)+`</div></div>`+
-      `<div class="sec"><h4>L'artista nel tempo</h4><button class="btn-ghost evo-toggle" onclick="toggleEvo('a')">🎤 Cosa faceva ${b.artista} prima e dopo</button><div id="evo-a" style="display:none;margin-top:16px">`+artistEvoHTML(b.artista)+`</div></div>`+
+      `<div class="sec evo-sec"><h4 class="evo-head" onclick="toggleEvo('a')"><span>L'artista nel tempo</span><svg class="evo-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></h4><div id="evo-a" class="evo-body" style="margin-top:14px">`+artistEvoHTML(b.artista)+`</div></div>`+
+      `<div class="sec evo-sec"><h4 class="evo-head" onclick="toggleEvo('g')"><span>Genere &amp; da dove arriva</span><svg class="evo-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></h4><div id="evo-g" class="evo-body" style="margin-top:14px">`+genreEvoHTML(b)+`</div></div>`+
     `</div>`;
   const cur=document.querySelector('.navbtn.active');window.__prevTab=cur?cur.dataset.tab:'brani';
   ['brani','mood','timeline','mixaggio','costellazione','stats','quiz','lezioni','glossario','info'].forEach(x=>{var e=document.getElementById('tab-'+x);if(e)e.style.display='none';});
@@ -2081,7 +2085,7 @@ function artistEvoHTML(name){
     `<div class="evo-block" style="margin-top:2px"><div class="evo-sub" style="--ec:#f59e0b">📈 COME SI È EVOLUTO IL SUONO</div><div class="phasebox" style="background:none;border:none;padding:0;margin:0">${ph}</div></div>`+
     `<div class="evo-note">💡 ${a.nota}</div>`;
 }
-function toggleEvo(k){const e=document.getElementById('evo-'+k);if(e)e.style.display=(e.style.display==='none'?'':'none');}
+function toggleEvo(k){const e=document.getElementById('evo-'+k);if(!e)return;const open=e.style.display!=='none';e.style.display=open?'none':'';const sec=e.closest('.evo-sec');if(sec)sec.classList.toggle('evo-collapsed',open);}
 function renderEvo(){
   const g=GENRE_EVO;
   const roots=g.radici.map(r=>`<div class="root-card"><div class="rc-t">${r[0]}</div><div class="rc-m">${r[1]} · ${r[2]}</div><div class="rc-d">${r[3]}</div></div>`).join('<span class="rootplus">+</span>');
