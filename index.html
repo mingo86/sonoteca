@@ -685,6 +685,11 @@
   .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media(max-width:760px){.stats-grid{grid-template-columns:1fr}}
   .stats-grid .barlist{max-width:none;margin:0}
+  .btn-ico{width:42px;height:42px;padding:0;justify-content:center;border-radius:50%;flex:none}
+  .btn-ico svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+  .btn-ico:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-ico.faved{color:var(--accent);border-color:var(--accent)}
+  .btn-ico.faved svg{fill:currentColor}
 </style>
 </head>
 <body>
@@ -1733,20 +1738,20 @@ function similiByTag(b,n){const sa=TAGSET.get(b);if(!sa)return [];const out=[];B
 /* ====== PREFERITI (localStorage) ====== */
 function favSet(){try{return new Set(JSON.parse(localStorage.getItem('sonoteca-fav')||'[]'))}catch(e){return new Set()}}
 function isFav(id){return id?favSet().has(id):false;}
-function toggleFav(id,btn){const s=favSet();if(s.has(id))s.delete(id);else s.add(id);try{localStorage.setItem('sonoteca-fav',JSON.stringify([...s]))}catch(e){}if(btn)btn.innerHTML=s.has(id)?'❤️ Nei preferiti':'🤍 Preferito';var p=document.getElementById('rail-scorciatoie');if(p&&p.style.display!=='none')renderScorciatoie();}
+function toggleFav(id,btn){const s=favSet();if(s.has(id))s.delete(id);else s.add(id);try{localStorage.setItem('sonoteca-fav',JSON.stringify([...s]))}catch(e){}if(btn){if(btn.classList.contains('btn-ico')){btn.classList.toggle('faved',s.has(id));btn.title=s.has(id)?'Nei preferiti':'Preferito';}else{btn.innerHTML=s.has(id)?'❤️ Nei preferiti':'🤍 Preferito';}}var p=document.getElementById('rail-scorciatoie');if(p&&p.style.display!=='none')renderScorciatoie();}
 function favBrani(){const s=favSet();return BRANI.filter(b=>s.has(b.trackId));}
 /* ====== LINK CONDIVISIBILI (hash) ====== */
 function syncHash(){try{const cur=document.querySelector('.navbtn.active');const tab=cur?cur.dataset.tab:'brani';const h={t:tab};if(activeTags.size)h.g=[...activeTags];if(bpmTarget)h.b=bpmTarget;location.replace('#'+encodeURIComponent(JSON.stringify(h)));}catch(e){}}
 function applyHash(){try{if(!location.hash||location.hash.length<2)return;const h=JSON.parse(decodeURIComponent(location.hash.slice(1)));if(h.g){activeTags.clear();h.g.forEach(t=>activeTags.add(t));}if(h.b)bpmTarget=h.b;renderTagbar();render();if(h.t&&h.t!=='brani')switchTab(h.t);}catch(e){}}
 function openSheet(i){
   const b=BRANI[i];
-  const prev=b.preview?`<button class="btn-ghost" onclick="playPreview(${i})">▶ Anteprima 30s</button>`:'';
+  const prev=b.preview?`<button class="btn-ghost btn-ico" title="Anteprima 30s" aria-label="Anteprima 30s" onclick="playPreview(${i})"><svg viewBox="0 0 24 24"><path d="M7 5l13 7-13 7z"/></svg></button>`:'';
   const fav=isFav(b.trackId);
   const embed=b.trackId?`<div class="sec"><h4>Ascolta su Spotify</h4><iframe class="spembed" src="https://open.spotify.com/embed/track/${b.trackId}" width="100%" height="152" frameborder="0" loading="lazy" allow="encrypted-media"></iframe></div>`:'';
   const facts=[];if(b.camelot)facts.push(['Camelot',b.camelot]);facts.push(['BPM',b.bpm],['Tonalità',b.key],['Metro',b.metro],['Durata',b.durata],['Epoca',b.epoca]);
   const factsHTML=facts.filter(f=>f[1]).map(f=>`<span class="dfact"><b>${f[1]}</b>${f[0]}</span>`).join('');
   const htech=`<div class="dh-tech"><div class="dh-tech-h">Scheda tecnica</div>${[['Genere',b.genere],['Tonalità',b.key],['BPM',b.bpm],['Metro',b.metro],['Durata',b.durata],['Produttore',b.produttore||'—']].filter(r=>r[1]).map(r=>`<div class="dh-tech-r"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>`;
-  const actions=`<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost" onclick="toggleFav('${esc(b.trackId)}',this)">${fav?'❤️ Nei preferiti':'🤍 Preferito'}</button><button class="btn-ghost" onclick="openRadio(${i})">📻 Radio</button></div>`;
+  const actions=`<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost btn-ico${fav?' faved':''}" title="Preferito" aria-label="Preferito" onclick="toggleFav('${esc(b.trackId)}',this)"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10z"/></svg></button><button class="btn-ghost btn-ico" title="Radio" aria-label="Radio" onclick="openRadio(${i})"><svg viewBox="0 0 24 24"><path d="M5 9h14v10H5z"/><circle cx="9" cy="14" r="2.4"/><path d="M16 8l-7 1.4"/><circle cx="16" cy="13" r="1"/></svg></button></div>`;
   const tags=`<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>{let col,tg='';if(t.c==='genere'){const pr=GENRE_GRAD[genreKey({genere:t.t})]||GENRE_GRAD['pop-other'];col=pr[0];tg=`;--tg:linear-gradient(135deg,${pr[0]},${pr[1]})`;}else col=TAGCATS[t.c].col;return `<button class="tagchip" style="--tc:${col}${tg}" onclick="goTag('${esc(t.t)}')"><span class="tl">${t.t}</span></button>`;}).join('')}</div></div>`;
   const carattere=b.metriche?`<div class="sec"><h4>Carattere</h4>${meters(b.metriche)}</div>`:'';
   document.getElementById('tab-detail').innerHTML=
