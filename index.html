@@ -32,7 +32,7 @@
     --player:#101012f2; --overlay:rgba(4,4,6,.76);
     --gauge-needle:#ffffff; --gauge-track:#28282f; --doc-tx:#d6d6da;
     --bigstat:linear-gradient(135deg,#16211a,#101013);
-    --navhover:#19191e; --navactive:rgba(30,215,96,.16); --navactive-tx:#ffffff;
+    --navhover:rgba(255,255,255,.04); --navactive:rgba(255,255,255,.08); --navactive-tx:#ffffff;
     /* --- ombre --- */
     --sh-1:0 2px 8px rgba(0,0,0,.35);
     --sh-2:0 10px 28px rgba(40,10,60,.5);
@@ -82,10 +82,10 @@
   .sidebar{background:var(--sidebar);border:1px solid var(--line);border-radius:var(--r-xl);padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow:auto;box-shadow:var(--sh-2);backdrop-filter:blur(10px)}
   .logo{font-size:21px;font-weight:900;letter-spacing:-.4px;padding:4px 10px 18px;display:flex;align-items:center;gap:11px;background:var(--brand);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
   .logo .wave i{background:var(--accent)}
-  .navbtn{display:flex;align-items:center;gap:14px;background:none;border:0;color:var(--muted);padding:11px 13px;border-radius:12px;cursor:pointer;font-size:15px;font-weight:650;text-align:left;width:100%;transition:transform .15s,background .2s,color .2s;position:relative}
-  .navbtn:hover{color:var(--txt);background:var(--navhover);transform:translateX(2px)}
-  .navbtn.active{color:var(--navactive-tx);background:var(--navactive);box-shadow:var(--sh-1)}
-  .navbtn.active::before{content:"";position:absolute;left:-12px;top:50%;transform:translateY(-50%);width:4px;height:20px;border-radius:99px;background:var(--brand)}
+  .navbtn{display:flex;align-items:center;gap:13px;background:none;border:0;color:var(--muted);padding:9px 11px;border-radius:7px;cursor:pointer;font-size:14.5px;font-weight:600;text-align:left;width:100%;transition:background .15s,color .15s;position:relative}
+  .navbtn:hover{color:var(--txt);background:var(--navhover)}
+  .navbtn.active{color:var(--navactive-tx);background:var(--navactive);font-weight:700}
+  .navbtn.active::before{display:none}
   .navbtn svg{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:2;transition:.2s}
   .navbtn.active svg{stroke:var(--accent)}
   .side-foot{margin-top:auto;padding:14px 12px 4px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);font-weight:600}
@@ -519,7 +519,7 @@
   .sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;padding:16px 12px 14px;background:var(--sidebar,var(--panel));border-right:1px solid var(--line);overflow:auto;z-index:20}
   .sidebar .logo{font-size:21px;font-weight:900;letter-spacing:-.5px;display:flex;align-items:center;gap:9px;color:var(--accent);padding:4px 8px 14px;white-space:nowrap}
   .sidenav{display:flex;flex-direction:column;gap:3px;flex:1}
-  .sidebar .themebtn{margin-top:10px;width:100%;display:flex;align-items:center;gap:10px;justify-content:flex-start;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:11px 13px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s}
+  .sidebar .themebtn{margin-top:10px;width:100%;display:flex;align-items:center;gap:10px;justify-content:flex-start;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:10px 12px;font-size:13.5px;font-weight:650;cursor:pointer;transition:.15s}
   .sidebar .themebtn:hover{border-color:var(--accent);color:var(--accent)}
   .shell{transition:grid-template-columns .24s ease}
   .nav-collapsed .shell{grid-template-columns:74px 1fr}
@@ -641,6 +641,7 @@
       <section id="tab-brani">
         <div class="hero"><div class="art">🎧</div><div><div class="eyebrow">Corso di musica personale</div><h1>La mia Sonoteca</h1><p>Ogni brano analizzato a fondo — genere, tonalità, voce, strumenti, scena — con mood, infografiche e playlist contestuali. Passa sopra una copertina per l'anteprima.</p></div></div>
         <div id="featured"></div>
+        <div id="flow"></div>
         <div id="shelves"></div>
         <div class="gridbar"><h3 class="grid-h" id="gridHead">Tutti i brani</h3><div class="viewtoggle"><button id="vGrid" class="active" onclick="setGrid('grid')" title="Griglia">▦</button><button id="vList" onclick="setGrid('list')" title="Lista (BPM · Key)">☰</button></div></div>
         <div id="grid" class="grid"></div>
