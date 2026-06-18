@@ -598,10 +598,10 @@
   .detail-bar{display:flex;align-items:center;gap:10px;padding:6px 0 0}
   .dback{display:inline-flex;align-items:center;gap:7px;background:var(--elev);border:1px solid var(--line);color:var(--txt);padding:9px 15px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s}
   .dback:hover{border-color:var(--accent);color:var(--accent);transform:translateX(-2px)}
-  .detail-hero{position:relative;display:flex;gap:18px;align-items:flex-end;margin:10px 0 0;padding:20px;border-radius:18px;overflow:hidden;background:var(--hg,var(--sheet-hero));box-shadow:0 16px 40px var(--shadow)}
+  .detail-hero{position:relative;display:flex;gap:20px;align-items:center;margin:10px 0 0;padding:22px;border-radius:18px;overflow:hidden;background:var(--hg,var(--sheet-hero));box-shadow:0 16px 40px var(--shadow)}
   .detail-hero::after{content:"";position:absolute;inset:0;background:radial-gradient(130% 100% at 82% -12%,rgba(255,255,255,.22),transparent 55%);pointer-events:none}
   .detail-hero>*{position:relative;z-index:1}
-  .detail-hero .cover{width:148px;height:148px;font-size:46px;flex:none;border-radius:14px;box-shadow:0 18px 38px rgba(0,0,0,.36)}
+  .detail-hero .cover{width:176px;height:176px;font-size:52px;flex:none;border-radius:16px;box-shadow:0 18px 38px rgba(0,0,0,.36)}
   .dh-meta{color:#fff;min-width:0;flex:1}
   .dh-meta .eyebrow{color:rgba(255,255,255,.88);font-weight:800}
   .dh-meta h1{margin:4px 0 3px;font-size:clamp(24px,3.4vw,38px);font-weight:900;letter-spacing:-1px;line-height:1.03;color:#fff}
@@ -731,7 +731,8 @@
   .evo-nota{margin-top:14px;font-size:12.5px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--accent2);border-radius:10px;padding:10px 12px;line-height:1.5}
   .evo-empty{font-size:13px;color:var(--muted)}
   @media(max-width:640px){.lineage2{grid-template-columns:1fr}}
-  /* scheda brano aperta: contenuto chiaro, sidebar/topbar restano scure */
+  /* scheda brano aperta: contenuto chiaro (anche il floor dietro la sidebar), sidebar/topbar restano scure */
+  body.song-open{background-color:#faf9f5}
   body.song-open #content{color:var(--txt);
     --accent:#cc785c;--accent2:#e8a55a;--green:#5db872;--pink:#cc785c;--sun:#e8a55a;--sky:#5db8a6;
     --brand:linear-gradient(90deg,#cc785c,#a9583e);--bg-grad:#ece5d9;
@@ -1818,7 +1819,7 @@ function openSheet(i){
   const facts=[];if(b.camelot)facts.push(['Camelot',b.camelot]);facts.push(['BPM',b.bpm],['Tonalità',b.key],['Metro',b.metro],['Durata',b.durata],['Epoca',b.epoca]);
   const factsHTML=facts.filter(f=>f[1]).map(f=>`<span class="dfact"><b>${f[1]}</b>${f[0]}</span>`).join('');
   const htech=`<div class="dh-tech"><div class="dh-tech-h">Scheda tecnica</div>${[['Genere',b.genere],['Tonalità',b.key],['BPM',b.bpm],['Metro',b.metro],['Durata',b.durata],['Produttore',b.produttore||'—']].filter(r=>r[1]).map(r=>`<div class="dh-tech-r"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>`;
-  const actions=`<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost btn-ico${fav?' faved':''}" title="Preferito" aria-label="Preferito" onclick="toggleFav('${esc(b.trackId)}',this)"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.4-7 10-7 10z"/></svg></button><button class="btn-ghost btn-ico" title="Radio" aria-label="Radio" onclick="openRadio(${i})"><svg viewBox="0 0 24 24"><path d="M5 9h14v10H5z"/><circle cx="9" cy="14" r="2.4"/><path d="M16 8l-7 1.4"/><circle cx="16" cy="13" r="1"/></svg></button></div>`;
+  const actions=`<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost btn-ico${fav?' faved':''}" title="Preferito" aria-label="Preferito" onclick="toggleFav('${esc(b.trackId)}',this)"><svg viewBox="0 0 24 24"><path d="M19.5 12.6 12 20l-7.5-7.4a4.6 4.6 0 0 1 6.5-6.5l1 1 1-1a4.6 4.6 0 0 1 6.5 6.5z"/></svg></button><button class="btn-ghost btn-ico" title="Radio" aria-label="Radio" onclick="openRadio(${i})"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 15.5a5 5 0 0 0 0-7M6 6a9 9 0 0 0 0 12M18 18a9 9 0 0 0 0-12"/></svg></button></div>`;
   const tags=`<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>{let col,tg='';if(t.c==='genere'){const pr=GENRE_GRAD[genreKey({genere:t.t})]||GENRE_GRAD['pop-other'];col=pr[0];tg=`;--tg:linear-gradient(135deg,${pr[0]},${pr[1]})`;}else col=TAGCATS[t.c].col;return `<button class="tagchip" style="--tc:${col}${tg}" onclick="goTag('${esc(t.t)}')"><span class="tl">${t.t}</span></button>`;}).join('')}</div></div>`;
   const carattere=b.metriche?`<div class="sec"><h4>Carattere</h4>${meters(b.metriche)}</div>`:'';
   document.getElementById('tab-detail').innerHTML=
