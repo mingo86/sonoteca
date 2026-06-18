@@ -47,10 +47,10 @@
   [data-theme="dark"]{
     --accent:#cc785c; --accent2:#e8a55a; --green:#5db872; --pink:#cc785c; --sun:#e8a55a; --sky:#5db8a6;
     --brand:linear-gradient(90deg,#cc785c,#a9583e);
-    --bg-grad:#0f0e0c;
-    --sidebar:#1f1e1b; --panel:#1f1e1b; --panel2:#1f1e1b; --elev:#252320; --line:#2e2c28;
+    --bg-grad:#1F1F1E;
+    --sidebar:#262626; --panel:#1f1e1b; --panel2:#1f1e1b; --elev:#252320; --line:#2e2c28;
     --txt:#faf9f5; --muted:#a09d96;
-    --content-grad:#181715;
+    --content-grad:#1F1F1E;
     --topbar-grad:linear-gradient(180deg,rgba(20,19,18,.92),rgba(20,19,18,0));
     --info-bg:#1f1e1b; --track:#2e2c28;
     --chip-bg:#252320; --chip-bd:#2e2c28; --chip-tx:#faf9f5;
@@ -519,7 +519,7 @@
   :root{--rail:340px;--side:240px}
   body{height:auto;min-height:100%}
   .shell{display:grid;grid-template-columns:var(--side) 1fr;gap:10px;padding:8px 10px 12px;min-height:calc(100vh - 54px)}
-  .sidebar{position:sticky;top:62px;height:calc(100vh - 74px);display:flex;flex-direction:column;gap:4px;padding:14px 12px;background:var(--content-grad);border:0;border-radius:14px;box-shadow:var(--sh-2);overflow:auto;z-index:20}
+  .sidebar{position:sticky;top:58px;height:calc(100vh - 70px);display:flex;flex-direction:column;gap:4px;padding:14px 12px;background:var(--sidebar);border:0;border-radius:8px;box-shadow:var(--sh-2);overflow:auto;z-index:20}
   .sidebar .logo{font-size:19px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:9px;color:#ededf0;background:none;-webkit-text-fill-color:#ededf0;padding:6px 8px 16px;white-space:nowrap}
   .sidenav{display:flex;flex-direction:column;gap:2px;flex:1}
   .sidenav .navsec{font-size:11px;font-weight:600;color:var(--muted);padding:15px 11px 5px;letter-spacing:.2px}
@@ -1800,7 +1800,7 @@ function switchTab(t){
   document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
   ['brani','mood','timeline','mixaggio','costellazione','stats','quiz','lezioni','glossario','info'].forEach(x=>document.getElementById('tab-'+x).style.display=(x===t?'':'none'));
   document.getElementById('secTitle').textContent=TITLES[t];
-  document.getElementById('searchWrap').style.display=(t==='brani'?'':'none');
+  document.getElementById('searchWrap').style.display='none';
   if(t==='quiz')newQuiz();
   if(t==='mixaggio')renderMix();
   if(t==='costellazione')renderCostellazione();
