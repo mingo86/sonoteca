@@ -163,8 +163,10 @@
   .tagbar .tagrow:nth-child(5){--tc:#ec4899}.tagbar .tagrow:nth-child(6){--tc:#ef4444}
   .tagbar .tagrow:nth-child(7){--tc:#0ea5a5}.tagbar .tagrow:nth-child(8){--tc:#7c3aed}
   @media(max-width:780px){.filterbar{padding:14px}.tagcat{width:100%;margin-bottom:-2px}}
-  .moodgrid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(186px,1fr))}
-  .moodcard{border-radius:var(--r-lg);padding:20px;cursor:pointer;min-height:104px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;background:linear-gradient(135deg,#8b5cf6,#6d28d9);transition:transform .25s cubic-bezier(.2,.7,.3,1),box-shadow .25s;overflow:hidden;position:relative;box-shadow:0 10px 24px rgba(124,58,237,.26)}
+  .moodgrid{display:flex;flex-direction:column;gap:26px}
+  .moodgrid-cat{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .mood-sec-h{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin:0 0 12px;padding-left:2px}
+  .moodcard{border-radius:var(--r-lg);padding:14px;cursor:pointer;min-height:104px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;background:linear-gradient(135deg,#8b5cf6,#6d28d9);transition:transform .25s cubic-bezier(.2,.7,.3,1),box-shadow .25s;overflow:hidden;position:relative;box-shadow:0 10px 24px rgba(124,58,237,.26)}
   .moodcard::after{content:"";position:absolute;right:-30px;bottom:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.16)}
   .moodcard:nth-child(3n+1){background:linear-gradient(135deg,#2dd4a7,#0ea5a5)}
   .moodcard:nth-child(3n+2){background:linear-gradient(135deg,#fb7185,#e8115b)}
@@ -309,7 +311,7 @@
     .topbar{padding:14px 16px;flex-wrap:wrap}.topbar h2{font-size:21px}
     .search{max-width:none;width:100%;order:3}
     .grid{grid-template-columns:repeat(2,1fr);gap:13px}
-    .moodgrid{grid-template-columns:repeat(2,1fr)}
+    .moodgrid-cat{grid-template-columns:repeat(2,1fr)}
     .filterbar{padding:14px}
     .hero{flex-direction:column;align-items:flex-start;gap:16px;padding-top:2px}.hero h1{font-size:clamp(28px,8vw,34px)}.hero .art{width:88px;height:88px;font-size:38px}
     .modal{padding:0}.sheet{border-radius:0;min-height:100vh;max-width:none}
@@ -419,11 +421,11 @@
   .flow-c:hover{transform:translateY(-3px) scale(1.04)}
   .flow-n{position:relative;z-index:1;font-size:14px;font-weight:800;text-align:center;line-height:1.1;letter-spacing:-.2px;color:#fff;text-shadow:0 1px 7px rgba(18,4,34,.5);max-width:94%}
   /* mood card grandi stile categoria (solo gradiente + nome) */
-  .moodcard{min-height:140px;border-radius:20px;justify-content:flex-end;position:relative;overflow:hidden}
+  .moodcard{min-height:94px;border-radius:16px;justify-content:flex-end;position:relative;overflow:hidden}
   .moodcard::after{content:"";position:absolute;inset:0;background:radial-gradient(130% 90% at 80% -10%,rgba(255,255,255,.22),transparent 55%)}
   .moodcard>*{position:relative;z-index:1}
-  .moodcard .mood-name{font-size:24px;font-weight:900;letter-spacing:-.5px;line-height:1.05}
-  .moodgrid{gap:16px}
+  .moodcard .mood-name{font-size:17px;font-weight:900;letter-spacing:-.4px;line-height:1.08}
+  .moodgrid-cat{gap:14px}
   /* vista lista densa (Beatport) */
   .gridbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 12px}
   .gridbar .grid-h{margin:0}
@@ -1788,7 +1790,18 @@ function renderFlow(){const host=document.getElementById('flow');if(!host)return
 }
 function renderMood(){
   const counts={};BRANI.forEach(b=>b.mood.forEach(m=>counts[m]=(counts[m]||0)+1));
-  document.getElementById('moodgrid').innerHTML=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).map(m=>`<div class="moodcard" style="background:${moodGrad(m)}" onclick="goMood('${m.replace(/'/g,"\\'")}')"><div class="mood-name">${m}</div><div class="cnt">${counts[m]} brano/i</div></div>`).join('');
+  const CAT={
+    "Da ballare":"Carica & festa","Adrenalina":"Carica & festa","Euforia":"Carica & festa","Rave":"Carica & festa","Pista da ballo":"Carica & festa","Block party":"Carica & festa","Indie club":"Carica & festa",
+    "Solare":"Luce & positività","Domenica mattina":"Luce & positività","Pomeriggio d'estate":"Luce & positività","Finestrini giù":"Luce & positività","Notte d'estate":"Luce & positività","Glam '90":"Luce & positività",
+    "Sensuale":"Notte & sensualità","Intimo":"Notte & sensualità","Cena a lume di candela":"Notte & sensualità","Camera da letto":"Notte & sensualità","Notte in città":"Notte & sensualità","After-hours":"Notte & sensualità","Tarda notte":"Notte & sensualità","Guida notturna":"Notte & sensualità","Gospel sudato":"Notte & sensualità",
+    "Malinconico":"Intimo & riflessivo","Riflessivo":"Intimo & riflessivo","Disteso":"Intimo & riflessivo","Nostalgia '90":"Intimo & riflessivo","Sogno a occhi aperti":"Intimo & riflessivo","Pomeriggio piovoso":"Intimo & riflessivo","Tramonto":"Intimo & riflessivo","Tramonto in spiaggia":"Intimo & riflessivo",
+    "Strumentale":"Trasversale"
+  };
+  const ORDER=["Carica & festa","Luce & positività","Notte & sensualità","Intimo & riflessivo","Trasversale","Altro"];
+  const groups={};
+  Object.keys(counts).forEach(m=>{const c=CAT[m]||"Altro";(groups[c]=groups[c]||[]).push(m);});
+  const card=m=>`<div class="moodcard" style="background:${moodGrad(m)}" onclick="goMood('${m.replace(/'/g,"\\'")}')"><div class="mood-name">${m}</div><div class="cnt">${counts[m]} brano/i</div></div>`;
+  document.getElementById('moodgrid').innerHTML=ORDER.filter(c=>groups[c]&&groups[c].length).map(c=>`<div class="mood-sec"><div class="mood-sec-h">${c}</div><div class="moodgrid-cat">${groups[c].sort((a,b)=>counts[b]-counts[a]).map(card).join('')}</div></div>`).join('');
 }
 function goMood(m){goTag(m);}
 function renderLezioni(){document.getElementById('tab-lezioni').innerHTML=LEZIONI.map(l=>`<div class="doc"><h3>${l.titolo}</h3>${l.testo}</div>`).join('')}
