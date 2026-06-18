@@ -513,24 +513,29 @@
   .qmode{display:flex;justify-content:center;margin:-4px 0 12px}
   .chain-spark{background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:10px}
   /* ====== NUOVO LAYOUT: topbar + content + rail ====== */
-  :root{--rail:344px}
+  :root{--rail:340px;--side:240px}
   body{height:auto;min-height:100%}
-  .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;padding:10px 18px;background:var(--sidebar,var(--panel));border-bottom:1px solid var(--line);box-shadow:0 4px 18px var(--shadow);backdrop-filter:blur(8px)}
-  .topbar .logo{font-size:19px;font-weight:800;display:flex;align-items:center;gap:9px;color:var(--accent);padding:0;white-space:nowrap}
-  .topnav{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
-  .topnav::-webkit-scrollbar{display:none}
-  .topnav .navbtn{flex:none;width:auto;display:inline-flex;flex-direction:row;align-items:center;gap:8px;background:none;border:0;color:var(--muted);padding:9px 13px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;white-space:nowrap;transition:.15s}
-  .topnav .navbtn svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2}
-  .topnav .navbtn:hover{color:var(--txt);background:var(--navhover)}
-  .topnav .navbtn.active{color:var(--navactive-tx);background:var(--navactive)}
-  .topbar .search{flex:none;width:220px;max-width:30vw;margin:0}
-  .railtoggle{display:none;background:var(--elev);border:1px solid var(--line);color:var(--txt);width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:17px;flex:none}
-  .layout{display:grid;grid-template-columns:1fr var(--rail);gap:14px;padding:14px;align-items:start}
-  .content{background:var(--content-grad);border-radius:16px;overflow:auto;box-shadow:0 8px 26px var(--shadow);min-height:calc(100vh - 132px)}
+  .shell{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh}
+  .sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;padding:16px 12px 14px;background:var(--sidebar,var(--panel));border-right:1px solid var(--line);overflow:auto;z-index:20}
+  .sidebar .logo{font-size:21px;font-weight:900;letter-spacing:-.5px;display:flex;align-items:center;gap:9px;color:var(--accent);padding:4px 8px 14px;white-space:nowrap}
+  .sidenav{display:flex;flex-direction:column;gap:3px;flex:1}
+  .sidebar .themebtn{margin-top:10px;width:100%;display:flex;align-items:center;gap:10px;justify-content:flex-start;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:11px 13px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s}
+  .sidebar .themebtn:hover{border-color:var(--accent);color:var(--accent)}
+  .main{display:flex;flex-direction:column;min-width:0}
+  .topbar{position:sticky;top:0;z-index:18;display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--topbar-grad);backdrop-filter:blur(14px) saturate(1.4)}
+  .topbar .search{flex:1;max-width:520px;margin:0}
+  .topbar .search input{width:100%}
+  .railtoggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--elev);border:1px solid var(--line);color:var(--txt);height:40px;padding:0 15px;border-radius:11px;cursor:pointer;font-size:14px;font-weight:700;flex:none;margin-left:auto;transition:.15s}
+  .railtoggle:hover{border-color:var(--accent);color:var(--accent)}
+  .layout{padding:6px 16px 24px}
+  .content{background:var(--content-grad);border-radius:16px;box-shadow:0 8px 26px var(--shadow);min-height:calc(100vh - 150px)}
   .viewhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:16px 24px 0}
   .viewhead h2{margin:0;font-size:24px;font-weight:800;color:var(--txt)}
   .viewhead .side-foot{border:0;padding:0;margin:0;color:var(--muted);font-size:12px}
-  .rail{position:sticky;top:84px;align-self:start;height:calc(100vh - 98px);background:var(--sidebar,var(--panel));border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;box-shadow:0 8px 26px var(--shadow);overflow:hidden}
+  .railscrim{position:fixed;inset:0;background:rgba(8,4,18,.5);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;z-index:44}
+  .railscrim.on{opacity:1;visibility:visible}
+  .rail{position:fixed;top:0;right:0;height:100%;width:var(--rail);max-width:92vw;background:var(--sidebar,var(--panel));border-left:1px solid var(--line);display:flex;flex-direction:column;box-shadow:-14px 0 44px var(--shadow);transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:45}
+  .rail.open{transform:translateX(0)}
   .rail-seg{display:flex;gap:2px;padding:8px;border-bottom:1px solid var(--line);flex:none}
   .rail-seg button{flex:1;background:none;border:0;color:var(--muted);font-size:11px;font-weight:700;padding:9px 3px;border-radius:9px;cursor:pointer;transition:.15s}
   .rail-seg button:hover{color:var(--txt);background:var(--navhover)}
@@ -561,19 +566,23 @@
   .rail .player{position:static;display:none;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none;margin:0;padding:10px 14px;flex:none}
   .rail .player.on{display:flex}
   @media(max-width:880px){
-    .layout{grid-template-columns:1fr;padding:8px}
-    .railtoggle{display:inline-flex}
-    .rail{position:fixed;top:0;right:0;height:100%;width:330px;max-width:88vw;border-radius:0;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:45}
-    .rail.open{transform:translateX(0)}
+    .layout{padding:8px}
     .content{min-height:auto}
     .rail .player.on{position:fixed;left:0;right:0;bottom:0;border-radius:0;z-index:35}
+  }
+  @media(max-width:780px){
+    .shell{grid-template-columns:1fr}
+    .sidenav{flex-direction:row;justify-content:space-around;gap:0;width:100%;overflow-x:auto}
+    .sidebar .themebtn{display:none}
+    .topbar{padding:10px 14px}
   }
 </style>
 </head>
 <body>
-<header class="topbar">
+<div class="shell">
+<aside class="sidebar" id="sidebar">
   <div class="logo"><span class="wave"><i style="height:40%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:65%"></i></span> Sonoteca</div>
-  <nav class="topnav">
+  <nav class="sidenav">
     <button class="navbtn active" data-tab="brani"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span class="navlabel">Brani</span></button>
     <button class="navbtn" data-tab="mood"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9.5" r="1"/><circle cx="15" cy="9.5" r="1"/></svg><span class="navlabel">Mood</span></button>
     <button class="navbtn" data-tab="timeline"><svg viewBox="0 0 24 24"><path d="M4 12h16"/><circle cx="7" cy="12" r="2"/><circle cx="17" cy="12" r="2"/></svg><span class="navlabel">Timeline</span></button>
@@ -585,9 +594,12 @@
     <button class="navbtn" data-tab="glossario"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H7a2 2 0 0 0-2 2z"/><path d="M9 8h7M9 12h7"/></svg><span class="navlabel">Glossario</span></button>
     <button class="navbtn" data-tab="info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span class="navlabel">Info</span></button>
   </nav>
+  <button id="themeBtn" class="themebtn" onclick="toggleTheme()" title="Tema chiaro/scuro">🌙 Tema</button>
+</aside>
+<div class="main">
+<header class="topbar">
   <div class="search" id="searchWrap"><input id="q" placeholder="Cerca…" oninput="render()"></div>
-  <button id="themeBtn" class="themebtn" onclick="toggleTheme()" title="Tema chiaro/scuro">🌙</button>
-  <button class="railtoggle" onclick="toggleRail()" title="Pannello laterale">☰</button>
+  <button class="railtoggle" onclick="toggleRail()" title="Mostra/nascondi pannello laterale">☰ Filtri</button>
 </header>
 <div class="layout">
   <main class="content" id="content">
@@ -639,6 +651,9 @@
     </div>
   </aside>
 </div>
+</div>
+</div>
+<div class="railscrim" id="railscrim" onclick="toggleRail(false)"></div>
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
 <div class="modal" id="cmpModal" onclick="if(event.target===this)closeCmp()"><div class="sheet" id="cmpSheet" style="max-width:480px"></div></div>
 <div class="modal" id="radioModal" onclick="if(event.target===this)closeRadio()"><div class="sheet" id="radioSheet" style="max-width:540px"></div></div>
@@ -1933,7 +1948,7 @@ function selArtist(btn,name){
 
 /* ====== SIDEBAR DESTRA (rail) ====== */
 window.__ctx=null;
-function toggleRail(){const r=document.getElementById('rail');if(r)r.classList.toggle('open');}
+function toggleRail(open){const r=document.getElementById('rail');if(!r)return;const s=document.getElementById('railscrim');const willOpen=(open===undefined)?!r.classList.contains('open'):!!open;r.classList.toggle('open',willOpen);if(s)s.classList.toggle('on',willOpen);}
 function railTab(n){
   document.querySelectorAll('.rail-seg button').forEach(b=>b.classList.toggle('active',b.dataset.rail===n));
   ['filtri','contesto','gusto','scorciatoie'].forEach(x=>{const e=document.getElementById('rail-'+x);if(e)e.style.display=(x===n?'':'none');});
