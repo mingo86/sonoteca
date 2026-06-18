@@ -81,7 +81,7 @@
   .app{display:grid;grid-template-columns:var(--side) 1fr;gap:12px;padding:12px;height:100vh}
   .sidebar{background:var(--sidebar);border:1px solid var(--line);border-radius:var(--r-xl);padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow:auto;box-shadow:var(--sh-2);backdrop-filter:blur(10px)}
   .logo{font-size:21px;font-weight:900;letter-spacing:-.4px;padding:4px 10px 18px;display:flex;align-items:center;gap:11px;background:var(--brand);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .logo .wave i{background:var(--pink)}
+  .logo .wave i{background:var(--accent)}
   .navbtn{display:flex;align-items:center;gap:14px;background:none;border:0;color:var(--muted);padding:11px 13px;border-radius:12px;cursor:pointer;font-size:15px;font-weight:650;text-align:left;width:100%;transition:transform .15s,background .2s,color .2s;position:relative}
   .navbtn:hover{color:var(--txt);background:var(--navhover);transform:translateX(2px)}
   .navbtn.active{color:var(--navactive-tx);background:var(--navactive);box-shadow:var(--sh-1)}
@@ -641,7 +641,6 @@
       <section id="tab-brani">
         <div class="hero"><div class="art">🎧</div><div><div class="eyebrow">Corso di musica personale</div><h1>La mia Sonoteca</h1><p>Ogni brano analizzato a fondo — genere, tonalità, voce, strumenti, scena — con mood, infografiche e playlist contestuali. Passa sopra una copertina per l'anteprima.</p></div></div>
         <div id="featured"></div>
-        <div id="flow"></div>
         <div id="shelves"></div>
         <div class="gridbar"><h3 class="grid-h" id="gridHead">Tutti i brani</h3><div class="viewtoggle"><button id="vGrid" class="active" onclick="setGrid('grid')" title="Griglia">▦</button><button id="vList" onclick="setGrid('list')" title="Lista (BPM · Key)">☰</button></div></div>
         <div id="grid" class="grid"></div>
