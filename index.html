@@ -744,6 +744,19 @@
     --bigstat:linear-gradient(135deg,#efe9de,#e8e0d2);--navhover:#efe9de;--navactive:#e8e0d2;--navactive-tx:#141413;
     --sh-1:0 1px 3px rgba(20,20,19,.06);--sh-2:0 6px 20px rgba(20,20,19,.08);--sh-3:0 16px 40px rgba(20,20,19,.12);
     --shadow:rgba(20,20,19,.08);--glow:0 8px 30px rgba(204,120,92,.18)}
+  .htl{display:flex;gap:14px;overflow-x:auto;padding:6px 2px 12px;scrollbar-width:none}
+  .htl::-webkit-scrollbar{display:none}
+  .htl-step{flex:0 0 230px;display:flex;flex-direction:column;position:relative}
+  .htl-rail{position:relative;height:16px;margin-bottom:8px}
+  .htl-rail::before{content:"";position:absolute;top:7px;left:0;right:-14px;height:2px;background:linear-gradient(90deg,var(--c),var(--line))}
+  .htl-step:last-child .htl-rail::before{right:auto;width:7px}
+  .htl-dot{position:absolute;top:1px;left:0;width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px var(--panel),0 0 12px color-mix(in srgb,var(--c) 55%,transparent)}
+  .htl-era{font-weight:700;font-size:12.5px;color:var(--c);margin-bottom:6px;display:flex;align-items:center;gap:7px}
+  .htl-here{font-size:9.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;background:var(--c);color:#fff;padding:2px 7px;border-radius:999px}
+  .htl-card{flex:1;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.45}
+  .htl-card b{font-weight:700}
+  .htl-step.cur .htl-card{box-shadow:0 0 0 2px color-mix(in srgb,var(--c) 45%,transparent)}
+  .evo-flows{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:6px}
 </style>
 </head>
 <body>
@@ -2110,15 +2123,14 @@ const ARTIST_EVO={"Gadi Mizrahi":{"influenze":["deep house","disco","nu disco","
 function genreEvoHTML(b){
   const g=resolveGenre(b),P=['#cc785c','#e8a55a','#5db8a6','#8b7bd8','#cc6b8e','#5db872','#22b8cf'];
   const roots=g.radici.map(r=>`<div class="evo-root"><div class="er-t">${r[0]}</div><div class="er-m">${r[1]} · ${r[2]}</div><div class="er-d">${r[3]}</div></div>`).join('');
-  const tl=g.timeline.map((e,i)=>{const c=P[i%P.length];const cur=/hip-hop soul/i.test(e.era);return `<div class="tl-step${cur?' cur':''}" style="--c:${c}"><div class="tl-dot"></div><div class="tl-yr">${e.era}${cur?' <span class="tl-here">qui</span>':''}</div><div class="tl-txt"><b>${e.luogo}</b> · ${e.desc}<div class="evo-chips">${e.esempi.map(x=>`<span class="evo-chip" style="--cc:${c}">${x}</span>`).join('')}</div></div></div>`;}).join('');
+  const tl=g.timeline.map((e,i)=>{const c=P[i%P.length];const cur=/hip-hop soul/i.test(e.era);return `<div class="htl-step${cur?' cur':''}" style="--c:${c}"><div class="htl-rail"><span class="htl-dot"></span></div><div class="htl-era">${e.era}${cur?'<span class="htl-here">sei qui</span>':''}</div><div class="htl-card"><b>${e.luogo}</b> · ${e.desc}<div class="evo-chips">${e.esempi.map(x=>`<span class="evo-chip" style="--cc:${c}">${x}</span>`).join('')}</div></div></div>`;}).join('');
   const world=g.mondo.map(w=>`<div class="evo-world" style="--c:${w.col}"><div class="ew-t">${w.luogo} · <span>${w.titolo}</span></div><div class="ew-d">${w.desc}</div><div class="evo-chips">${w.esempi.map(x=>`<span class="evo-chip" style="--cc:${w.col}">${x}</span>`).join('')}</div></div>`).join('');
-  const inf=(g.influenze&&g.influenze.length)?`<div class="evo-flow"><span class="ef-lbl teal">↤ da dove arriva</span><div class="evo-chips">${g.influenze.map(x=>`<span class="evo-chip teal">${x}</span>`).join('')}</div></div>`:'';
-  const er=(g.eredita&&g.eredita.length)?`<div class="evo-flow"><span class="ef-lbl pink">dove è andato ↦</span><div class="evo-chips">${g.eredita.map(x=>`<span class="evo-chip pink">${x}</span>`).join('')}</div></div>`:'';
+  const inf=(g.influenze&&g.influenze.length)?`<div class="evo-flow"><span class="ef-lbl teal">da dove arriva</span><div class="evo-chips">${g.influenze.map(x=>`<span class="evo-chip teal">${x}</span>`).join('')}</div></div>`:'';
+  const er=(g.eredita&&g.eredita.length)?`<div class="evo-flow"><span class="ef-lbl pink">dove è andato</span><div class="evo-chips">${g.eredita.map(x=>`<span class="evo-chip pink">${x}</span>`).join('')}</div></div>`:'';
   return `<div class="evo-fam">Famiglia di genere · <b>${g.nome}</b></div>`+
+    `<div class="evo-sub2">La sua evoluzione nel tempo →</div><div class="htl">${tl}</div>`+
+    `<div class="evo-flows">${inf}${er}</div>`+
     `<div class="evo-sub2">Le radici</div><div class="evo-roots">${roots}</div>`+
-    inf+
-    `<div class="evo-sub2">Come si è evoluto</div><div class="tl-vert">${tl}</div>`+
-    er+
     `<div class="evo-sub2">Nel mondo</div><div class="evo-worlds">${world}</div>`;
 }
 function artistEvoHTML(name){
@@ -2128,9 +2140,10 @@ function artistEvoHTML(name){
   name=ARTIST_EVO[name]?name:prim;
   const inf=a.influenze.map(x=>`<span class="evo-chip teal">${x}</span>`).join('');
   const er=a.eredita.map(x=>`<span class="evo-chip pink">${x}</span>`).join('');
-  const steps=a.fasi.map(p=>`<div class="tl-step"><div class="tl-dot"></div><div class="tl-yr">${p[0]}</div><div class="tl-txt">${p[1]}</div></div>`).join('');
+  const PY=['#cc785c','#e8a55a','#5db8a6','#8b7bd8','#cc6b8e'];
+  const steps=a.fasi.map((p,i)=>{const c=PY[i%PY.length];return `<div class="htl-step" style="--c:${c}"><div class="htl-rail"><span class="htl-dot"></span></div><div class="htl-era">${p[0]}</div><div class="htl-card">${p[1]}</div></div>`;}).join('');
   return `<div class="lineage2"><div class="lin-side"><div class="lin-h">↤ Prima · influenze</div><div class="evo-chips">${inf}</div></div><div class="lin-mid"><div class="lin-orb">${name}</div></div><div class="lin-side"><div class="lin-h">Dopo · eredità ↦</div><div class="evo-chips">${er}</div></div></div>`+
-    `<div class="evo-sub2">Come si è evoluto il suono</div><div class="tl-vert">${steps}</div>`+
+    `<div class="evo-sub2">L'evoluzione del suono →</div><div class="htl">${steps}</div>`+
     `<div class="evo-nota">${a.nota}</div>`;
 }
 function toggleEvo(k){const e=document.getElementById('evo-'+k);if(!e)return;const open=e.style.display!=='none';e.style.display=open?'none':'';const sec=e.closest('.evo-sec');if(sec)sec.classList.toggle('evo-collapsed',open);}
