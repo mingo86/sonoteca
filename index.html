@@ -564,7 +564,9 @@
   .nav-collapsed .sidebar .themebtn{justify-content:center;padding:12px 0}
   .nav-collapsed .sidebar .themebtn .themetx{display:none}
   .main{display:flex;flex-direction:column;min-width:0}
-  .topbar{position:sticky;top:0;z-index:18;display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--topbar-grad);backdrop-filter:blur(14px) saturate(1.4)}
+  .topbar{position:sticky;top:0;z-index:18;display:flex;align-items:center;gap:12px;padding:11px 18px;background:var(--content-grad);border-bottom:1px solid var(--line);backdrop-filter:none}
+  .crumb{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;color:var(--txt);white-space:nowrap;flex:none}
+  .crumb .wave{height:15px}
   .topbar .search{flex:1;max-width:520px;margin:0}
   .topbar .search input{width:100%}
   .railtoggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--elev);border:1px solid var(--line);color:var(--txt);height:40px;padding:0 15px;border-radius:11px;cursor:pointer;font-size:14px;font-weight:700;flex:none;margin-left:auto;transition:.15s}
@@ -671,6 +673,7 @@
 </aside>
 <div class="main">
 <header class="topbar">
+  <div class="crumb"><span class="wave"><i style="height:40%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:65%"></i></span><b>Sonoteca</b></div>
   <div class="search" id="searchWrap"><input id="q" placeholder="Cerca…" oninput="render()"></div>
   <button id="themeBtn" class="themebtn-top" onclick="toggleTheme()" title="Tema chiaro/scuro">🌙</button>
   <button class="railtoggle" onclick="toggleRail()" title="Mostra/nascondi pannello laterale">☰ Filtri</button>
