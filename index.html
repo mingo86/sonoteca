@@ -20,10 +20,10 @@
     --pink:#ff5db1; --sun:#ffb14e; --sky:#3ec6ff; --side:236px;
     --brand:linear-gradient(90deg,#1ed760,#1db954);
     /* --- superfici (scuro colorato) --- */
-    --bg-grad:#0a0a0c;
-    --sidebar:#060607; --panel:#141417; --panel2:#141417; --elev:#1e1e22; --line:#28282f;
-    --txt:#f5f5f7; --muted:#9a9aa3;
-    --content-grad:linear-gradient(180deg,#141417 0%,#0c0c0e 320px);
+    --bg-grad:#0f0f11;
+    --sidebar:#1c1c1f; --panel:#202024; --panel2:#202024; --elev:#26262c; --line:#2e2e35;
+    --txt:#ededf0; --muted:#9595a0;
+    --content-grad:linear-gradient(180deg,#161619 0%,#141416 320px);
     --topbar-grad:linear-gradient(180deg,rgba(10,10,12,.92),rgba(10,10,12,0));
     --info-bg:#141417; --track:#28282f;
     --chip-bg:#1c1c21; --chip-bd:#2c2c34; --chip-tx:#d6f0de;
@@ -81,13 +81,13 @@
   .app{display:grid;grid-template-columns:var(--side) 1fr;gap:12px;padding:12px;height:100vh}
   .sidebar{background:var(--sidebar);border:1px solid var(--line);border-radius:var(--r-xl);padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow:auto;box-shadow:var(--sh-2);backdrop-filter:blur(10px)}
   .logo{font-size:21px;font-weight:900;letter-spacing:-.4px;padding:4px 10px 18px;display:flex;align-items:center;gap:11px;background:var(--brand);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .logo .wave i{background:var(--accent)}
-  .navbtn{display:flex;align-items:center;gap:13px;background:none;border:0;color:var(--muted);padding:9px 11px;border-radius:7px;cursor:pointer;font-size:14.5px;font-weight:600;text-align:left;width:100%;transition:background .15s,color .15s;position:relative}
+  .logo .wave i{background:var(--muted)}
+  .navbtn{display:flex;align-items:center;gap:12px;background:none;border:0;color:var(--muted);padding:8px 10px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;text-align:left;width:100%;transition:background .12s,color .12s;position:relative}
   .navbtn:hover{color:var(--txt);background:var(--navhover)}
-  .navbtn.active{color:var(--navactive-tx);background:var(--navactive);font-weight:700}
+  .navbtn.active{color:var(--navactive-tx);background:var(--navactive);font-weight:600}
   .navbtn.active::before{display:none}
-  .navbtn svg{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:2;transition:.2s}
-  .navbtn.active svg{stroke:var(--accent)}
+  .navbtn svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;transition:.15s}
+  .navbtn.active svg{stroke:currentColor}
   .side-foot{margin-top:auto;padding:14px 12px 4px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);font-weight:600}
   .content{background:var(--content-grad);border:1px solid var(--line);border-radius:var(--r-xl);overflow:auto;position:relative;box-shadow:var(--sh-2)}
   .topbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:14px;padding:18px 26px;background:var(--topbar-grad);backdrop-filter:blur(14px) saturate(1.4)}
@@ -517,8 +517,11 @@
   body{height:auto;min-height:100%}
   .shell{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh}
   .sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;padding:16px 12px 14px;background:var(--sidebar,var(--panel));border-right:1px solid var(--line);overflow:auto;z-index:20}
-  .sidebar .logo{font-size:21px;font-weight:900;letter-spacing:-.5px;display:flex;align-items:center;gap:9px;color:var(--accent);padding:4px 8px 14px;white-space:nowrap}
-  .sidenav{display:flex;flex-direction:column;gap:3px;flex:1}
+  .sidebar .logo{font-size:19px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:9px;color:#ededf0;background:none;-webkit-text-fill-color:#ededf0;padding:6px 8px 16px;white-space:nowrap}
+  .sidenav{display:flex;flex-direction:column;gap:2px;flex:1}
+  .sidenav .navsec{font-size:11px;font-weight:600;color:var(--muted);padding:15px 11px 5px;letter-spacing:.2px}
+  .sidenav .navsec:first-child{padding-top:4px}
+  .nav-collapsed .navsec{display:none}
   .sidebar .themebtn{margin-top:10px;width:100%;display:flex;align-items:center;gap:10px;justify-content:flex-start;background:var(--elev);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:10px 12px;font-size:13.5px;font-weight:650;cursor:pointer;transition:.15s}
   .sidebar .themebtn:hover{border-color:var(--accent);color:var(--accent)}
   .shell{transition:grid-template-columns .24s ease}
@@ -619,10 +622,12 @@
     <button class="navbtn active" data-tab="brani"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span class="navlabel">Brani</span></button>
     <button class="navbtn" data-tab="mood"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9.5" r="1"/><circle cx="15" cy="9.5" r="1"/></svg><span class="navlabel">Mood</span></button>
     <button class="navbtn" data-tab="timeline"><svg viewBox="0 0 24 24"><path d="M4 12h16"/><circle cx="7" cy="12" r="2"/><circle cx="17" cy="12" r="2"/></svg><span class="navlabel">Timeline</span></button>
+    <div class="navsec">Strumenti</div>
     <button class="navbtn" data-tab="mixaggio"><svg viewBox="0 0 24 24"><path d="M6 3v12"/><path d="M18 9v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/></svg><span class="navlabel">Mix</span></button>
     <button class="navbtn" data-tab="costellazione"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="1.5"/><circle cx="19" cy="7" r="1.5"/><circle cx="18" cy="17" r="1.5"/><circle cx="6" cy="18" r="1.5"/><path d="M12 12 5 6M12 12l7-5M12 12l6 5M12 12l-6 6"/></svg><span class="navlabel">Costellazione</span></button>
     <button class="navbtn" data-tab="stats"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span class="navlabel">Stats</span></button>
     <button class="navbtn" data-tab="quiz"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .8-1 1.7M12 17h.01"/></svg><span class="navlabel">Quiz</span></button>
+    <div class="navsec">Studio</div>
     <button class="navbtn" data-tab="lezioni"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/></svg><span class="navlabel">Lezioni</span></button>
     <button class="navbtn" data-tab="glossario"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H7a2 2 0 0 0-2 2z"/><path d="M9 8h7M9 12h7"/></svg><span class="navlabel">Glossario</span></button>
     <button class="navbtn" data-tab="info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span class="navlabel">Info</span></button>
