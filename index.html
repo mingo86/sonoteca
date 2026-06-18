@@ -139,7 +139,7 @@
   .tagrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
   .tagcat{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--tc,var(--muted));width:84px;flex:none;font-weight:850;display:flex;align-items:center;gap:7px}
   .tagrow .tagcat::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--tc,var(--muted));box-shadow:0 0 0 3px color-mix(in srgb,var(--tc,var(--muted)) 22%,transparent)}
-  .tagchip{position:relative;display:inline-flex;align-items:center;gap:6px;margin-left:6px;background:linear-gradient(135deg,color-mix(in srgb,var(--tc) 90%,#fff),color-mix(in srgb,var(--tc) 74%,#180a2c));color:#fff;border:0;padding:7px 11px 7px 18px;font-size:12px;cursor:pointer;font-weight:800;line-height:1;border-radius:6px 11px 11px 6px;box-shadow:0 4px 12px rgba(20,5,40,.35);transition:filter .15s,transform .15s}
+  .tagchip{position:relative;display:inline-flex;align-items:center;gap:6px;margin-left:6px;background:var(--tg,linear-gradient(135deg,color-mix(in srgb,var(--tc) 90%,#fff),color-mix(in srgb,var(--tc) 74%,#180a2c)));color:#fff;border:0;padding:7px 11px 7px 18px;font-size:12px;cursor:pointer;font-weight:800;line-height:1;border-radius:6px 11px 11px 6px;box-shadow:0 4px 12px rgba(20,5,40,.35);transition:filter .15s,transform .15s}
   .tagchip::before{content:"";position:absolute;left:-5px;top:50%;transform:translateY(-50%);width:13px;height:13px;background:color-mix(in srgb,var(--tc) 90%,#fff);border-radius:0 0 0 4px;rotate:45deg}
   .tagchip::after{content:"";position:absolute;left:4px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:rgba(10,2,20,.55);box-shadow:inset 0 1px 1px rgba(0,0,0,.6);z-index:2}
   .tagchip>span{position:relative;z-index:2}
@@ -1512,8 +1512,10 @@ function renderTagbar(){
     const arr=byCat[c].sort((a,b)=>b.n-a.n||a.t.localeCompare(b.t));
     return `<div class="tagrow"><span class="tagcat">${TAGCATS[c].lbl}</span>`+arr.map(e=>{
       const on=activeTags.has(e.t);
-      const col=(c==='genere')?genreColor({genere:e.t}):TAGCATS[c].col;
-      return `<button class="tagchip${on?' on':''}" style="--tc:${col}" onclick="toggleTag('${esc(e.t)}')"><span class="tl">${e.t}</span><span class="tn">${e.n}</span></button>`;
+      let col,tg='';
+      if(c==='genere'){const pr=GENRE_GRAD[genreKey({genere:e.t})]||GENRE_GRAD['pop-other'];col=pr[0];tg=`;--tg:linear-gradient(135deg,${pr[0]},${pr[1]})`;}
+      else col=TAGCATS[c].col;
+      return `<button class="tagchip${on?' on':''}" style="--tc:${col}${tg}" onclick="toggleTag('${esc(e.t)}')"><span class="tl">${e.t}</span><span class="tn">${e.n}</span></button>`;
     }).join('')+`</div>`;
   }).join(''):`<div class="taghint" style="padding:8px 2px">Nessun tag corrisponde a "${tagQuery}".</div>`;
   const head=document.getElementById('taghead');
@@ -1608,7 +1610,7 @@ function openSheet(i){
       `<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost" onclick="toggleFav('${esc(b.trackId)}',this)">${fav?'❤️ Nei preferiti':'🤍 Preferito'}</button><button class="btn-ghost" onclick="openRadio(${i})">📻 Radio</button></div>`+
       embed+
       `<div class="ctx"><b>Mood —</b> ${b.contesto}<div class="chips" style="margin-top:8px">${b.mood.map(x=>moodChip(x)).join('')}</div></div>`+
-      `<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>`<button class="tagchip" style="--tc:${t.c==='genere'?genreColor({genere:t.t}):TAGCATS[t.c].col}" onclick="goTag('${esc(t.t)}')"><span class="tl">${t.t}</span></button>`).join('')}</div></div>`+
+      `<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>{let col,tg='';if(t.c==='genere'){const pr=GENRE_GRAD[genreKey({genere:t.t})]||GENRE_GRAD['pop-other'];col=pr[0];tg=`;--tg:linear-gradient(135deg,${pr[0]},${pr[1]})`;}else col=TAGCATS[t.c].col;return `<button class="tagchip" style="--tc:${col}${tg}" onclick="goTag('${esc(t.t)}')"><span class="tl">${t.t}</span></button>`;}).join('')}</div></div>`+
       `<table><tr><td>Genere</td><td>${b.genere}</td></tr><tr><td>Tonalità</td><td>${b.key}</td></tr><tr><td>BPM</td><td>${b.bpm}</td></tr><tr><td>Metro</td><td>${b.metro}</td></tr><tr><td>Durata</td><td>${b.durata}</td></tr><tr><td>Produttore</td><td>${b.produttore||'—'}</td></tr></table>`+
       infografica(b)+
       emozioniHTML(b)+anatomiaSensazione(b,i)+
