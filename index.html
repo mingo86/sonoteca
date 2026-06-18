@@ -409,6 +409,29 @@
   .flow-e{font-size:36px;line-height:1}
   .flow-n{font-size:12px;font-weight:800;text-align:center;padding:0 10px;line-height:1.15;text-shadow:0 1px 5px rgba(0,0,0,.35)}
   .moodcard .mood-emo{font-size:30px;line-height:1;margin-bottom:6px}
+  /* mood card grandi stile categoria */
+  .moodcard{min-height:150px;border-radius:20px;justify-content:flex-end}
+  .moodcard .mood-emo{font-size:52px;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25))}
+  .moodcard .big{font-size:21px;font-weight:900;letter-spacing:-.3px}
+  .moodgrid{gap:16px}
+  /* vista lista densa (Beatport) */
+  .gridbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 12px}
+  .gridbar .grid-h{margin:0}
+  .viewtoggle{display:flex;gap:3px;background:var(--elev);border:1px solid var(--line);border-radius:999px;padding:3px;flex:none}
+  .viewtoggle button{border:0;background:none;color:var(--muted);font-size:15px;width:34px;height:30px;border-radius:999px;cursor:pointer;transition:.15s}
+  .viewtoggle button.active{background:var(--accent);color:#fff}
+  .listview{display:flex;flex-direction:column;gap:2px}
+  .lhead,.lrow{display:grid;grid-template-columns:46px 1fr 190px 54px 54px 38px;align-items:center;gap:12px}
+  .lhead{padding:2px 12px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:800;border-bottom:1px solid var(--line);margin-bottom:4px}
+  .lrow{padding:7px 12px;border-radius:10px;cursor:pointer;transition:.12s}
+  .lrow:hover{background:var(--elev)}
+  .lcov .cover{width:40px;height:40px;font-size:13px;border-radius:8px}
+  .lt{font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .la{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lgen{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lbpm,.lkey{font-size:13px;font-weight:800;color:var(--accent2);text-align:center}
+  .lplay{border:0;background:var(--green);color:#000;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:11px}
+  @media(max-width:780px){.lhead,.lrow{grid-template-columns:40px 1fr 50px}.lgen,.lplay,.lkey{display:none}.lhead span:nth-child(3),.lhead span:nth-child(5),.lhead span:nth-child(6){display:none}}
   /* caroselli stile Spotify */
   .grid-h{margin:18px 0 12px;font-size:20px;font-weight:800;color:var(--txt)}
   .shelf{margin:6px 0 24px}
@@ -538,7 +561,7 @@
         <div class="hero"><div class="art">🎧</div><div><div class="eyebrow">Corso di musica personale</div><h1>La mia Sonoteca</h1><p>Ogni brano analizzato a fondo — genere, tonalità, voce, strumenti, scena — con mood, infografiche e playlist contestuali. Passa sopra una copertina per l'anteprima.</p></div></div>
         <div id="flow"></div>
         <div id="shelves"></div>
-        <h3 class="grid-h" id="gridHead">Tutti i brani</h3>
+        <div class="gridbar"><h3 class="grid-h" id="gridHead">Tutti i brani</h3><div class="viewtoggle"><button id="vGrid" class="active" onclick="setGrid('grid')" title="Griglia">▦</button><button id="vList" onclick="setGrid('list')" title="Lista (BPM · Key)">☰</button></div></div>
         <div id="grid" class="grid"></div>
       </section>
       <section id="tab-mood" style="display:none"><p style="color:var(--muted);margin-top:4px">Sfoglia per atmosfera. Tocca un mood per vedere i brani che lo evocano.</p><div id="moodgrid" class="moodgrid"></div></section>
@@ -1369,7 +1392,21 @@ COME CRESCE — Si aggiungono brani man mano che li ascolto o li segnalo; glossa
 function spotifyTrack(b){return b.trackId?("https://open.spotify.com/track/"+b.trackId):("https://open.spotify.com/search/"+encodeURIComponent(b.artista+" "+b.titolo))}
 function spotifySearch(t,a){return "https://open.spotify.com/search/"+encodeURIComponent(a+" "+t)}
 function initials(s){return s.split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase()}
-function coverHTML(b,cls){return b.cover?`<div class="cover ${cls||''}"><img src="${b.cover}" alt="" loading="lazy"></div>`:`<div class="cover ${cls||''}">${initials(b.artista)}</div>`}
+function hashStr(s){let h=0;s=''+(s||'x');for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
+let _avc=0;
+function avatarSVG(seed){
+  const h=hashStr(seed);
+  const grads=[['#ff5db1','#a238ff'],['#a238ff','#7b2ff7'],['#ffb14e','#ff5db1'],['#3ec6ff','#a238ff'],['#1ed760','#3ec6ff'],['#ff4fa3','#ffb14e'],['#7b2ff7','#3ec6ff'],['#c77dff','#ff5db1']];
+  const skins=['#ffd9b3','#f0c098','#d9a06b','#b97f4f','#8a5a3b'],hairs=['#2b2b3a','#6d28d9','#ff5db1','#ffb14e','#3ec6ff','#1ed760','#f5f5f5'];
+  const g=grads[h%grads.length],sk=skins[(h>>3)%skins.length],ha=hairs[(h>>6)%hairs.length],acc=(h>>9)%3,mouth=(h>>11)%3,gid='ag'+(_avc++);
+  let f=`<defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${g[0]}"/><stop offset="1" stop-color="${g[1]}"/></linearGradient></defs><rect width="100" height="100" fill="url(#${gid})"/><circle cx="50" cy="46" r="30" fill="${ha}"/><circle cx="50" cy="50" r="24" fill="${sk}"/>`;
+  if(acc===1)f+=`<rect x="30" y="44" width="40" height="11" rx="5" fill="#1a1a2a"/><circle cx="38" cy="49.5" r="4" fill="#fff"/><circle cx="62" cy="49.5" r="4" fill="#fff"/>`;
+  else f+=`<circle cx="41" cy="48" r="2.7" fill="#22203a"/><circle cx="59" cy="48" r="2.7" fill="#22203a"/>`;
+  f+=mouth===0?`<path d="M42 60 q8 8 16 0" stroke="#a2324d" stroke-width="3" fill="none" stroke-linecap="round"/>`:mouth===1?`<ellipse cx="50" cy="61" rx="6" ry="4.5" fill="#a2324d"/>`:`<path d="M43 60 h14" stroke="#a2324d" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  if(acc===2)f+=`<path d="M24 50 a26 26 0 0 1 52 0" stroke="#22203a" stroke-width="4" fill="none"/><rect x="19" y="48" width="9" height="17" rx="4" fill="#22203a"/><rect x="72" y="48" width="9" height="17" rx="4" fill="#22203a"/>`;
+  return `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block">${f}</svg>`;
+}
+function coverHTML(b,cls){return b.cover?`<div class="cover ${cls||''}"><img src="${b.cover}" alt="" loading="lazy"></div>`:`<div class="cover ${cls||''}" style="background:none">${avatarSVG(b.trackId||b.titolo||b.artista)}</div>`}
 function uniq(a){return [...new Set(a)].sort((x,y)=>x.localeCompare(y))}
 function fill(id,vals){const s=document.getElementById(id);vals.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o)})}
 document.getElementById('sidefoot').textContent=BRANI.length+" brani in archivio";
@@ -1485,7 +1522,13 @@ function render(){
     if(bpmTarget&&(!b.bpmNum||Math.abs(b.bpmNum-bpmTarget)>8))return false;
     return true;
   });
-  if(!list.length){grid.innerHTML='<div class="empty">Nessun brano con questi filtri.'+(activeTags.size?'<br><button class="tagclear" style="margin-top:12px" onclick="clearTags()">✕ Azzera filtri</button>':'')+'</div>';return}
+  if(!list.length){grid.className='grid';grid.innerHTML='<div class="empty">Nessun brano con questi filtri.'+(activeTags.size?'<br><button class="tagclear" style="margin-top:12px" onclick="clearTags()">✕ Azzera filtri</button>':'')+'</div>';return}
+  if(gridMode==='list'){
+    grid.className='listview';
+    grid.innerHTML='<div class="lhead"><span></span><span>Titolo</span><span>Genere</span><span>BPM</span><span>Key</span><span></span></div>'+list.map(b=>{const idx=BRANI.indexOf(b);const d=domEmo(b);const fab=b.preview?`<button class="lplay" onclick="event.stopPropagation();playPreview(${idx})">▶</button>`:'<span></span>';const key=b.camelot||(b.key||'').replace(/\s*(maggiore|minore)/i,'')||'–';return `<div class="lrow" onclick="openSheet(${idx})"><div class="lcov">${coverHTML(b)}</div><div class="lmain"><div class="lt">${d?d.ic+' ':''}${b.titolo}</div><div class="la">${b.artista}</div></div><div class="lgen">${b.genere}</div><div class="lbpm">${b.bpmNum||'–'}</div><div class="lkey">${key}</div>${fab}</div>`;}).join('');
+    return;
+  }
+  grid.className='grid';
   list.forEach((b,n)=>{
     const idx=BRANI.indexOf(b);
     const el=document.createElement('div');el.className='card';el.style.animationDelay=(n*0.05)+'s';el.onclick=()=>openSheet(idx);
@@ -1497,6 +1540,8 @@ function render(){
     grid.appendChild(el);
   });
 }
+let gridMode='grid';
+function setGrid(m){gridMode=m;var g=document.getElementById('vGrid'),l=document.getElementById('vList');if(g)g.classList.toggle('active',m==='grid');if(l)l.classList.toggle('active',m==='list');render();}
 
 /* ====== MODAL ====== */
 function similiByTag(b,n){const sa=TAGSET.get(b);if(!sa)return [];const out=[];BRANI.forEach(x=>{if(x===b)return;const sx=TAGSET.get(x);if(!sx)return;let inter=0;sa.forEach(t=>{if(sx.has(t))inter++;});if(!inter)return;out.push({x,score:inter/(sa.size+sx.size-inter),shared:inter});});return out.sort((a,c)=>c.score-a.score).slice(0,n||6);}
