@@ -602,7 +602,7 @@
   .detail-hero::after{content:"";position:absolute;inset:0;background:radial-gradient(130% 100% at 82% -12%,rgba(255,255,255,.22),transparent 55%);pointer-events:none}
   .detail-hero>*{position:relative;z-index:1}
   .detail-hero .cover{width:184px;height:184px;font-size:54px;flex:none;border-radius:16px;box-shadow:0 18px 38px rgba(0,0,0,.36)}
-  .dh-meta{color:#fff;min-width:0}
+  .dh-meta{color:#fff;min-width:0;flex:1}
   .dh-meta .eyebrow{color:rgba(255,255,255,.88);font-weight:800}
   .dh-meta h1{margin:6px 0 4px;font-size:clamp(28px,4vw,46px);font-weight:900;letter-spacing:-1px;line-height:1.02;color:#fff}
   .dh-artist{color:rgba(255,255,255,.92);font-size:15px;font-weight:600}
@@ -663,6 +663,13 @@
   .detail-evos{display:flex;flex-direction:column;gap:14px;padding:0 0 30px}
   .detail-evos .sec{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 16px}
   @media(max-width:780px){.sens-row{grid-template-columns:1fr}}
+  .dh-tech{flex:none;align-self:flex-end;width:212px;max-width:42%;background:rgba(10,4,22,.24);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:13px 15px;color:#fff}
+  .dh-tech-h{font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.82);margin-bottom:8px}
+  .dh-tech-r{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:5px 0;border-top:1px solid rgba(255,255,255,.15)}
+  .dh-tech-r:first-of-type{border-top:0}
+  .dh-tech-r span{color:rgba(255,255,255,.72);white-space:nowrap}
+  .dh-tech-r b{font-weight:700;text-align:right}
+  @media(max-width:780px){.dh-tech{width:100%;max-width:none;align-self:stretch}}
 </style>
 </head>
 <body>
@@ -1721,14 +1728,15 @@ function openSheet(i){
   const prev=b.preview?`<button class="btn-ghost" onclick="playPreview(${i})">▶ Anteprima 30s</button>`:'';
   const fav=isFav(b.trackId);
   const embed=b.trackId?`<div class="sec"><h4>Ascolta su Spotify</h4><iframe class="spembed" src="https://open.spotify.com/embed/track/${b.trackId}" width="100%" height="152" frameborder="0" loading="lazy" allow="encrypted-media"></iframe></div>`:'';
-  const facts=[];if(b.camelot)facts.push(['Camelot',b.camelot]);facts.push(['BPM',b.bpm],['Tonalità',b.key],['Metro',b.metro],['Durata',b.durata],['Epoca',b.epoca]);if(b.produttore)facts.push(['Produttore',b.produttore]);
+  const facts=[];if(b.camelot)facts.push(['Camelot',b.camelot]);facts.push(['BPM',b.bpm],['Tonalità',b.key],['Metro',b.metro],['Durata',b.durata],['Epoca',b.epoca]);
   const factsHTML=facts.filter(f=>f[1]).map(f=>`<span class="dfact"><b>${f[1]}</b>${f[0]}</span>`).join('');
+  const htech=`<div class="dh-tech"><div class="dh-tech-h">Scheda tecnica</div>${[['Genere',b.genere],['Tonalità',b.key],['BPM',b.bpm],['Metro',b.metro],['Durata',b.durata],['Produttore',b.produttore||'—']].filter(r=>r[1]).map(r=>`<div class="dh-tech-r"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>`;
   const actions=`<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost" onclick="toggleFav('${esc(b.trackId)}',this)">${fav?'❤️ Nei preferiti':'🤍 Preferito'}</button><button class="btn-ghost" onclick="openRadio(${i})">📻 Radio</button></div>`;
   const tags=`<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>{let col,tg='';if(t.c==='genere'){const pr=GENRE_GRAD[genreKey({genere:t.t})]||GENRE_GRAD['pop-other'];col=pr[0];tg=`;--tg:linear-gradient(135deg,${pr[0]},${pr[1]})`;}else col=TAGCATS[t.c].col;return `<button class="tagchip" style="--tc:${col}${tg}" onclick="goTag('${esc(t.t)}')"><span class="tl">${t.t}</span></button>`;}).join('')}</div></div>`;
   const carattere=b.metriche?`<div class="sec"><h4>Carattere</h4>${meters(b.metriche)}</div>`:'';
   document.getElementById('tab-detail').innerHTML=
     `<div class="detail-bar"><button class="dback" onclick="closeDetail()">← Torna</button></div>`+
-    `<div class="detail-hero" style="--hg:${genreGrad(b)}">${coverHTML(b)}<div class="dh-meta"><div class="eyebrow">${b.genere}</div><h1>${b.titolo}</h1><div class="dh-artist">${b.artista} · ${b.epoca}</div><div class="dh-facts">${factsHTML}</div>${actions}</div></div>`+
+    `<div class="detail-hero" style="--hg:${genreGrad(b)}">${coverHTML(b)}<div class="dh-meta"><div class="eyebrow">${b.genere}</div><h1>${b.titolo}</h1><div class="dh-artist">${b.artista} · ${b.epoca}</div><div class="dh-facts">${factsHTML}</div>${actions}</div>${htech}</div>`+
     `<div class="detail-grid">`+
       `<div class="dcol dcol-main">`+
         `<div class="sec"><h4>Mood &amp; atmosfera</h4><div class="ctx">${b.contesto}<div class="chips" style="margin-top:10px">${b.mood.map(x=>moodChip(x)).join('')}</div></div></div>`+
