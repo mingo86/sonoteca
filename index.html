@@ -519,7 +519,7 @@
   :root{--rail:340px;--side:240px}
   body{height:auto;min-height:100%}
   .shell{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh}
-  .sidebar{position:sticky;top:56px;height:calc(100vh - 56px);display:flex;flex-direction:column;gap:4px;padding:14px 12px;background:var(--sidebar,var(--panel));border-right:1px solid var(--line);overflow:auto;z-index:20}
+  .sidebar{position:sticky;top:56px;height:calc(100vh - 56px);display:flex;flex-direction:column;gap:4px;padding:14px 12px;background:var(--bg-grad);overflow:auto;z-index:20}
   .sidebar .logo{font-size:19px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:9px;color:#ededf0;background:none;-webkit-text-fill-color:#ededf0;padding:6px 8px 16px;white-space:nowrap}
   .sidenav{display:flex;flex-direction:column;gap:2px;flex:1}
   .sidenav .navsec{font-size:11px;font-weight:600;color:var(--muted);padding:15px 11px 5px;letter-spacing:.2px}
@@ -564,12 +564,14 @@
   .nav-collapsed .sidebar .themebtn{justify-content:center;padding:12px 0}
   .nav-collapsed .sidebar .themebtn .themetx{display:none}
   .main{display:flex;flex-direction:column;min-width:0}
-  .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:11px;padding:9px 16px;background:var(--content-grad);border-bottom:1px solid var(--line);backdrop-filter:none}
+  .topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;padding:9px 16px;background:var(--bg-grad);backdrop-filter:none}
   .crumb{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;flex:none}
   .crumb .wave{height:14px}
   .tbnav{display:flex;gap:2px;flex:none}
-  .tbic{width:30px;height:30px;border-radius:7px;background:none;border:0;color:var(--muted);font-size:21px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s}
+  .tbright{margin-left:auto;display:flex;gap:2px;align-items:center;flex:none}
+  .tbic{width:32px;height:32px;border-radius:7px;background:none;border:0;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s}
   .tbic:hover{background:var(--navhover);color:var(--txt)}
+  .tbic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
   .topbar .search{flex:1;max-width:520px;margin:0}
   .topbar .search input{width:100%}
   .railtoggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--elev);border:1px solid var(--line);color:var(--txt);height:36px;padding:0 13px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:600;flex:none;transition:.15s}
@@ -651,9 +653,12 @@
 <header class="topbar">
   <div class="crumb"><span class="wave"><i style="height:40%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:65%"></i></span><b>Sonoteca</b></div>
   <div class="tbnav"><button class="tbic" onclick="history.back()" title="Indietro" aria-label="Indietro">‹</button><button class="tbic" onclick="history.forward()" title="Avanti" aria-label="Avanti">›</button></div>
-  <div class="search" id="searchWrap"><input id="q" placeholder="Cerca…" oninput="render()"></div>
-  <button id="themeBtn" class="themebtn-top" onclick="toggleTheme()" title="Tema chiaro/scuro">🌙</button>
-  <button class="railtoggle" onclick="toggleRail()" title="Mostra/nascondi pannello laterale">☰ Filtri</button>
+  <div class="search" id="searchWrap" style="display:none"><input id="q" placeholder="Cerca…" oninput="render()"></div>
+  <div class="tbright">
+    <button class="tbic" onclick="toggleSearch()" title="Cerca" aria-label="Cerca"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg></button>
+    <button id="themeBtn" class="tbic" onclick="toggleTheme()" title="Tema chiaro/scuro" aria-label="Tema">🌙</button>
+    <button class="tbic" onclick="toggleRail()" title="Filtri" aria-label="Filtri"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M14 4v16"/></svg></button>
+  </div>
 </header>
 <div class="shell">
 <aside class="sidebar" id="sidebar">
@@ -2048,6 +2053,7 @@ function selArtist(btn,name){
 /* ====== SIDEBAR DESTRA (rail) ====== */
 window.__ctx=null;
 function toggleRail(open){const r=document.getElementById('rail');if(!r)return;const s=document.getElementById('railscrim');const willOpen=(open===undefined)?!r.classList.contains('open'):!!open;r.classList.toggle('open',willOpen);if(s)s.classList.toggle('on',willOpen);}
+function toggleSearch(){var w=document.getElementById('searchWrap');if(!w)return;var on=(w.style.display==='none');w.style.display=on?'':'none';if(on){var q=document.getElementById('q');if(q)q.focus();}}
 function railTab(n){
   document.querySelectorAll('.rail-seg button').forEach(b=>b.classList.toggle('active',b.dataset.rail===n));
   ['filtri','contesto','gusto','scorciatoie'].forEach(x=>{const e=document.getElementById('rail-'+x);if(e)e.style.display=(x===n?'':'none');});
