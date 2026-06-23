@@ -764,6 +764,17 @@
   .htl-card b{font-weight:700}
   .htl-step.cur .htl-card{box-shadow:0 0 0 2px color-mix(in srgb,var(--c) 45%,transparent)}
   .evo-flows{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:6px}
+  .lyr-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .lyr-head h4{margin:0}
+  .lyr-lang{font-size:10px;background:var(--chip-bg);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--muted);font-weight:700;vertical-align:middle}
+  .btn-sm{padding:6px 13px;font-size:12px}
+  .lyr-tg.on{border-color:var(--accent);color:var(--accent)}
+  .lyrics{font-size:14.5px;line-height:1.5;max-width:680px}
+  .ly-o{color:var(--txt)}
+  .ly-t{display:none;color:var(--muted);font-size:13px;font-style:italic;margin:2px 0 0}
+  .lyr-sec.show-trad .ly-t{display:block}
+  .lyr-sec.show-trad .ly-line{margin-bottom:9px}
+  .ly-br{height:12px}
 </style>
 </head>
 <body>
@@ -862,6 +873,18 @@
 <div class="modal" id="radioModal" onclick="if(event.target===this)closeRadio()"><div class="sheet" id="radioSheet" style="max-width:540px"></div></div>
 <script>
 /* ====== DATI ====== nuovi brani in cima ====== */
+/* ====== TESTI + TRADUZIONE ====== chiave = trackId. Solo per le tracce che vogliamo seguire.
+   Formato: { lang:'pt', testo:[ ["riga originale","traduzione"], ["",""]=stanza vuota, ... ] }
+   NB: i testi qui sotto sono PLACEHOLDER d'esempio — sostituiscili col testo reale che vuoi usare. */
+const LYRICS = {
+  '1uCRxzPoF91Fk4P7l6g25P': { lang:'pt', testo:[
+    ["[Strofa 1 · incolla qui la prima riga in portoghese]","[traduzione italiana della prima riga]"],
+    ["[seconda riga del brano]","[traduzione della seconda riga]"],
+    ["",""],
+    ["[Ritornello · prima riga]","[traduzione del ritornello]"],
+    ["[Ritornello · seconda riga]","[traduzione]"]
+  ]}
+};
 const BRANI = [
   {
     titolo:"My Head Is a Jungle (Radio Edit)", artista:"Sam Hidd", data:"2026-06-16", fonte:"Spotify · ascolti recenti",
@@ -1813,6 +1836,7 @@ function similiByTag(b,n){const sa=TAGSET.get(b);if(!sa)return [];const out=[];B
 function favSet(){try{return new Set(JSON.parse(localStorage.getItem('sonoteca-fav')||'[]'))}catch(e){return new Set()}}
 function isFav(id){return id?favSet().has(id):false;}
 function toggleFav(id,btn){const s=favSet();if(s.has(id))s.delete(id);else s.add(id);try{localStorage.setItem('sonoteca-fav',JSON.stringify([...s]))}catch(e){}if(btn){if(btn.classList.contains('btn-ico')){btn.classList.toggle('faved',s.has(id));btn.title=s.has(id)?'Nei preferiti':'Preferito';}else{btn.innerHTML=s.has(id)?'❤️ Nei preferiti':'🤍 Preferito';}}var p=document.getElementById('rail-scorciatoie');if(p&&p.style.display!=='none')renderScorciatoie();}
+function toggleTrad(btn){const sec=btn.closest('.lyr-sec');if(!sec)return;const on=sec.classList.toggle('show-trad');btn.classList.toggle('on',on);btn.textContent=on?'Nascondi traduzione':'Traduzione';}
 function favBrani(){const s=favSet();return BRANI.filter(b=>s.has(b.trackId));}
 /* ====== LINK CONDIVISIBILI (hash) ====== */
 function syncHash(){try{const cur=document.querySelector('.navbtn.active');const tab=cur?cur.dataset.tab:'brani';const h={t:tab};if(activeTags.size)h.g=[...activeTags];if(bpmTarget)h.b=bpmTarget;location.replace('#'+encodeURIComponent(JSON.stringify(h)));}catch(e){}}
@@ -1827,6 +1851,8 @@ function openSheet(i){
   const htech=`<div class="dh-tech"><div class="dh-tech-h">Scheda tecnica</div>${[['Genere',b.genere],['Tonalità',b.key],['BPM',b.bpm],['Metro',b.metro],['Durata',b.durata],['Produttore',b.produttore||'—']].filter(r=>r[1]).map(r=>`<div class="dh-tech-r"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>`;
   const actions=`<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost btn-ico${fav?' faved':''}" title="Preferito" aria-label="Preferito" onclick="toggleFav('${esc(b.trackId)}',this)"><svg viewBox="0 0 24 24"><path d="M19.5 12.6 12 20l-7.5-7.4a4.6 4.6 0 0 1 6.5-6.5l1 1 1-1a4.6 4.6 0 0 1 6.5 6.5z"/></svg></button><button class="btn-ghost btn-ico" title="Radio" aria-label="Radio" onclick="openRadio(${i})"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 15.5a5 5 0 0 0 0-7M6 6a9 9 0 0 0 0 12M18 18a9 9 0 0 0 0-12"/></svg></button></div>`;
   const tags=`<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>{let col,tg='';if(t.c==='genere'){const pr=GENRE_GRAD[genreKey({genere:t.t})]||GENRE_GRAD['pop-other'];col=pr[0];tg=`;--tg:linear-gradient(135deg,${pr[0]},${pr[1]})`;}else col=TAGCATS[t.c].col;return `<button class="tagchip" style="--tc:${col}${tg}" onclick="goTag('${esc(t.t)}')"><span class="tl">${t.t}</span></button>`;}).join('')}</div></div>`;
+  const lyr=LYRICS[b.trackId];
+  const lyrics=lyr?`<div class="sec lyr-sec"><div class="lyr-head"><h4>Testo${lyr.lang?` <span class="lyr-lang">${esc(lyr.lang).toUpperCase()}</span>`:''}</h4>${(lyr.testo.some(p=>p[1])?`<button class="btn-ghost btn-sm lyr-tg" onclick="toggleTrad(this)">Traduzione</button>`:'')}</div><div class="lyrics">${lyr.testo.map(p=>(!p[0]&&!p[1])?`<div class="ly-br"></div>`:`<div class="ly-line"><div class="ly-o">${esc(p[0])}</div><div class="ly-t">${esc(p[1]||'')}</div></div>`).join('')}</div></div>`:'';
   const carattere=b.metriche?`<div class="sec"><h4>Carattere</h4>${meters(b.metriche)}</div>`:'';
   document.getElementById('tab-detail').innerHTML=
     `<div class="detail-bar"><button class="dback" onclick="closeDetail()">← Torna</button></div>`+
@@ -1834,6 +1860,7 @@ function openSheet(i){
     `<div class="detail-grid">`+
       `<div class="dcol dcol-main">`+
         `<div class="sec"><h4>Mood &amp; atmosfera</h4><div class="ctx">${b.contesto}<div class="chips" style="margin-top:10px">${b.mood.map(x=>moodChip(x)).join('')}</div></div></div>`+
+        lyrics+
         infografica(b)+
         `<div class="sens-row">`+emozioniHTML(b)+anatomiaSensazione(b,i)+`</div>`+
         (b.voce?`<div class="sec"><h4>La voce</h4><div>${b.voce}</div></div>`:'')+
