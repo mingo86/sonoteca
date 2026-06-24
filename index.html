@@ -775,6 +775,16 @@
   .lyr-sec.show-trad .ly-t{display:block}
   .lyr-sec.show-trad .ly-line{margin-bottom:9px}
   .ly-br{height:12px}
+  .pa-top{display:flex;align-items:center;gap:12px}
+  .pa-play{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--elev);color:var(--txt);font-size:15px;cursor:pointer;flex:none;transition:.15s}
+  .pa-play:hover{border-color:var(--accent);color:var(--accent)}
+  .pa-wave{flex:1;height:64px;display:block;min-width:0}
+  .pa-time{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;flex:none;white-space:nowrap}
+  .pa-now{font-size:12.5px;color:var(--accent);font-weight:600;min-height:18px;margin:8px 0 10px}
+  .pa-instr{display:flex;flex-wrap:wrap;gap:8px}
+  .pa-i{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:var(--panel2);opacity:.5;filter:grayscale(.4);transition:.18s}
+  .pa-i .ic{font-size:15px}
+  .pa-i.on{opacity:1;filter:none;color:var(--txt);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--panel2));box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 35%,transparent)}
 </style>
 </head>
 <body>
@@ -883,6 +893,17 @@ const LYRICS = {
     ["",""],
     ["[Ritornello · prima riga]","[traduzione del ritornello]"],
     ["[Ritornello · seconda riga]","[traduzione]"]
+  ]}
+};
+/* ====== PLAY-ALONG ====== "strumenti che entrano" sull'anteprima 30s (chiave = trackId).
+   Tempi in secondi scritti a mano; ogni layer = set di strumenti ATTIVI da quel secondo. */
+const STEMMAP = {
+  '4lO6nX7iOGPSfkEE6FhT4C': { layers:[
+    {t:0,  on:['Synth'],                           note:'Intro · solo synth'},
+    {t:5,  on:['Synth','Batteria'],                note:'Entra la batteria'},
+    {t:10, on:['Synth','Batteria','Basso'],        note:'Groove · + basso'},
+    {t:16, on:['Synth','Batteria','Basso','Voce'], note:'Entra la voce'},
+    {t:24, on:['Synth','Batteria','Basso','Voce'], note:'Pieno'}
   ]}
 };
 const BRANI = [
@@ -1852,6 +1873,8 @@ function openSheet(i){
   const actions=`<div class="actions"><a class="btn-green" href="${spotifyTrack(b)}" target="_blank" rel="noopener">▶ Ascolta su Spotify</a>${prev}<button class="btn-ghost btn-ico${fav?' faved':''}" title="Preferito" aria-label="Preferito" onclick="toggleFav('${esc(b.trackId)}',this)"><svg viewBox="0 0 24 24"><path d="M19.5 12.6 12 20l-7.5-7.4a4.6 4.6 0 0 1 6.5-6.5l1 1 1-1a4.6 4.6 0 0 1 6.5 6.5z"/></svg></button><button class="btn-ghost btn-ico" title="Radio" aria-label="Radio" onclick="openRadio(${i})"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 15.5a5 5 0 0 0 0-7M6 6a9 9 0 0 0 0 12M18 18a9 9 0 0 0 0-12"/></svg></button></div>`;
   const tags=`<div class="sec"><h4>🏷️ Tag — clicca per trovare brani simili</h4><div class="sheet-tags">${tagsOf(b).map(t=>{let col,tg='';if(t.c==='genere'){const pr=GENRE_GRAD[genreKey({genere:t.t})]||GENRE_GRAD['pop-other'];col=pr[0];tg=`;--tg:linear-gradient(135deg,${pr[0]},${pr[1]})`;}else col=TAGCATS[t.c].col;return `<button class="tagchip" style="--tc:${col}${tg}" onclick="goTag('${esc(t.t)}')"><span class="tl">${t.t}</span></button>`;}).join('')}</div></div>`;
   const lyr=LYRICS[b.trackId];
+  const stem=STEMMAP[b.trackId];
+  const playalong=(stem&&b.preview)?`<div class="sec pa-sec"><div class="lyr-head"><h4>Analisi mentre suona <span class="lyr-lang">30s</span></h4></div><div class="playalong" data-i="${i}"><div class="pa-top"><button class="pa-play" onclick="playPreview(${i})">▶</button><canvas class="pa-wave"></canvas><span class="pa-time">0:00 / 0:30</span></div><div class="pa-now"></div><div class="pa-instr">${(b.strumentiList||[]).map(n=>`<span class="pa-i" data-name="${esc(n)}"><span class="ic">${INSTRIC[n]||'🎵'}</span>${esc(n)}</span>`).join('')}</div></div></div>`:'';
   const lyrics=lyr?`<div class="sec lyr-sec"><div class="lyr-head"><h4>Testo${lyr.lang?` <span class="lyr-lang">${esc(lyr.lang).toUpperCase()}</span>`:''}</h4>${(lyr.testo.some(p=>p[1])?`<button class="btn-ghost btn-sm lyr-tg" onclick="toggleTrad(this)">Traduzione</button>`:'')}</div><div class="lyrics">${lyr.testo.map(p=>(!p[0]&&!p[1])?`<div class="ly-br"></div>`:`<div class="ly-line"><div class="ly-o">${esc(p[0])}</div><div class="ly-t">${esc(p[1]||'')}</div></div>`).join('')}</div></div>`:'';
   const carattere=b.metriche?`<div class="sec"><h4>Carattere</h4>${meters(b.metriche)}</div>`:'';
   document.getElementById('tab-detail').innerHTML=
@@ -1860,6 +1883,7 @@ function openSheet(i){
     `<div class="detail-grid">`+
       `<div class="dcol dcol-main">`+
         `<div class="sec"><h4>Mood &amp; atmosfera</h4><div class="ctx">${b.contesto}<div class="chips" style="margin-top:10px">${b.mood.map(x=>moodChip(x)).join('')}</div></div></div>`+
+        playalong+
         lyrics+
         infografica(b)+
         `<div class="sens-row">`+emozioniHTML(b)+anatomiaSensazione(b,i)+`</div>`+
@@ -1883,7 +1907,7 @@ function openSheet(i){
     `</div>`;
   const cur=document.querySelector('.navbtn.active');window.__prevTab=cur?cur.dataset.tab:'brani';
   ['brani','mood','timeline','mixaggio','costellazione','stats','quiz','lezioni','glossario','info'].forEach(x=>{var e=document.getElementById('tab-'+x);if(e)e.style.display='none';});
-  document.getElementById('tab-detail').style.display='';document.body.classList.add('song-open');
+  document.getElementById('tab-detail').style.display='';document.body.classList.add('song-open');paInit();
   document.body.classList.add('nav-collapsed');
   var vh=document.querySelector('.content .viewhead');if(vh)vh.style.display='none';
   var sw=document.getElementById('searchWrap');if(sw)sw.style.display='none';
@@ -1908,6 +1932,34 @@ function playPreview(i){
   pl.classList.add('on');
 }
 function togglePlay(){if(audio.paused){audio.play();document.getElementById('pbtn').textContent='⏸'}else{audio.pause();document.getElementById('pbtn').textContent='▶'}}
+let paRaf=null,paWaveCache={};
+function paBars(seed,n){const key=seed+'_'+n;if(paWaveCache[key])return paWaveCache[key];let h=0;for(let k=0;k<seed.length;k++)h=(h*31+seed.charCodeAt(k))>>>0;const a=[];for(let j=0;j<n;j++){h=(h*1103515245+12345)>>>0;a.push(0.25+(h%1000)/1000*0.75);}paWaveCache[key]=a;return a;}
+function paActive(map,t){let cur=map.layers[0];for(const l of map.layers){if(l.t<=t)cur=l;else break;}return cur;}
+function paFmt(s){s=Math.max(0,s|0);return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);}
+function paInit(){
+  if(paRaf){cancelAnimationFrame(paRaf);paRaf=null;}
+  const host=document.querySelector('#tab-detail .playalong');if(!host)return;
+  const i=+host.dataset.i,b=BRANI[i],map=b&&STEMMAP[b.trackId];if(!map)return;
+  const cv=host.querySelector('.pa-wave');if(!cv||!cv.getContext||typeof requestAnimationFrame!=='function')return;
+  const ctx=cv.getContext('2d'),chips=[...host.querySelectorAll('.pa-i')],timeEl=host.querySelector('.pa-time'),nowEl=host.querySelector('.pa-now'),playBtn=host.querySelector('.pa-play');
+  const DPR=Math.min(2,window.devicePixelRatio||1),H=64;let W=0,bars=[];
+  function size(){W=Math.max(120,cv.clientWidth||500);cv.width=Math.round(W*DPR);cv.height=H*DPR;cv.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0);bars=paBars(b.trackId,Math.max(40,Math.floor(W/4)));}
+  size();
+  function tick(){
+    if(!document.body.contains(cv)){paRaf=null;return;}
+    if(cv.clientWidth&&Math.abs(cv.clientWidth-W)>4)size();
+    const on=(curIdx===i)&&!audio.paused,dur=(curIdx===i&&audio.duration)?audio.duration:30,t=(curIdx===i)?audio.currentTime:0,prog=dur?Math.min(1,t/dur):0,n=bars.length,bw=W/n;
+    ctx.clearRect(0,0,W,H);
+    for(let k=0;k<n;k++){const bh=bars[k]*(H-8);ctx.fillStyle=(k/n)<=prog?'#cc785c':'rgba(140,140,140,.32)';ctx.fillRect(k*bw+bw*0.2,(H-bh)/2,Math.max(1,bw*0.6),bh);}
+    ctx.fillStyle='#a9583e';ctx.fillRect(prog*W-1,0,2,H);
+    if(timeEl)timeEl.textContent=paFmt(t)+' / '+paFmt(dur);
+    const a=paActive(map,t);chips.forEach(c=>c.classList.toggle('on',a.on.indexOf(c.dataset.name)>=0));
+    if(nowEl)nowEl.textContent=on?(a.note||''):'';
+    if(playBtn)playBtn.textContent=on?'⏸':'▶';
+    paRaf=requestAnimationFrame(tick);
+  }
+  tick();
+}
 audio.addEventListener('timeupdate',()=>{const p=audio.duration?audio.currentTime/audio.duration*100:0;document.getElementById('pbar').style.width=p+'%'});
 audio.addEventListener('ended',()=>{document.getElementById('pbtn').textContent='▶'});
 
