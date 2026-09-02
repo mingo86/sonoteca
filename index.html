@@ -632,11 +632,22 @@
     .rail .player.on{position:fixed;left:0;right:0;bottom:0;border-radius:0;z-index:35}
   }
   @media(max-width:780px){
-    .shell{grid-template-columns:1fr}
-    .sidenav{flex-direction:row;justify-content:space-around;gap:0;width:100%;overflow-x:auto}
+    /* Mobile: la sidebar diventa barra di navigazione fissa in basso (anche con .nav-collapsed) */
+    .shell,.nav-collapsed .shell{grid-template-columns:1fr;padding:0;gap:0;min-height:auto}
+    .sidebar,.nav-collapsed .sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;flex-direction:row;align-items:stretch;border-radius:0;border-top:1px solid var(--line);padding:4px 2px calc(4px + env(safe-area-inset-bottom));gap:0;background:var(--sidebar);box-shadow:0 -6px 22px var(--shadow);overflow:visible;z-index:25}
+    .sidenav,.nav-collapsed .sidenav{flex-direction:row;justify-content:flex-start;gap:0;width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .sidenav::-webkit-scrollbar{display:none}
+    .sidenav .navsec{display:none}
+    .sidenav .navbtn,.nav-collapsed .sidenav .navbtn{flex:1 0 58px;width:auto;flex-direction:column;justify-content:center;gap:3px;padding:6px 2px;font-size:10px}
+    .nav-collapsed .sidenav .navlabel{display:block}
     .sidebar .themebtn{display:none}
+    .content{border-radius:0;box-shadow:none;min-height:calc(100vh - 54px)}
+    .body{padding:4px 14px calc(84px + env(safe-area-inset-bottom))}
     .topbar{padding:10px 14px}
+    .player{bottom:calc(66px + env(safe-area-inset-bottom))}
   }
+  .grid-more{grid-column:1/-1;display:flex;justify-content:center;padding:18px 0 6px}
+  .grid-more .tagclear{padding:10px 18px;font-size:13.5px}
   .cst-wrap{position:relative;width:100%;max-width:820px;margin:10px 0}
   .cst-cv{display:block;width:100%;border-radius:14px;background:radial-gradient(120% 90% at 50% 0%,#272336,#1a191f 72%);cursor:default}
   .cst-tip{position:absolute;pointer-events:none;background:rgba(18,17,22,.94);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;line-height:1.3;color:#fff;z-index:5;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.45)}
@@ -1826,6 +1837,7 @@ function render(){
   if(_gh)_gh.textContent=_f?'Risultati':'Tutti i brani';
   syncHash();
   const grid=document.getElementById('grid');grid.innerHTML='';
+  gridStop();
   const list=BRANI.filter(b=>{
     const hay=(b.titolo+b.artista+b.strumenti+(b.tags||[]).join(' ')+b.mood.join(' ')).toLowerCase();
     if(q&&!hay.includes(q))return false;
@@ -1834,21 +1846,43 @@ function render(){
     return true;
   });
   if(!list.length){grid.className='grid';grid.innerHTML='<div class="empty">Nessun brano con questi filtri.'+(activeTags.size?'<br><button class="tagclear" style="margin-top:12px" onclick="clearTags()">✕ Azzera filtri</button>':'')+'</div>';return}
-  if(gridMode==='list'){
-    grid.className='listview';
-    grid.innerHTML='<div class="lhead"><span></span><span>Titolo</span><span>Genere</span><span>BPM</span><span>Key</span><span></span></div>'+list.map(b=>{const idx=BRANI.indexOf(b);const d=domEmo(b);const fab=b.preview?`<button class="lplay" onclick="event.stopPropagation();playPreview(${idx})">▶</button>`:'<span></span>';const key=b.camelot||(b.key||'').replace(/\s*(maggiore|minore)/i,'')||'–';return `<div class="lrow" style="border-left:4px solid ${genreColor(b)}" onclick="openSheet(${idx})"><div class="lcov">${coverHTML(b)}</div><div class="lmain"><div class="lt">${d?d.ic+' ':''}${b.titolo}</div><div class="la">${b.artista}</div></div><div class="lgen">${b.genere}</div><div class="lbpm">${b.bpmNum||'–'}</div><div class="lkey">${key}</div>${fab}</div>`;}).join('');
-    return;
-  }
-  grid.className='grid';
-  list.forEach((b,n)=>{
+  const isList=gridMode==='list';
+  grid.className=isList?'listview':'grid';
+  if(isList)grid.innerHTML='<div class="lhead"><span></span><span>Titolo</span><span>Genere</span><span>BPM</span><span>Key</span><span></span></div>';
+  const rowHTML=b=>{const idx=BRANI.indexOf(b);const d=domEmo(b);const fab=b.preview?`<button class="lplay" onclick="event.stopPropagation();playPreview(${idx})">▶</button>`:'<span></span>';const key=b.camelot||(b.key||'').replace(/s*(maggiore|minore)/i,'')||'–';return `<div class="lrow" style="border-left:4px solid ${genreColor(b)}" onclick="openSheet(${idx})"><div class="lcov">${coverHTML(b)}</div><div class="lmain"><div class="lt">${d?d.ic+' ':''}${b.titolo}</div><div class="la">${b.artista}</div></div><div class="lgen">${b.genere}</div><div class="lbpm">${b.bpmNum||'–'}</div><div class="lkey">${key}</div>${fab}</div>`;};
+  const cardEl=(b,n)=>{
     const idx=BRANI.indexOf(b);
-    const el=document.createElement('div');el.className='card story';el.style.animationDelay=(n*0.05)+'s';el.style.background=genreGrad(b);el.onclick=()=>openSheet(idx);
+    const el=document.createElement('div');el.className='card story';el.style.animationDelay=(n*0.03)+'s';el.style.background=genreGrad(b);el.onclick=()=>openSheet(idx);
     const fab=b.preview?`<button class="playfab" onclick="event.stopPropagation();playPreview(${idx})">▶</button>`:'';
     const d=domEmo(b);
-    el.innerHTML=`<div class="story-top"><span class="story-gen">${((b.genere||'').split(/[\/,]/)[0]||'').trim()}</span>${b.bpmNum?`<span class="story-pill">${b.bpmNum} BPM</span>`:''}</div><div class="cwrap">${coverHTML(b)}${fab}</div><h3>${b.titolo}</h3><div class="artist">${b.artista}</div><div class="story-foot">${b.camelot?`<span class="story-pill">${b.camelot}</span>`:'<span></span>'}<span class="story-cta">▶ Ascolta</span></div>`;
-    grid.appendChild(el);
-  });
+    el.innerHTML=`<div class="story-top"><span class="story-gen">${((b.genere||'').split(/[/,]/)[0]||'').trim()}</span>${b.bpmNum?`<span class="story-pill">${b.bpmNum} BPM</span>`:''}</div><div class="cwrap">${coverHTML(b)}${fab}</div><h3>${b.titolo}</h3><div class="artist">${b.artista}</div><div class="story-foot">${b.camelot?`<span class="story-pill">${b.camelot}</span>`:'<span></span>'}<span class="story-cta">▶ Ascolta</span></div>`;
+    return el;
+  };
+  // Rendering progressivo: la griglia mostra GRID_PAGE brani per volta e ne aggiunge altri
+  // quando il sentinella "Mostra altri" entra nel viewport (o al click).
+  const more=document.createElement('div');more.className='grid-more';
+  more.innerHTML='<button class="tagclear" onclick="renderMore()">Mostra altri <span class="grid-more-n"></span></button>';
+  let cursor=0;
+  const step=()=>{
+    const end=Math.min(cursor+GRID_PAGE,list.length);const frag=document.createDocumentFragment();
+    for(let n=cursor;n<end;n++){const b=list[n];if(isList){const t=document.createElement('template');t.innerHTML=rowHTML(b);frag.appendChild(t.content.firstChild);}else frag.appendChild(cardEl(b,n-cursor));}
+    cursor=end;
+    if(more.parentNode===grid)grid.insertBefore(frag,more);else grid.appendChild(frag);
+    if(cursor>=list.length){more.remove();gridStop();return}
+    more.querySelector('.grid-more-n').textContent='('+(list.length-cursor)+' rimanenti)';
+  };
+  _gridStep=step;step();
+  if(cursor<list.length){
+    grid.appendChild(more);
+    if('IntersectionObserver' in window){_gridObs=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)&&_gridStep)_gridStep();},{rootMargin:'700px 0px'});_gridObs.observe(more);}
+    // Fallback (browser senza IO o con IO in pausa): controllo sullo scroll.
+    _gridScroll=()=>{if(!_gridStep||more.parentNode!==grid)return;if(more.getBoundingClientRect().top<(window.innerHeight||800)+700)_gridStep();};
+    window.addEventListener('scroll',_gridScroll,{passive:true});
+  }
 }
+const GRID_PAGE=40;let _gridObs=null,_gridStep=null,_gridScroll=null;
+function gridStop(){if(_gridObs){_gridObs.disconnect();_gridObs=null}if(_gridScroll){window.removeEventListener('scroll',_gridScroll);_gridScroll=null}_gridStep=null;}
+function renderMore(){if(_gridStep)_gridStep();}
 let gridMode='grid';
 function setGrid(m){gridMode=m;var g=document.getElementById('vGrid'),l=document.getElementById('vList');if(g)g.classList.toggle('active',m==='grid');if(l)l.classList.toggle('active',m==='list');render();}
 
