@@ -5,7 +5,7 @@ Sei l'orchestratore di un progetto chiamato **Sonoteca**. Prima di qualsiasi cos
 ## Cosa stiamo facendo
 Sonoteca è una web app **a pagina singola** (un unico `index.html`, HTML/CSS/JS vanilla, niente build né dipendenze) che funziona come "corso di musica personale": ogni brano che l'utente ascolta viene analizzato a fondo (genere, tonalità, BPM, voce, strumenti, scena storica) e arricchito con mood, playlist contestuali, infografiche, un modulo "cosa dovresti sentire" (emozioni + perché) e diagrammi di evoluzione di genere e artista. Tema chiaro/scuro, responsive, mini-player con anteprime Spotify. L'app è in italiano.
 
-Attualmente ci sono 3 brani d'esempio (Toni Braxton, Jodeci, TLC, area R&B anni 90). Il progetto cresce aggiungendo brani.
+Attualmente ci sono ~507 brani, ma solo una manciata sono analisi curate a mano; il resto viene da import in blocco con testi da template (vedi 'Stato dei dati' in CLAUDE.md). Il progetto cresce curando brani, non solo aggiungendoli.
 
 ## Vincoli non negoziabili
 1. **Singolo file `index.html` autosufficiente**, apribile offline e pubblicabile come sito statico. Niente framework, niente build, niente CDN obbligatori.

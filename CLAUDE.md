@@ -13,9 +13,11 @@ Contesto per lavorare su questo progetto con Claude Code.
 
 ## Architettura di `index.html`
 - **Nessun framework, nessuna build, nessuna dipendenza esterna.** Solo HTML/CSS/JS vanilla. Le copertine sono URL remoti di Spotify (`i.scdn.co`); le anteprime audio sono mp3 di Spotify (`p.scdn.co`).
-- **Temi**: variabili CSS in `:root` (scuro, default) e `[data-theme="light"]` (chiaro). Il toggle salva la scelta in `localStorage` (`sonoteca-theme`). NON usare localStorage per altro.
+- **Temi**: variabili CSS in `:root` (chiaro crema, default) e `[data-theme="dark"]` (navy). Il toggle salva la scelta in `localStorage` (`sonoteca-theme-v2`). I preferiti stanno in `localStorage` (`sonoteca-fav`, array di trackId). Non usare localStorage per altro.
+- **Font**: EB Garamond (titoli) e Inter (testo) sono incorporati in base64 nei due `@font-face` all'inizio di `<style>`. Devono restare DENTRO `<style>` e la prima riga del file deve restare `<!doctype html>` (una versione precedente li aveva inseriti dentro il doctype: pagina in quirks mode e font mai caricati).
 - **Navigazione**: sidebar con `.navbtn[data-tab]`; `switchTab(t)` mostra/nasconde le `<section id="tab-...">`. Su mobile (<780px) la sidebar diventa barra in basso.
-- **Dati**: array JS dentro lo script (`BRANI`, `LEZIONI`, `GLOSSARIO`, `INFO`, `GENRE_EVO`, `ARTIST_EVO`).
+- **Dati**: array JS dentro lo script (`BRANI`, `LEZIONI`, `GLOSSARIO`, `INFO`, `GENRE_EVO`, `ARTIST_EVO`, più `LYRICS` e `STEMMAP` indicizzati per trackId, e `GENRE_FAMILIES`/`GENRE_GRAD` per famiglie e colori di genere).
+- **Stato dei dati (set 2026)**: ~507 brani. Solo una manciata (i primi dell'array, con `preview`, `produttore`, `playlist` valorizzati) sono analisi curate a mano; gli altri ~500 vengono da import in blocco dalle playlist Spotify, con testi generati da template (`oneline` tipo "Nu disco in…", frasi con "Strumentalità 0.72") e spesso senza cover, preview, produttore, playlist e struttura. Tenerne conto: le funzioni che dipendono da `preview` (quiz audio, play-along) funzionano solo sui brani curati.
 - **Render**: tutto è generato via template literal in funzioni `render*`/`*HTML`.
 
 ### Modello dati — oggetto in `BRANI`
@@ -34,7 +36,8 @@ Contesto per lavorare su questo progetto con Claude Code.
   voce, strumenti, armonia, scena,    // testi analisi
   mood:[...], contesto,                // mood + paragrafo atmosfera
   playlist:[["Titolo","Artista"],...], // consigliati (link ricerca Spotify)
-  ascolta:[...], simili:[...], tags:[...]
+  ascolta:[...], simili:[...], tags:[...],
+  camelot:"8A"    // presente sui brani importati in blocco
 }
 ```
 `GENRE_EVO` = {nome, radici[], timeline[], mondo[]}. `ARTIST_EVO` = { "Nome":{influenze[], eredita[], fasi[[anno,desc]], nota} }.
@@ -47,6 +50,7 @@ Contesto per lavorare su questo progetto con Claude Code.
 - `renderMood/renderTimeline/renderStats/renderLezioni/renderGlossario/renderInfo`.
 - `newQuiz()/answer()/qWrap()` — ear-training.
 - `playPreview(i)/togglePlay()` — mini-player. `setTheme(t)/toggleTheme()` — temi.
+- `renderCostellazione()` — grafo a forze su canvas. `renderMixFor()` — vista Mix (compatibilità Camelot/BPM). `paInit()` — play-along sull'anteprima. `toggleFav()/favSet()` — preferiti.
 
 ## Come aggiungere un brano (task ricorrente)
 1. Recupera dati reali: tonalità/BPM/produttore (fonti tipo songbpm, tunebat, Wikipedia) e copertina/preview/trackId (da Spotify).
@@ -56,7 +60,7 @@ Contesto per lavorare su questo progetto con Claude Code.
 5. Glossario/lezioni si espandono se compaiono termini nuovi.
 
 ## Validazione (niente test runner)
-Controlla che lo script sia sintatticamente valido prima di salvare, es. estrai il blocco `<script>` ed esegui con stub del DOM in Node:
+C'è `_smoke.js` in cartella (non versionato: `.gitignore` esclude `_*`) che stubba il DOM e chiama le funzioni principali: `node _smoke.js`. Come minimo controlla che lo script sia sintatticamente valido prima di salvare, es. estrai il blocco `<script>` ed esegui con stub del DOM in Node:
 ```bash
 node -e "const h=require('fs').readFileSync('index.html','utf8');new Function(h.match(/<script>([\s\S]*?)<\/script>/)[1]); console.log('parse OK')"
 ```
@@ -70,7 +74,15 @@ node -e "const h=require('fs').readFileSync('index.html','utf8');new Function(h.
 - Il file può troncarsi se scritto in un colpo solo troppo grande: preferire modifiche mirate.
 
 ## Deploy
-È un file statico. Opzioni: trascinarlo su Netlify Drop; oppure copiarlo nella web root di un VPS (nginx) — vedi note del progetto. Su Vercel funziona come sito statico.
+GitHub Pages dal branch `main` del repo `mingo86/sonoteca`: https://mingo86.github.io/sonoteca/. Dopo ogni modifica approvata: commit + push (il sito si aggiorna da solo in 1-2 minuti). Per provare in locale: `python -m http.server 8099 --directory Corso-Musica` dalla cartella padre (vedi `.claude/launch.json`).
 
-## Idee / roadmap
-Copertine nelle playlist consigliate; esempi cliccabili (ascolto) dentro i diagrammi evoluzione; emozione dominante come chip sulle card; più brani in archivio; mappa del mondo per le scene regionali; restyling visivo (vedi `DESIGN-BRIEF.md`).
+In cartella ci sono anche `index.redesign.html`, `_index.bak.html` e decine di `_*.json` (output della pipeline di import da Spotify, non versionati): sono residui, non vanno usati come sorgente.
+
+## Idee / roadmap (priorità da valutazione del 2 set 2026)
+1. Layout mobile: sotto 780px la sidebar deve diventare barra in basso (oggi resta un pannello a tutto schermo sopra il contenuto).
+2. Rendering progressivo della griglia (oggi 507 card in un colpo, ~17k nodi DOM).
+3. Campo `livello: "curato" | "auto"` sui brani, badge e filtro; testi automatici etichettati come tali.
+4. Estrarre i dati in file separati (`data/brani.js`, `data/evo.js`) caricati con `<script src>`, più script di validazione (campi obbligatori, duplicati, genere in tassonomia).
+5. Normalizzare i generi (266 stringhe distinte) sulle famiglie di `GENRE_FAMILIES`; separare gli artisti multipli ("A, B") così le voci `ARTIST_EVO` si agganciano.
+6. Recuperare cover e anteprime mancanti (API pubbliche Deezer/iTunes).
+7. Poi: copertine nelle playlist consigliate; esempi cliccabili nei diagrammi evoluzione; emozione dominante come chip sulle card; mappa del mondo per le scene regionali.
